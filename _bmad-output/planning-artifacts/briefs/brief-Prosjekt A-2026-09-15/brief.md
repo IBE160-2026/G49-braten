@@ -2,7 +2,7 @@
 title: "Product Brief: AI Study Buddy"
 status: draft
 created: 2026-09-15
-updated: 2026-09-15
+updated: 2026-10-28
 ---
 
 # Product Brief: AI Study Buddy
@@ -13,7 +13,7 @@ AI Study Buddy er en enkel, responsiv web-app som lar en student laste opp egne 
 
 Problemet den løser er velkjent for de fleste studenter: pensum bearbeides i dag manuelt og usystematisk — lest på nytt, skrevet av for hånd, med ad hoc-spørsmål til ChatGPT eller Claude når noe er uklart — uten at noe av dette blir til gjenbrukbart repetisjonsmateriale. Løsningen henter det studiematerialet som trengs for aktiv gjenkalling direkte ut av det studenten allerede laster opp, fortløpende gjennom semesteret, ikke bare rett før eksamen.
 
-Prosjektet konkurrerer bevisst ikke med etablerte verktøy som Quizlet, StudyFetch eller Quizgecko — funksjonelt overlapper det med det de allerede tilbyr. Verdien ligger i at det er et eget, gratis verktøy skreddersydd til egen studiehverdag, og i at selve byggingen er læringsmålet i oppgaven. Suksess måles først og fremst i om studenten faktisk bruker appen løpende fram til innlevering, ikke bare i om prototypen fungerer teknisk.
+Prosjektet konkurrerer bevisst ikke med etablerte verktøy som Quizlet, StudyFetch eller Quizgecko — funksjonelt overlapper det med det de allerede tilbyr. Verdien ligger i at det er et eget, gratis verktøy skreddersydd til egen studiehverdag, og i at selve byggingen er læringsmålet i oppgaven. Suksess måles på to måter: at studenten faktisk bruker appen løpende fram til innlevering, og at seks funksjonelle kriterier kan testes (se Suksesskriterier).
 
 ## Problemet
 
@@ -25,15 +25,17 @@ Det finnes også et sekundært problem: studenter bruker allerede generelle AI-v
 
 ## Løsningen
 
-En web-app der studenten laster opp sine egne pensumkilder — forelesningsnotater, lysbilder, pensumtekster som PDF eller ren maskinskrevet tekst — sammen med enkel kontekst (kurskode/emne, kapittel/tema, ønsket detaljnivå på sammendrag, språk/preferanser). Fra dette genererer appen, uavhengig av hvor stor teksten er:
+En web-app der studenten laster opp sine egne pensumkilder — forelesningsnotater, lysbilder, pensumtekster som PDF eller ren maskinskrevet tekst — sammen med enkel kontekst (kurskode/emne, kapittel/tema, ønsket detaljnivå på sammendrag, språk/preferanser). Fra dette genererer appen, for opplastinger opp til 50 sider / 10 MB:
 
 - **Sammendrag** av opplastet materiale, med justerbar detaljgrad
 - **Flashcards** for aktiv gjenkalling
 - **Quiz-spørsmål og -svar** — både korte og åpne oppgaveformater — for egentesting og eksamensforberedelse
 - **Nøkkelbegreper** trukket ut fra materialet
-- **Referansepekere** tilbake til kilde/side
+- **Referansepekere** tilbake til kilde/side: hvert flashcard og hvert quiz-spørsmål viser sidetall, og appen kontrollerer i koden at sidetallet finnes og at sitatet står på den siden
 
 Alt organiseres per kurs og kapittel/tema, slik at studenten enkelt kan skille hva som hører til hvor og bruke verktøyet fortløpende gjennom semesteret — ikke bare som en engangs eksamens-crammer. Innlogging lar studenten lagre opplastet materiale og generert innhold organisert på denne måten, og komme tilbake til det senere for repetisjon.
+
+**Etter genereringen** blar studenten i flashcards, leser sammendraget og tar quizen direkte i appen. Quizen rettes, og spørsmål som ble besvart feil samles i en ny øvingsrunde, slik at studenten repeterer det som faktisk sitter dårlig. [ASSUMPTION: rettingen av åpne spørsmål gjøres av språkmodellen mot kildeteksten; korte spørsmål rettes mot fasit.]
 
 ## Hva som gjør dette annerledes
 
@@ -55,6 +57,15 @@ Det som gjør dette prosjektet verdt å bygge er:
 
 **Personlig bruk (det viktigste kriteriet):** Appen regnes som vellykket hvis den faktisk brukes løpende gjennom semesteret — for flere fag, over tid — til å bearbeide pensum, og ikke bare fungerer som en engangs-demo bygget for innlevering. Reell bruk før 7. desember er selve beviset på at løsningen er nyttig, ikke bare funksjonell.
 
+**Funksjonelle kriterier (kan testes av sensor):**
+
+1. En opplastet PDF på 20 sider gir sammendrag, nøkkelbegreper, minst 10 flashcards og en quiz.
+2. Hvert flashcard og hvert quiz-spørsmål viser sidetall i kilden. Appen kontrollerer at sidetallet finnes i dokumentet og at sitatet står på den siden; det som feiler, skjules eller merkes. [ASSUMPTION: kontrollen er en enkel tekstsammenligning, ikke en vurdering av om svaret er riktig.]
+3. Appen kan kjøres lokalt etter README uten betalt nøkkel: mock-modus er standard og gir et fast, innspilt resultat på et eksempeldokument. Med egen nøkkel i `.env` brukes en ekte modell.
+4. Opplastinger over 50 sider eller 10 MB avvises med en tydelig feilmelding.
+5. Quizen rettes, og feil besvarte spørsmål samles i en ny øvingsrunde.
+6. Opplastet materiale og generert innhold ligger lagret per bruker, kurs og kapittel/tema, og er tilgjengelig etter ny innlogging.
+
 **Leveransekriterier (skoleoppgaven):** En fungerende prototype som dekker det oppgaveteksten spesifiserer — data inn (opplastede forelesningsnotater/lysbilder/pensum, kurskode, detaljnivå, språk) og data ut (sammendrag, flashcards, quiz-spørsmål/svar, nøkkelbegreper, referansepekere) — samt en skriftlig rapport som blant annet reflekterer over hvordan AI kan brukes til tekstbehandling.
 
 ## Omfang
@@ -62,10 +73,13 @@ Det som gjør dette prosjektet verdt å bygge er:
 **Med i første versjon (MVP, til 7. desember):**
 - Opplasting av pensumkilder som PDF eller ren maskinskrevet tekst (ikke bilder/håndskrift)
 - Enkel kontekst per opplasting: kurskode/emne, kapittel/tema, ønsket detaljnivå, språk
-- Generering av: sammendrag, flashcards, quiz-spørsmål/svar (korte og åpne formater), nøkkelbegreper, referansepekere til kilde/side
+- Generering av: sammendrag, flashcards, quiz-spørsmål/svar (korte og åpne formater), nøkkelbegreper, referansepekere til kilde/side. Bygges i trinn: (1) opplasting, sidevis tekstuttrekk, sammendrag og quiz; (2) flashcards og nøkkelbegreper; (3) kontroll av sidehenvisninger og rettet quiz med ny øvingsrunde.
+- Grense per opplasting: 50 sider / 10 MB
+- Et lag mellom appen og språkmodellen med mock-modus som standard og egen nøkkel via `.env` (`.env.example` følger med), slik at appen kan kjøres uten betalt nøkkel
 - Organisering av innhold per kurs og kapittel/tema
 - Innlogging og lagring, slik at studenten kan komme tilbake til tidligere opplastinger og generert innhold
 - Responsiv web-app som fungerer på mobil, nettbrett og desktop i nettleser (ingen native apper)
+- Eksempeldokument uten opphavsrettslige problemer i repoet, brukt til mock-modus og tester
 
 **Bevisst utenfor omfang:**
 - Native mobil-, iPad- eller desktop-apper
@@ -73,3 +87,7 @@ Det som gjør dette prosjektet verdt å bygge er:
 - AI-generert fasit på øvingsoppgaver, verifisert mot nettet
 - Betaling/kjøp
 - Deling eller samarbeid mellom studenter (flerbrukerfunksjoner utover egen innlogging)
+
+## Visjon
+
+Prosjektet er ferdig ved innlevering. Etter det er mobil den naturlige neste plattformen, og opplasting av bilder (OCR) den naturlige neste inndatakilden. Ingenting av dette er med i første versjon.
