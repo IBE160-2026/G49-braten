@@ -2,7 +2,7 @@
 title: "Product Brief: AI Study Buddy"
 status: draft
 created: 2026-09-15
-updated: 2026-10-28
+updated: 2026-10-29
 ---
 
 # Product Brief: AI Study Buddy
@@ -74,8 +74,9 @@ Det som gjør dette prosjektet verdt å bygge er:
 - Opplasting av pensumkilder som PDF eller ren maskinskrevet tekst (ikke bilder/håndskrift)
 - Enkel kontekst per opplasting: kurskode/emne, kapittel/tema, ønsket detaljnivå, språk
 - Generering av: sammendrag, flashcards, quiz-spørsmål/svar (korte og åpne formater), nøkkelbegreper, referansepekere til kilde/side. Bygges i trinn: (1) opplasting, sidevis tekstuttrekk, sammendrag og quiz; (2) flashcards og nøkkelbegreper; (3) kontroll av sidehenvisninger og rettet quiz med ny øvingsrunde.
-- Grense per opplasting: 50 sider / 10 MB
+- Grense per opplasting: 50 sider / 10 MB. [ASSUMPTION: arbeidsantakelse; ingen kilde støtter akkurat dette tallet. Bekreftes mot tester på egne notater og mot tokengrensene på gratisnivåene.]
 - Et lag mellom appen og språkmodellen med mock-modus som standard og egen nøkkel via `.env` (`.env.example` følger med), slik at appen kan kjøres uten betalt nøkkel
+- Personvern: pensumtekst sendes til den valgte språkmodell-leverandøren når en ekte modell er slått på. På Geminis gratisnivå kan innsendt innhold brukes til å forbedre Googles produkter, og menneskelige vurderere kan lese det. Brukeren skal få vite dette før opplasting, og mock-modus sender ingenting ut.
 - Organisering av innhold per kurs og kapittel/tema
 - Innlogging og lagring, slik at studenten kan komme tilbake til tidligere opplastinger og generert innhold
 - Responsiv web-app som fungerer på mobil, nettbrett og desktop i nettleser (ingen native apper)
