@@ -7,3 +7,5 @@
 - [ ] 2026-10-28 [teknisk-research-llm-pdf](998-2026-10-28-07-43-43-teknisk-research-llm-pdf.md) — avklar PyMuPDF AGPL-lisens hvis Python velges
 - [ ] 2026-10-28 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — korte ned brief (1290 ord, mål 1–2 sider) og kjør bmad-review på brief og addendum
 - [ ] 2026-10-28 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — bekreft eller rett [ASSUMPTION] om retting av åpne quiz-spørsmål
+- [ ] 2026-10-29 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — bekreft sidegrensen 50 sider / 10 MB (merket [ASSUMPTION] i brief-en)
+- [ ] 2026-10-29 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — PRD: krav om varsel til brukeren om at pensumtekst sendes til ekstern leverandør

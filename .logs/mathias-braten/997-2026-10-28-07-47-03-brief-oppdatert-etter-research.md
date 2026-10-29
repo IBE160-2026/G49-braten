@@ -19,3 +19,25 @@ Legge funnene fra den tekniske research-en og faglærerens tilbakemelding inn i 
 - Språkvask/strukturgjennomgang (`bmad-review`) er ikke kjørt på brief og addendum.
 - Rettingen av åpne quiz-spørsmål (modell mot kildetekst) er en antakelse merket [ASSUMPTION] i brief-en.
 - Neste steg: PRD (`bmad-prd`).
+
+## 2026-10-29 kl. 13:01 — Mathias Bråten
+
+### Oppgave
+Vurdere om briefen er klar for PRD, sjekke at research-funnene faktisk er tatt høyde for, og rette de punktene som manglet.
+
+### Plan
+- `bmad-help` for å plassere prosjektet i BMad-flyten (planleggingsfasen, neste obligatoriske steg `bmad-prd`).
+- Sammenligne `research.md` (anbefaling 1–7) mot `brief.md`. Rapporten ble lest bare til og med linje 150, og addendumet ble ikke lest.
+- Tre rettelser avtalt med brukeren: markere sidegrensen som antakelse, legge inn personvern, la `[ASSUMPTION]` om retting av åpne quiz-spørsmål stå.
+
+### Resultat
+- `brief.md`: sidegrensen 50 sider / 10 MB er nå merket `[ASSUMPTION]` (ingen kilde støtter tallet, bekreftes mot tester på egne notater og gratisnivåenes tokengrenser).
+- `brief.md`: ny omfangslinje om personvern (pensumtekst sendes til leverandøren; Geminis gratisnivå kan bruke innhold til produktforbedring og la mennesker lese det; mock-modus sender ingenting ut).
+- `brief.md`: `updated` satt til 2026-10-29. Status er fortsatt `draft`, siden `[ASSUMPTION]`-merkene står.
+- Research-hull som ikke er i briefen, men bør i PRD/arkitektur: testkrav for uttrekk fra egne lysbilder, strukturert JSON-utdata, valg av PDF-bibliotek, PyMuPDF-lisens.
+- Endringen i `brief.md` er ikke committet; bare loggfila og `issues.md` committes her.
+
+### Åpne punkter
+- Sidegrensen 50 sider / 10 MB er en antakelse som må bekreftes.
+- PRD må ha krav om varsel til brukeren om at tekst sendes til ekstern leverandør.
+- Neste steg: `bmad-prd` (anbefalt i ny kontekst etter `/clear`).
