@@ -13,4 +13,6 @@
 - [ ] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — kuttlinje 30.11.2026: er FR-14–17 ikke ferdig, flytt FR-16 og FR-17 til Should og noter det (PRD §7.1)
 - [ ] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — velg standard KI-leverandør for Real mode i arkitekturen (PRD §9, spørsmål 2)
 - [ ] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — avklar hva slags bilder (håndskrift eller skjermbilder) hvis bilder kommer inn etter v1 (PRD §9, spørsmål 1)
-- [ ] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — lag UX-skisser med bmad-ux (faglærer ba om skjermskisser), deretter arkitektur
+- [x] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — lag UX-skisser med bmad-ux (faglærer ba om skjermskisser), deretter arkitektur (løst 2026-11-05)
+- [ ] 2026-11-05 [ux-ai-study-buddy](995-2026-11-05-19-31-27-ux-ai-study-buddy.md) — gå gjennom de 18 utsatte UX-antakelsene (3 i DESIGN.md, 15 i EXPERIENCE.md) når skjermene bygges
+- [ ] 2026-11-05 [ux-ai-study-buddy](995-2026-11-05-19-31-27-ux-ai-study-buddy.md) — kjør bmad-architecture, og velg der også komponentbibliotek (tokenene i DESIGN.md er nøytrale)
