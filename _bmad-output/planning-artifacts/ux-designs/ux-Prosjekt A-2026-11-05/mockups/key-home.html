@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nøkkelskjerm: Hjem – AI Study Buddy</title>
+<style>
+/* Key-screen mock. Governed by: DESIGN.md Colors, Typography, Components (top-bar, due-today-panel, course-card, button); EXPERIENCE.md IA (Home), Component Patterns, Responsive & Platform, Key Flows UJ-2.
+   DESIGN.md and EXPERIENCE.md win on any conflict with this file. */
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#E6E8EC;color:#1D1F24;padding:32px 24px 64px}
+a{color:inherit;text-decoration:none}
+.sheet{max-width:1480px;margin:0 auto}
+.sheet-head{max-width:820px;margin-bottom:28px}
+.sheet-head h1{font-size:24px;font-weight:700;letter-spacing:-.01em}
+.sheet-head p{font-size:15px;line-height:1.5;color:#4B515C;margin-top:6px}
+.frames{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start}
+.frame-label{font-size:13px;font-weight:600;color:#4B515C;margin-bottom:10px}
+.frame{position:relative;overflow:hidden;background:var(--canvas);color:var(--ink)}
+.desktop{width:1024px;min-height:760px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.12),0 12px 40px rgba(16,24,40,.12)}
+.chrome{height:36px;background:#DADDE2;display:flex;align-items:center;gap:8px;padding:0 14px}
+.chrome i{width:11px;height:11px;border-radius:50%;background:#B9BEC6}
+.chrome span{margin-left:16px;width:360px;height:22px;border-radius:6px;background:#F0F1F4;font-size:12px;color:#5A606C;display:flex;align-items:center;padding:0 10px}
+.phone{width:390px;height:844px;border-radius:48px;border:12px solid #17181B;box-shadow:0 12px 40px rgba(16,24,40,.18)}
+.notch{height:30px;display:flex;justify-content:center;background:var(--surface)}
+.notch.on-canvas{background:var(--canvas)}
+.notch i{width:110px;height:24px;background:#17181B;border-radius:0 0 14px 14px}
+
+/* Tokens: DESIGN.md colors (light names; .dark resolves the -dark twins) */
+.light{--canvas:#F5F6F8;--surface:#FFFFFF;--surface-muted:#EEF0F3;--ink:#1D1F24;--ink-2:#5A606C;--hair:#E1E4E9;--border:#80868F;--accent:#2C6BDB;--accent-strong:#2357B8;--accent-soft:#E8F0FD;--accent-on-soft:#2357B8;--on-accent:#FFFFFF;--success:#1E7A4C;--success-soft:#E6F4EC;--warning:#8A5800;--warning-soft:#FFF2D5;--danger:#B3362D;--danger-soft:#FCEBE9;--c1:#DCE8FF;--c2:#DCF2E3;--c3:#E8E2FA;--card-shadow:0 2px 8px rgba(16,24,40,.08)}
+.dark{--canvas:#111215;--surface:#1A1C20;--surface-muted:#24262B;--ink:#F1F2F4;--ink-2:#A5AAB4;--hair:#2E3137;--border:#6E7480;--accent:#74A3FF;--accent-strong:#9BBCFF;--accent-soft:#1C2A44;--accent-on-soft:#74A3FF;--on-accent:#0B1426;--success:#57C994;--success-soft:#13291D;--warning:#F1B95A;--warning-soft:#2E2513;--danger:#FF8077;--danger-soft:#301B1A;--c1:#22324F;--c2:#1E3829;--c3:#2D2747;--card-shadow:none}
+
+/* Typography roles */
+.display{font-size:40px;font-weight:700;line-height:1.1;letter-spacing:-.02em}
+.phone .display{font-size:32px;line-height:1.15;letter-spacing:-.015em}
+.title{font-size:28px;font-weight:600;line-height:1.2;letter-spacing:-.01em}
+.headline{font-size:21px;font-weight:600;line-height:1.3}
+.body{font-size:17px;line-height:1.5}
+.body-sm{font-size:15px;line-height:1.45}
+.label{font-size:15px;font-weight:600;line-height:1.2}
+.label-sm{font-size:13px;font-weight:600;line-height:1.2}
+.caption{font-size:13px;line-height:1.35;color:var(--ink-2)}
+.num{font-variant-numeric:tabular-nums}
+
+/* Components */
+.top-bar{height:56px;background:var(--surface);border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.phone .top-bar{padding:0 16px}
+.brand{font-size:15px;font-weight:600}
+.top-links{display:flex;align-items:center;gap:16px}
+.today{font-size:15px;font-weight:600;color:var(--accent)}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--surface-muted);display:grid;place-items:center;font-size:13px;font-weight:600}
+.content{max-width:1040px;margin:0 auto;padding:32px}
+.phone .content{padding:16px 16px 24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 24px;border-radius:9999px;font-size:15px;font-weight:600;white-space:nowrap}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-secondary{background:var(--surface-muted);color:var(--ink)}
+.btn-quiet{color:var(--accent);padding:0 10px}
+.btn.full{width:100%}
+.badge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:9999px;font-size:13px;font-weight:600;white-space:nowrap}
+.badge-weak{background:var(--warning-soft);color:var(--warning)}
+.badge-ready{background:var(--success-soft);color:var(--success)}
+.badge-generating{background:var(--accent-soft);color:var(--accent-on-soft)}
+.breadcrumb{font-size:15px;line-height:1.45;color:var(--ink-2);margin-bottom:12px}
+.breadcrumb a{text-decoration:underline;text-underline-offset:2px}
+.breadcrumb .here{color:var(--ink)}
+.back{display:inline-block;font-size:15px;font-weight:600;color:var(--accent);margin-bottom:12px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin:40px 0 16px}
+.phone .section-head{margin:32px 0 12px}
+
+.due{background:var(--accent-soft);border-radius:18px;padding:24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.phone .due{flex-direction:column;align-items:stretch;gap:20px}
+.due-count{display:flex;align-items:baseline;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:9999px;background:var(--surface);font-size:13px;font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--border)}
+.c1{background:var(--c1)}.c2{background:var(--c2)}.c3{background:var(--c3)}
+
+.course-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.phone .course-grid{grid-template-columns:1fr;gap:12px}
+.course-card{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--hair);border-radius:18px;padding:24px 24px 22px 30px;min-height:156px;display:flex;flex-direction:column;gap:2px}
+.phone .course-card{min-height:0}
+.course-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--marker)}
+.m1{--marker:var(--c1)}.m2{--marker:var(--c2)}.m3{--marker:var(--c3)}
+.course-card .meta{margin-top:auto;padding-top:16px;display:flex;flex-direction:column;gap:2px}
+.warn-text{color:var(--warning);font-weight:600}
+.more{position:absolute;right:18px;top:16px;font-size:20px;line-height:1;color:var(--ink-2);letter-spacing:1px}
+
+.head-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}
+.phone .head-row{flex-direction:column;align-items:stretch;gap:16px;margin-bottom:20px}
+.actions{display:flex;align-items:center;gap:8px}
+.phone .actions{flex-direction:column;align-items:stretch}
+.list{background:var(--surface);border:1px solid var(--hair);border-radius:18px;overflow:hidden}
+.topic-row{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:64px;padding:16px 24px;border-top:1px solid var(--hair)}
+.topic-row:first-child{border-top:0}
+.phone .topic-row{flex-direction:column;align-items:stretch;gap:10px;padding:16px}
+.row-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.meter{display:flex;align-items:center;gap:12px}
+.track{width:160px;height:6px;border-radius:9999px;background:var(--surface-muted);overflow:hidden}
+.phone .track{flex:1;width:auto}
+.fill{height:100%;border-radius:9999px;background:var(--accent)}
+.fill.weak{background:var(--warning)}
+.value{min-width:122px;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.phone .value{min-width:0}
+
+.topic-layout{display:grid;grid-template-columns:2fr 1fr;gap:32px;align-items:start}
+.phone .topic-layout{display:block}
+.side{position:sticky;top:24px}
+.side .card{background:var(--surface);border:1px solid var(--hair);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:12px}
+.side .meter .track{flex:1;width:auto}
+.phone-actions{display:flex;flex-direction:column;gap:8px;margin:16px 0 8px}
+.source{margin-top:24px;background:var(--surface);border:1px solid var(--hair);border-radius:18px;overflow:hidden}
+.source-row{position:relative;display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--hair)}
+.phone .source-row{padding:14px 16px;flex-wrap:wrap}
+.source-row.solo{border-bottom:0}
+.ficon{flex:none;color:var(--ink-2)}
+.grow{flex:1;min-width:0}
+.name{font-size:17px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.progress-line{position:absolute;left:0;bottom:0;height:2px;width:45%;background:var(--accent)}
+.source-body{padding:24px}
+.phone .source-body{padding:16px}
+.block-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.phone .block-head{flex-direction:column;align-items:flex-start;gap:10px}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:9999px;background:var(--surface-muted)}
+.seg span{height:30px;padding:0 14px;border-radius:9999px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink-2);border:1px solid transparent}
+.seg .on{background:var(--surface);color:var(--ink);border-color:var(--border)}
+.prose{max-width:680px}
+.prose p+p{margin-top:12px}
+.concepts{margin-top:32px}
+.concept{padding:18px 0;border-top:1px solid var(--hair)}
+.concepts .title+.concept{border-top:0}
+.concept .body{margin-top:4px}
+.concept-meta{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-top:8px}
+.concept-meta .caption{margin-right:6px}
+.link{font-size:15px;font-weight:600;color:var(--accent);padding:0 6px}
+.explain{margin-top:12px;background:var(--surface-muted);border-radius:12px;padding:16px}
+.explain .label-sm{color:var(--ink-2);margin-bottom:6px}
+.explain .caption{margin-top:8px}
+
+.session-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 32px;background:var(--canvas)}
+.phone .session-header{padding:10px 12px}
+.session-header .spacer{width:86px}
+.progress{flex:1;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.bar{width:100%;height:4px;border-radius:9999px;background:var(--surface-muted);overflow:hidden}
+.bar div{height:100%;border-radius:9999px;background:var(--accent)}
+.reading{max-width:680px;margin:8px auto 0;padding-bottom:40px}
+.phone .reading{margin:0;padding:0 16px 120px}
+.qcard{background:var(--surface);border:1px solid var(--hair);border-radius:18px;padding:32px}
+.phone .qcard{padding:24px}
+.qcard .headline{margin-top:6px}
+.options{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.option{display:flex;align-items:center;gap:14px;min-height:52px;padding:10px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface);font-size:17px;line-height:1.4}
+.letter{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:var(--surface-muted)}
+.tag{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;white-space:nowrap}
+.option.correct{border:2px solid var(--success);background:var(--success-soft)}
+.option.correct .tag{color:var(--success)}
+.option.incorrect{border:2px solid var(--danger);background:var(--danger-soft)}
+.option.incorrect .tag{color:var(--danger)}
+.feedback{margin-top:16px;border-radius:18px;padding:24px;background:var(--danger-soft)}
+.phone .feedback{padding:20px}
+.feedback .headline{display:flex;align-items:center;gap:8px}
+.feedback .headline svg{color:var(--danger)}
+.feedback .body{margin-top:10px}
+.reference{margin-top:16px;background:var(--surface-muted);border-left:3px solid var(--border);border-radius:12px;padding:12px 14px}
+.reference .label-sm{color:var(--ink-2);margin-bottom:4px}
+.fb-actions{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+.pinned{position:absolute;left:0;right:0;bottom:0;padding:12px 16px 26px;background:var(--canvas);border-top:1px solid var(--hair)}
+
+</style>
+</head>
+<body>
+<div class="sheet">
+<header class="sheet-head"><h1>Nøkkelskjerm: Hjem</h1><p>Startsiden etter innlogging: kortene som skal repeteres i dag, og alle fagene. Viser EXPERIENCE.md Information Architecture (Home), Component Patterns (top-bar, due-today-panel, course-card) og Key Flows UJ-2 steg 1.</p></header>
+<div class="frames">
+<section><p class="frame-label">Desktop · lyst tema · 1024 px</p><div class="frame desktop light"><div class="chrome"><i></i><i></i><i></i><span>localhost:3000</span></div><header class="top-bar"><span class="brand">AI Study Buddy</span><nav class="top-links"><a class="today num">I dag · 14</a><span class="avatar">I</span></nav></header><main class="content"><section class="due"><div><div class="due-count"><span class="display num">14</span><span class="body">kort i dag</span></div><div class="chips"><span class="chip num"><i class="dot c1"></i>Databases · 9</span><span class="chip num"><i class="dot c2"></i>Statistikk · 5</span></div></div><a class="btn btn-primary">Start repetisjon</a></section><div class="section-head"><h2 class="title">Fag</h2><a class="btn btn-secondary">Nytt fag</a></div><div class="course-grid"><article class="course-card m1"><span class="more" aria-hidden="true">···</span><h3 class="headline">Databases</h3><p class="caption">DAT102</p><div class="meta"><span class="body-sm num">4 temaer · 9 kort i dag</span><span class="body-sm warn-text">2 temaer trenger øving</span></div></article><article class="course-card m2"><span class="more" aria-hidden="true">···</span><h3 class="headline">Statistikk</h3><p class="caption">STA100</p><div class="meta"><span class="body-sm num">3 temaer · 5 kort i dag</span></div></article><article class="course-card m3"><span class="more" aria-hidden="true">···</span><h3 class="headline">Programmering</h3><p class="caption">ING101</p><div class="meta"><span class="body-sm num">5 temaer · ingen kort i dag</span></div></article></div></main></div></section><section><p class="frame-label">Mobil · mørkt tema · 390 px</p><div class="frame phone dark"><div class="notch "><i></i></div><header class="top-bar"><span class="brand">AI Study Buddy</span><nav class="top-links"><a class="today num">I dag · 14</a><span class="avatar">I</span></nav></header><main class="content"><section class="due"><div><div class="due-count"><span class="display num">14</span><span class="body">kort i dag</span></div><div class="chips"><span class="chip num"><i class="dot c1"></i>Databases · 9</span><span class="chip num"><i class="dot c2"></i>Statistikk · 5</span></div></div><a class="btn btn-primary full">Start repetisjon</a></section><div class="section-head"><h2 class="title">Fag</h2><a class="btn btn-secondary">Nytt fag</a></div><div class="course-grid"><article class="course-card m1"><span class="more" aria-hidden="true">···</span><h3 class="headline">Databases</h3><p class="caption">DAT102</p><div class="meta"><span class="body-sm num">4 temaer · 9 kort i dag</span><span class="body-sm warn-text">2 temaer trenger øving</span></div></article><article class="course-card m2"><span class="more" aria-hidden="true">···</span><h3 class="headline">Statistikk</h3><p class="caption">STA100</p><div class="meta"><span class="body-sm num">3 temaer · 5 kort i dag</span></div></article><article class="course-card m3"><span class="more" aria-hidden="true">···</span><h3 class="headline">Programmering</h3><p class="caption">ING101</p><div class="meta"><span class="body-sm num">5 temaer · ingen kort i dag</span></div></article></div></main></div></section>
+</div>
+</div>
+</body>
+</html>
