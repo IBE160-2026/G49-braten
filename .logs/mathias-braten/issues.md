@@ -16,4 +16,7 @@
 - [x] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — lag UX-skisser med bmad-ux (faglærer ba om skjermskisser), deretter arkitektur (løst 2026-11-05)
 - [ ] 2026-11-05 [ux-ai-study-buddy](995-2026-11-05-19-31-27-ux-ai-study-buddy.md) — gå gjennom de 18 utsatte UX-antakelsene (3 i DESIGN.md, 15 i EXPERIENCE.md) når skjermene bygges
 - [ ] 2026-11-05 [ux-ai-study-buddy](995-2026-11-05-19-31-27-ux-ai-study-buddy.md) — kjør bmad-architecture, og velg der også komponentbibliotek (tokenene i DESIGN.md er nøytrale)
-- [ ] 2026-11-09 [impeccable-installasjon](994-2026-11-09-10-54-10-impeccable-installasjon.md) — ny Claude Code-økt, så `/impeccable init` med de eksisterende DESIGN.md og EXPERIENCE.md som grunnlag
+- [x] 2026-11-09 [impeccable-installasjon](994-2026-11-09-10-54-10-impeccable-installasjon.md) — ny Claude Code-økt, så `/impeccable init` med de eksisterende DESIGN.md og EXPERIENCE.md som grunnlag (løst 2026-11-09: PRODUCT.md laget fra dokumentene uten intervju; bekreftelsen er eget punkt)
+- [ ] 2026-11-09 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — fullfør de ti konseptene etter kl. 18:50, ta sammenligningsbilder og fyll oversiktssiden; deretter velger Mathias 1–3 konsepter
+- [ ] 2026-11-09 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — bekreft eller rett «(inferred)»-faktaene i PRODUCT.md, som ble skrevet uten intervju
+- [ ] 2026-11-09 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — avklar om ønsket om lyse farger fra 5. november fortsatt gjelder
