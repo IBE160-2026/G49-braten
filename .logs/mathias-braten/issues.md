@@ -20,4 +20,6 @@
 - [x] 2026-11-09 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — fullfør de ti konseptene etter kl. 18:50, ta sammenligningsbilder og fyll oversiktssiden; deretter velger Mathias 1–3 konsepter (løst 2026-11-11: redusert til fem konsepter, alle ferdige og satt sammen)
 - [ ] 2026-11-09 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — bekreft eller rett «(inferred)»-faktaene i PRODUCT.md, som ble skrevet uten intervju
 - [ ] 2026-11-09 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — avklar om ønsket om lyse farger fra 5. november fortsatt gjelder
-- [ ] 2026-11-11 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — velg 1–3 av de fem konseptene i `.working/concepts/index.html`, deretter detaljering i bmad-ux
+- [x] 2026-11-11 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — velg 1–3 av de fem konseptene i `.working/concepts/index.html`, deretter detaljering i bmad-ux (løst 2026-11-11: Studievarselet valgt som hoveddesign, se decisions.md)
+- [ ] 2026-11-11 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — velg én av de fem variantene i runde 3 (`.working/runde-3/index.html`) og skriv valget i decisions.md
+- [ ] 2026-11-11 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — avklar «mestring per fag» (snitt over temaer) mot PRD-en

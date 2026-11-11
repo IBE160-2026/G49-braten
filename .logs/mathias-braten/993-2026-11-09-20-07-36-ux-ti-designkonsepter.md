@@ -66,3 +66,36 @@ Fortsette UX-kjøringen, men med fem designkonsepter i stedet for ti. Alle siden
 
 ### Åpne punkter
 - Mathias velger ett til tre av de fem konseptene, gjerne med elementer fra andre. Deretter detaljeres valget i bmad-ux til DESIGN.md og EXPERIENCE.md.
+
+### Fortsettelse kl. 21:26: runde 3
+
+**Oppgave:** Mathias skrev beslutningene sine i `decisions.md` og ba om fem nye design basert på dem:
+- 06 Studievarselet er hoveddesignet og skal utvikles videre, med god oversikt over fagene;
+- lån fra de andre konseptene, særlig neste steg-feltet fra 04 Gule skilt;
+- uttrykket skal være voksent, for studenter fra 20 år og oppover.
+
+**Plan:**
+- Gjorde om `decisions.md`, som var opprettet som en tom mappe, til en fil med mal.
+- Førte beslutningene inn i memloggen.
+- Skrev bestillingen `.working/runde-3/brief.md`. Den har felles regler for oversikt over fagene, ett neste steg-felt per side og et voksent uttrykk, og den beskriver fem varianter.
+- Fem agenter i parallell. De ble stoppet to ganger av bruksgrensen og fortsatte der de slapp.
+
+**Resultat:**
+- **Fem ferdige varianter** i `.working/runde-3/`. Alle har 24 skjermer, `notes.md` og skjermbilder:
+  - 11 Klarvær: ryddet og luftig;
+  - 12 Veiviseren: + Gule skilt, i dempet oker;
+  - 13 Registeret: + Kompendiet, med dempede fagfarger;
+  - 14 Fagskinnen: + Kortboksen, med venstre fagskinne;
+  - 15 Fagtavla: oversiktstabell, nøktern.
+- 240 sammenligningsbilder.
+- Oversiktssiden `.working/runde-3/index.html` er fylt inn.
+- **Publisert privat:**
+  - runde 3: https://claude.ai/artifact/18UHcWBnhAyLKGEyZVg2CX;
+  - runde 2: https://claude.ai/artifact/R5hH5UYJS9evx14MCSZLzH.
+  Lenkene står også i `decisions.md`.
+- Lukket åpent punkt: Mathias valgte Studievarselet som hoveddesign.
+- UX-mappa og `PRODUCT.md` er ikke committet.
+
+**Åpne punkter:**
+- Mathias velger én av de fem variantene i runde 3, gjerne med detaljer fra de andre, og skriver valget i `decisions.md`. Deretter kommer DESIGN.md og EXPERIENCE.md.
+- Mestring per fag (snitt over temaene), som flere varianter viser, er et nytt begrep som må avklares mot PRD-en.
