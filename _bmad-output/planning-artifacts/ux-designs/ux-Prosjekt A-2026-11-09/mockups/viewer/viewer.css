@@ -1,0 +1,79 @@
+/* Shared concept viewer chrome. Neutral on purpose: it must never read as part of a concept.
+   Every rule is scoped to .cv-* so it cannot collide with concept styles. */
+:root {
+  --cv-bar: #18181b;
+  --cv-bar-ink: #f4f4f5;
+  --cv-bar-muted: #a1a1aa;
+  --cv-bar-line: #3f3f46;
+  --cv-bar-on: #f4f4f5;
+  --cv-bar-on-ink: #18181b;
+  --cv-stage: #d4d4d8;
+  --cv-caption: #3f3f46;
+  --cv-bar-h: 48px;
+}
+
+body.cv-ready { margin: 0; }
+
+.cv-bar {
+  position: fixed; inset: 0 0 auto 0; z-index: 2147483000;
+  height: var(--cv-bar-h); box-sizing: border-box;
+  display: flex; align-items: center; gap: 12px; padding: 0 16px;
+  background: var(--cv-bar); color: var(--cv-bar-ink);
+  font: 500 13px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0; overflow-x: auto; scrollbar-width: none;
+}
+.cv-bar::-webkit-scrollbar { display: none; }
+.cv-title { white-space: nowrap; font-weight: 650; }
+.cv-title small { color: var(--cv-bar-muted); font-weight: 500; margin-right: 6px; }
+.cv-spacer { flex: 1 1 auto; }
+.cv-group { display: inline-flex; border: 1px solid var(--cv-bar-line); border-radius: 8px; overflow: hidden; flex: none; }
+.cv-btn {
+  appearance: none; border: 0; margin: 0; background: transparent; color: var(--cv-bar-ink);
+  font: inherit; padding: 7px 11px; cursor: pointer; white-space: nowrap;
+}
+.cv-group .cv-btn + .cv-btn { border-left: 1px solid var(--cv-bar-line); }
+.cv-btn[aria-pressed="true"] { background: var(--cv-bar-on); color: var(--cv-bar-on-ink); }
+.cv-btn:focus-visible, .cv-select:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+.cv-select {
+  appearance: none; font: inherit; color: var(--cv-bar-ink); background: transparent;
+  border: 1px solid var(--cv-bar-line); border-radius: 8px; padding: 7px 28px 7px 10px; max-width: 280px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--cv-bar-muted) 50%), linear-gradient(135deg, var(--cv-bar-muted) 50%, transparent 50%);
+  background-position: right 13px center, right 8px center; background-size: 5px 5px; background-repeat: no-repeat;
+}
+.cv-select option, .cv-select optgroup { color: #18181b; background: #fff; }
+
+.cv-stage {
+  min-height: 100vh; box-sizing: border-box; background: var(--cv-stage);
+  padding: calc(var(--cv-bar-h) + 28px) 24px 48px;
+}
+.cv-single .cv-frame { margin: 0 auto; }
+.cv-frame {
+  container-type: inline-size; container-name: screen;
+  position: relative; box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 12px 32px rgba(0,0,0,.14);
+  overflow: hidden;
+}
+.cv-frame[data-device="desktop"] { width: 1280px; min-height: 800px; }
+.cv-frame[data-device="nettbrett"] { width: 834px; min-height: 1112px; border-radius: 18px; }
+.cv-frame[data-device="mobil"] { width: 390px; min-height: 844px; border-radius: 28px; }
+.cv-frame > .screen { position: relative; min-height: inherit; }
+.cv-hidden { display: none !important; }
+
+/* Grid of every page, for comparing at a glance. */
+.cv-grid { display: grid; gap: 28px 24px; justify-content: center; }
+.cv-grid[data-device="desktop"] { grid-template-columns: repeat(auto-fill, 320px); }
+.cv-grid[data-device="nettbrett"] { grid-template-columns: repeat(auto-fill, 250px); }
+.cv-grid[data-device="mobil"] { grid-template-columns: repeat(auto-fill, 195px); }
+.cv-cell { margin: 0; cursor: pointer; }
+.cv-cell .cv-frame { zoom: .25; height: 800px; min-height: 0; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.cv-cell .cv-frame > .screen { min-height: 100%; }
+.cv-grid[data-device="nettbrett"] .cv-cell .cv-frame { zoom: .3; height: 1112px; }
+.cv-grid[data-device="mobil"] .cv-cell .cv-frame { zoom: .5; height: 844px; }
+.cv-cell figcaption { font: 600 12px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--cv-caption); margin-top: 8px; }
+.cv-cell figcaption span { font-weight: 500; opacity: .75; margin-right: 6px; }
+.cv-cell:hover .cv-frame { outline: 3px solid #2563eb; outline-offset: 0; }
+
+/* Clean mode: no chrome, the screen fills the window. Used for screenshots. */
+.cv-clean .cv-bar { display: none; }
+.cv-clean .cv-stage { padding: 0; background: transparent; }
+.cv-clean .cv-frame { box-shadow: none; border-radius: 0; }
