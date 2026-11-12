@@ -99,3 +99,36 @@ Fortsette UX-kjøringen, men med fem designkonsepter i stedet for ti. Alle siden
 **Åpne punkter:**
 - Mathias velger én av de fem variantene i runde 3, gjerne med detaljer fra de andre, og skriver valget i `decisions.md`. Deretter kommer DESIGN.md og EXPERIENCE.md.
 - Mestring per fag (snitt over temaene), som flere varianter viser, er et nytt begrep som må avklares mot PRD-en.
+
+## 2026-11-12 kl. 08:16 — Mathias Bråten
+
+### Oppgave
+Fullføre bmad-ux med 14 Fagskinnen som valgt retning: skrive DESIGN.md og EXPERIENCE.md, avklare de åpne punktene og sette dokumentene til endelige. Underveis la Mathias til et nytt krav i `decisions.md`: appen skal også ha quiz, «test deg selv» og sammendrag av kapitler, ordnet pent og oversiktlig.
+
+### Plan
+- Destillere de to dokumentene fra 14 Fagskinnen, memloggen og PRD-en.
+- Avklare punktene som blokkerte fasen, ett om gangen, med Mathias.
+- Bygge inn det nye kravet i skissen (P05 Tema og P04 Fagoversikt) og i dokumentene.
+- Hoppe over Reviewer Gate (Mathias valgte det), sjekke at alle skjermene er dekket og kopiere skissen til `mockups/`.
+- Gå gjennom språk og struktur med bmad-review (linsene structure og prose), rette uten å endre beslutninger, og sette status til final.
+
+### Resultat
+- **Beslutninger (alle i `.memlog.md`):**
+  - Fagskinnen erstatter beslutningene fra 5. november: fagskinne i stedet for toppstolpe på desktop, hvit arbeidsflate og kobber som eneste aksent.
+  - Kantene på skjemafelt og knapper får en mørkere farge, `line-control` (#728A90 lys, #5E7A81 mørk). Den oppfyller 3:1 etter WCAG 1.4.11.
+  - Mestring per fag er snittet av temaene som har nok svar.
+  - «Test deg selv» betyr både kort og prøveeksamen.
+  - Tema-siden får fire faner: Sammendrag (standard), Quiz (med quizhistorikk), Test deg selv og Kilder.
+  - Prioriteten i neste steg-feltet på Hjem og Fagoversikt er: dagens kort, så svake temaer, så et tema uten kilder, så en rolig melding.
+- **Skisse:** P05 er bygd om med faner. På P04 viser feltet nå «Repeter kortene i Databaser», og knappen «Øv på svake temaer (2)» er lagt til. Begge sidene har nye alternative tilstander. Skissen ligger i `ux-Prosjekt A-2026-11-09/mockups/14-fagskinnen.html`, og runde 3 er publisert på nytt (https://claude.ai/artifact/18UHcWBnhAyLKGEyZVg2CX).
+- **Dokumentene** `DESIGN.md` og `EXPERIENCE.md` har `status: final` og er datert 2026-11-12.
+  - Strukturgjennomgangen fjernet historikken («changed from 2026-11-05») og slo sammen dubletter. Navnebyttene er ført i memloggen.
+  - Språkgjennomgangen gjorde om lag 40 setningsrettelser og ryddet begrepene, for eksempel review i stedet for repeat.
+  - Ingen beslutning er endret, og alle de 29 `[ASSUMPTION]`-merkene står igjen.
+- Lukker tre åpne punkter: valget av variant i runde 3, mestring per fag og de lyse fargene.
+- UX-mappa og `PRODUCT.md` er ikke committet.
+
+### Åpne punkter
+- PRD-en bør ta inn det nye fra UX: mestring per fag (snitt av temaene), fanene på Tema-siden, quizhistorikken og prioriteten i neste steg-feltet.
+- Gå gjennom de 29 utsatte UX-antakelsene (3 i DESIGN.md, 26 i EXPERIENCE.md) når skjermene bygges.
+- Neste steg: bmad-architecture, deretter bmad-create-epics-and-stories.
