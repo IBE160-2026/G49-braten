@@ -132,3 +132,20 @@ Fullføre bmad-ux med 14 Fagskinnen som valgt retning: skrive DESIGN.md og EXPER
 - PRD-en bør ta inn det nye fra UX: mestring per fag (snitt av temaene), fanene på Tema-siden, quizhistorikken og prioriteten i neste steg-feltet.
 - Gå gjennom de 29 utsatte UX-antakelsene (3 i DESIGN.md, 26 i EXPERIENCE.md) når skjermene bygges.
 - Neste steg: bmad-architecture, deretter bmad-create-epics-and-stories.
+
+## 2026-11-12 kl. 09:33 — Mathias Bråten
+
+### Oppgave
+Vise det ferdige designet, og deretter committe og pushe UX-arbeidet.
+
+### Plan
+- Åpne `mockups/14-fagskinnen.html` lokalt og publisere den som artifact.
+- Committe spinene, skissen, memlog, decisions.md og PRODUCT.md uten de 80 MB med arbeidsfiler i `.working/` (samme praksis som i e75b738), deretter pushe.
+
+### Resultat
+- Skissen er publisert privat: https://claude.ai/artifact/3nj9UHUw4g3ThNtDZEPAtP
+- Commit f6557ad «Legg til UX-design Fagskinnen for AI Study Buddy»: PRODUCT.md, .memlog.md, DESIGN.md, EXPERIENCE.md, decisions.md og mockups/ (8 filer). Pushet til origin/main sammen med de tidligere loggcommitene.
+- `.working/` (konsepter, runde 3, skjermbilder) er fortsatt ikke i git.
+
+### Åpne punkter
+Ingen nye.
