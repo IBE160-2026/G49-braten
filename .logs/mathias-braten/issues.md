@@ -32,3 +32,4 @@
 - [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — kalibrer de 15 startverdiene i PRD §10 med testene som står der
 - [x] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — UX: bekreft «Bruk KI-vurderingen» som angring av overstyrt Grade (løst 2026-11-13: bekreftet av Mathias)
 - [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — UX: oppdater mockupen 14-fagskinnen med Course score på P04, overstyring av Grade og meldingene om grense og avbrudd (valgfritt)
+- [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — før levering: kjør målingene i Real mode (svartider NFR-3, innholdssjekken i NFR-5, SM-3)
