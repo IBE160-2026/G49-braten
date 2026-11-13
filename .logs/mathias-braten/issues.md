@@ -28,5 +28,7 @@
 - [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — 20.11.2026: trinn 1 ferdig og testet, ellers flytt FR-24 til Should og noter det (PRD §7.1)
 - [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — 30.11.2026: er FR-14–17 ikke ferdig, flytt FR-16 og FR-17 til Should; UJ-3 blir Should, SM-4 og SM-2 sjekk 8 utgår (PRD §7.1)
 - [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — bekreft to punkter lagt inn uten spørsmål: avbrutt generering = failed (FR-9) og 8 av 10 Grades i NFR-5
-- [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — UX: ta inn overstyring av Grade (FR-12), meldinger om daglig grense og rate limit (NFR-7, FR-9) og generering mens studenten venter
+- [x] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — UX: ta inn overstyring av Grade (FR-12), meldinger om daglig grense og rate limit (NFR-7, FR-9) og generering mens studenten venter (løst 2026-11-13: EXPERIENCE.md og DESIGN.md oppdatert)
 - [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — kalibrer de 15 startverdiene i PRD §10 med testene som står der
+- [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — UX: bekreft «Bruk KI-vurderingen» som angring av overstyrt Grade
+- [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — UX: oppdater mockupen 14-fagskinnen med Course score på P04, overstyring av Grade og meldingene om grense og avbrudd (valgfritt)
