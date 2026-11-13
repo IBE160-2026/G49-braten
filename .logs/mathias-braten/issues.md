@@ -2,16 +2,16 @@
 
 - [x] 2026-10-27 [bmad-inn-i-repoet](999-2026-10-27-21-58-45-bmad-inn-i-repoet.md) — innarbeid faglærerens tilbakemelding i brief-en, deretter PRD (løst 2026-11-05)
 - [ ] 2026-10-27 [bmad-inn-i-repoet](999-2026-10-27-21-58-45-bmad-inn-i-repoet.md) — vurder project_name/communication_language i BMad-konfig
-- [ ] 2026-10-28 [teknisk-research-llm-pdf](998-2026-10-28-07-43-43-teknisk-research-llm-pdf.md) — les Gemini-gratisgrensene i AI Studio (og kortkrav)
+- [x] 2026-10-28 [teknisk-research-llm-pdf](998-2026-10-28-07-43-43-teknisk-research-llm-pdf.md) — les Gemini-gratisgrensene i AI Studio (og kortkrav) (løst 2026-11-13: ikke lenger relevant, Claude Haiku 5.5 valgt)
 - [ ] 2026-10-28 [teknisk-research-llm-pdf](998-2026-10-28-07-43-43-teknisk-research-llm-pdf.md) — test PDF-uttrekk på egne forelesningslysbilder før stakkvalg
 - [ ] 2026-10-28 [teknisk-research-llm-pdf](998-2026-10-28-07-43-43-teknisk-research-llm-pdf.md) — avklar PyMuPDF AGPL-lisens hvis Python velges
 - [ ] 2026-10-28 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — korte ned brief (1290 ord, mål 1–2 sider) og kjør bmad-review på brief og addendum
 - [ ] 2026-10-28 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — bekreft eller rett [ASSUMPTION] om retting av åpne quiz-spørsmål
 - [ ] 2026-10-29 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — bekreft sidegrensen 50 sider / 10 MB (merket [ASSUMPTION] i brief-en)
 - [x] 2026-10-29 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — PRD: krav om varsel til brukeren om at pensumtekst sendes til ekstern leverandør (løst 2026-11-05)
-- [ ] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — gå gjennom de 29 utsatte antakelsene i PRD §10 etter egen bruk eller i arkitekturen
-- [ ] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — kuttlinje 30.11.2026: er FR-14–17 ikke ferdig, flytt FR-16 og FR-17 til Should og noter det (PRD §7.1)
-- [ ] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — velg standard KI-leverandør for Real mode i arkitekturen (PRD §9, spørsmål 2)
+- [x] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — gå gjennom de 29 utsatte antakelsene i PRD §10 etter egen bruk eller i arkitekturen (løst 2026-11-13: beslutninger låst, 15 startverdier igjen er eget punkt)
+- [x] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — kuttlinje 30.11.2026: er FR-14–17 ikke ferdig, flytt FR-16 og FR-17 til Should og noter det (PRD §7.1) (løst 2026-11-13: erstattet av to nye kuttlinjer)
+- [x] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — velg standard KI-leverandør for Real mode i arkitekturen (PRD §9, spørsmål 2) (løst 2026-11-13: Claude Haiku 5.5, FR-21)
 - [ ] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — avklar hva slags bilder (håndskrift eller skjermbilder) hvis bilder kommer inn etter v1 (PRD §9, spørsmål 1)
 - [x] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — lag UX-skisser med bmad-ux (faglærer ba om skjermskisser), deretter arkitektur (løst 2026-11-05)
 - [ ] 2026-11-05 [ux-ai-study-buddy](995-2026-11-05-19-31-27-ux-ai-study-buddy.md) — gå gjennom de 18 utsatte UX-antakelsene (3 i DESIGN.md, 15 i EXPERIENCE.md) når skjermene bygges
@@ -25,3 +25,8 @@
 - [x] 2026-11-11 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — avklar «mestring per fag» (snitt over temaer) mot PRD-en (løst 2026-11-12: snitt av temaene med nok svar; PRD-oppdatering er eget punkt)
 - [ ] 2026-11-12 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — PRD: ta inn mestring per fag, fanene på Tema-siden, quizhistorikken og prioriteten i neste steg-feltet fra UX-dokumentene
 - [ ] 2026-11-12 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — gå gjennom de 29 utsatte UX-antakelsene (3 i DESIGN.md, 26 i EXPERIENCE.md) når skjermene bygges
+- [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — 20.11.2026: trinn 1 ferdig og testet, ellers flytt FR-24 til Should og noter det (PRD §7.1)
+- [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — 30.11.2026: er FR-14–17 ikke ferdig, flytt FR-16 og FR-17 til Should; UJ-3 blir Should, SM-4 og SM-2 sjekk 8 utgår (PRD §7.1)
+- [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — bekreft to punkter lagt inn uten spørsmål: avbrutt generering = failed (FR-9) og 8 av 10 Grades i NFR-5
+- [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — UX: ta inn overstyring av Grade (FR-12), meldinger om daglig grense og rate limit (NFR-7, FR-9) og generering mens studenten venter
+- [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — kalibrer de 15 startverdiene i PRD §10 med testene som står der
