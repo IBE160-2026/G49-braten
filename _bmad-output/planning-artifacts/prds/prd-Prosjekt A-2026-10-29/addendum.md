@@ -46,6 +46,7 @@ Detail for architecture and stories that does not belong in the PRD itself, plus
 | 4.4 Many `[ASSUMPTION]` tags in a final document | Decisions untagged; §10 now lists only starting values, each with the test that tunes it |
 | 4.5 Small gaps | Maximum interval of 180 days (FR-15); Topic score updates when a Grade is saved (FR-16); more checks in FR-14; Realizes lines added; Source status in the Glossary |
 | §6 Open choices before UX and architecture | Step-1 date and reserve cut, FR-9 as Must with FR-26 as Should, and the AI provider are all settled |
+| Follow-up (Author's question, 2026-11-13): how is step 1 tested? | §7.1 defines "done and tested" per step: automated tests for every consequence that runs without a Key, plus the SM-2 checks that belong to the step, in Mock mode. NFR-7 is placed in step 1. Real-mode measurements (NFR-3, the NFR-5 content check, SM-3) come before delivery |
 
 ## Changes from the UX work (decided 2026-11-11 and 2026-11-12, added to the PRD 2026-11-13)
 

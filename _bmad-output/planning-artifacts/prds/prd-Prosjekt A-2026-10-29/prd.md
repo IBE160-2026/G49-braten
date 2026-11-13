@@ -391,8 +391,16 @@ The Author confirmed this split and the build order on 2026-11-01. On 2026-11-13
 FR-1 to FR-4, FR-6 to FR-17, FR-20 to FR-24, FR-27, FR-28, and NFR-1 to NFR-7.
 
 Build order:
-1. Core loop, done and tested by 20 November 2026: FR-1 to FR-4, FR-6 to FR-13, FR-20 to FR-24.
+1. Core loop, done and tested by 20 November 2026: FR-1 to FR-4, FR-6 to FR-13, FR-20 to FR-24, and NFR-7, since its limit guards the generation built in this step.
 2. Practice over time, done by 30 November 2026: FR-14 to FR-17, FR-27 and FR-28. FR-20 is fully checked at the end of this step: the Examiner's path in it includes a Review, which needs FR-15.
+
+A step is done and tested when both of these hold:
+- Every testable consequence of the step's FRs and NFRs that can run without a Key has an automated test (NFR-5), and every one of those tests passes.
+- The SM-2 checks that belong to the step pass in Mock mode:
+  - step 1: checks 1 to 6 and 9, with check 3 covering the Examiner's path up to the Retry round;
+  - step 2: checks 7, 8 and 10, and check 3 in full.
+
+Consequences that need Real mode are measured before delivery, not at the end of a step. These are the response times in NFR-3, the content check in NFR-5 and SM-3.
 
 Cut lines. Either cut is recorded by the Author when it happens.
 - **20 November 2026:** if step 1 is not done and tested, FR-24 moves to Should. This cut leaves the bet in §1 intact.
