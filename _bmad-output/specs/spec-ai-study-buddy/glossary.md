@@ -1,0 +1,47 @@
+# Glossary
+
+Terms are used exactly as defined here, in code (English identifiers) and specs. Norwegian interface labels for each term are in EXPERIENCE.md, Voice and Tone.
+
+- **Student**: a signed-in user; the only role.
+- **Author**: the student who builds the app; also its primary Student.
+- **Examiner**: the person who assesses the course project by running the app locally from the README.
+- **Course**: a subject the Student studies, with a name and an optional course code. Has many Topics.
+- **Topic**: a chapter or theme within one Course. Has many Sources.
+- **Home**: the first screen after signing in: all Courses with their Course scores, Due today and the Next step.
+- **Course overview**: the screen listing a Course's Topics with Topic scores and Weak topics, the Course score and the Next step.
+- **Course score**: mean of the Topic scores of the Course's Topics that have one.
+- **Next step**: the one recommended action on Home and the Course overview (FR-28).
+- **Source**: one uploaded file or pasted text in one Topic.
+- **Source status**: generating, ready or failed (FR-9).
+- **Location**: where in a Source a piece of text sits: page index for PDF, nearest heading for Word, paragraph number for plain text.
+- **Reference**: a Location plus a verbatim quote from the Source.
+- **Generated item**: a Key concept, Flashcard or Question. Each has a Reference.
+- **Sample document**: a copyright-free PDF of about 20 pages in the repository, with recorded responses for Mock mode.
+- **Study material**: everything generated from one Source: its Summary and its Generated items.
+- **Summary**: a generated summary of one Source at a chosen Detail level. No Reference in v1.
+- **Detail level**: short, medium or detailed.
+- **Key concept**: a term from the Source with a definition.
+- **Simpler explanation**: a plainer explanation of a Key concept or Flashcard, made on request (Should).
+- **Flashcard**: front (question or term), back (answer) and a next review date.
+- **Review**: a session rating Due cards, which sets their next review dates.
+- **Due card**: a Flashcard whose next review date is today or earlier.
+- **Due today**: the Due cards from all of the Student's Courses.
+- **Question**: a quiz item generated from a Source, with a Hint; Multiple-choice or Free-text. Belongs to its Source's Topic.
+- **Multiple-choice question**: answered by picking one of four options.
+- **Free-text question**: answered in the Student's own words; has a model answer.
+- **Hint**: a nudge toward the answer, generated with its Question.
+- **Quiz**: one run of Questions, in Practice mode or Exam mode.
+- **Practice mode**: Hints and feedback after each Answer.
+- **Exam mode**: imitates an exam (Should).
+- **Answer**: the Student's response to one Question in a Quiz.
+- **Grade**: correct, partially correct (Free-text only), incorrect, or not graded (grading failed). The Student can override a Free-text Grade.
+- **Explanation**: why an Answer is correct or incorrect.
+- **Retry round**: a Quiz of the Questions graded incorrect or partially correct in the previous Quiz.
+- **Topic score**: how well the Student knows a Topic, from recent Answers.
+- **Weak topic**: a Topic whose Topic score is below the threshold.
+- **AI provider**: the language-model service that generates Study material, grades Free-text Answers and writes Simpler explanations.
+- **Generation call**: a call that makes or remakes Study material or a Simpler explanation; counted against NFR-7. Grading is not one.
+- **Key**: the secret AI-provider credential, kept in the environment configuration.
+- **Mock mode**: used when no Key is set; recorded responses for the Sample document replace the AI provider.
+- **Real mode**: used when a Key is set; the AI provider is called.
+- **Hosted instance**: the Author's own copy on a server, reachable from a phone (Should).
