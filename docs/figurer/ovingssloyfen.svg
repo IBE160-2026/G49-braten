@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" width="1200" height="780" role="img" aria-labelledby="t d" lang="nb">
+  <title id="t">Øvingssløyfen i AI Study Buddy</title>
+  <desc id="d">Kilden blir til studiemateriell. Spørsmål går inn i quiz-sløyfen, der svar rettes og feil øves på nytt, og rettede svar gir mestring per tema. Kort går inn i kortsløyfen, der vurderingen setter neste repetisjonsdato. Neste steg velger hva du gjør nå: repetisjon av kort først, deretter quiz fra temaer som trenger øving.</desc>
+  <defs>
+    <style>
+      svg { --bg:#FFFFFF; --panel:#F3F6F7; --card:#FFFFFF; --line:#D6DFE2; --line2:#B4C3C8; --ink:#142A30; --ink2:#3B5157; --ink3:#53676D; --link:#1D5F6B;
+            --band:#12404A; --bandink:#FFFFFF; --bandink2:#C9DDE0; --copper:#E88A52;
+            --ok:#1D6B3A; --oks:#E5F2E9; --part:#835400; --parts:#F9F0DC; --bad:#B42318; --bads:#FBE9E7; --pr:#A4471A; --prs:#F6EEE8; }
+      @media (prefers-color-scheme: dark) {
+        svg { --bg:#0E191C; --panel:#132226; --card:#1B2E33; --line:#24393F; --line2:#3A565D; --ink:#E6EEF0; --ink2:#B4C5C9; --ink3:#93A9AE; --link:#8FC3CA;
+              --band:#12404A; --bandink:#FFFFFF; --bandink2:#C9DDE0; --copper:#E88A52;
+              --ok:#7FD39B; --oks:#16301F; --part:#E3B45C; --parts:#33270F; --bad:#F2877B; --bads:#3A1B18; --pr:#F29D69; --prs:#33200F; }
+      }
+      text { font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif; fill: var(--ink); }
+      .h1 { font-size: 26px; font-weight: 700; }
+      .sub { font-size: 15px; fill: var(--ink2); }
+      .h { font-size: 16px; font-weight: 700; }
+      .p { font-size: 13px; fill: var(--ink2); }
+      .s { font-size: 12px; fill: var(--ink3); }
+      .lbl { font-size: 12px; font-weight: 600; fill: var(--link); }
+      .cap { font-size: 11px; font-weight: 700; letter-spacing: .08em; fill: var(--ink3); }
+      .chip { font-size: 12px; font-weight: 600; }
+      .bg { fill: var(--bg); }
+      .panel { fill: var(--panel); }
+      .box { fill: var(--card); stroke: var(--line2); stroke-width: 1.5; }
+      .accent { fill: var(--prs); stroke: var(--pr); stroke-width: 1.5; }
+      .arrow { fill: none; stroke: var(--link); stroke-width: 2; }
+      .arrowp { fill: none; stroke: var(--pr); stroke-width: 2.25; }
+      .head { fill: var(--link); }
+      .headp { fill: var(--pr); }
+      .band { fill: var(--band); }
+      .bt { fill: var(--bandink); }
+      .bt2 { fill: var(--bandink2); }
+      .num { fill: var(--copper); font-weight: 700; }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="headp" d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+
+  <rect class="bg" width="1200" height="780"/>
+
+  <!-- Overskrift -->
+  <text class="h1" x="40" y="46">Øvingssløyfen i AI Study Buddy</text>
+  <text class="sub" x="40" y="72">Hvert svar avgjør hva du øver på neste gang.</text>
+
+  <!-- Rad 1: kilde og studiemateriell -->
+  <rect class="box" x="40" y="96" width="220" height="76" rx="10"/>
+  <text class="h" x="58" y="126">Kilde</text>
+  <text class="p" x="58" y="148">PDF, tekstfil eller limt inn</text>
+  <text class="p" x="58" y="164">tekst, lagt i et fag og et tema</text>
+
+  <path class="arrow" d="M260,134 H306" marker-end="url(#a)"/>
+
+  <rect class="box" x="310" y="96" width="850" height="76" rx="10"/>
+  <text class="h" x="328" y="126">Studiemateriell</text>
+  <g>
+    <rect fill="var(--panel)" stroke="var(--line)" x="470" y="110" width="104" height="26" rx="13"/>
+    <text class="chip" x="522" y="127" text-anchor="middle">Sammendrag</text>
+    <rect fill="var(--panel)" stroke="var(--line)" x="582" y="110" width="124" height="26" rx="13"/>
+    <text class="chip" x="644" y="127" text-anchor="middle">Nøkkelbegreper</text>
+    <rect fill="var(--panel)" stroke="var(--line)" x="714" y="110" width="60" height="26" rx="13"/>
+    <text class="chip" x="744" y="127" text-anchor="middle">Kort</text>
+    <rect fill="var(--panel)" stroke="var(--line)" x="782" y="110" width="88" height="26" rx="13"/>
+    <text class="chip" x="826" y="127" text-anchor="middle">Spørsmål</text>
+  </g>
+  <text class="s" x="328" y="158">Alt peker tilbake til side og sitat i kilden. Det som ikke består referansesjekken, fjernes og telles.</text>
+
+  <!-- Paneler -->
+  <rect class="panel" x="20" y="212" width="540" height="480" rx="14"/>
+  <text class="cap" x="540" y="236" text-anchor="end">TEST DEG SELV</text>
+  <rect class="panel" x="640" y="212" width="540" height="340" rx="14"/>
+  <text class="cap" x="1160" y="236" text-anchor="end">REPETISJON AV KORT</text>
+
+  <!-- Studiemateriell til sløyfene -->
+  <path class="arrow" d="M420,172 V194 H150 V248" marker-end="url(#a)"/>
+  <text class="lbl" x="160" y="232">spørsmål</text>
+  <path class="arrow" d="M770,172 V248" marker-end="url(#a)"/>
+  <text class="lbl" x="780" y="232">kort</text>
+
+  <!-- Quiz-sløyfen -->
+  <rect class="box" x="40" y="252" width="220" height="76" rx="10"/>
+  <text class="h" x="58" y="281">Quiz</text>
+  <text class="p" x="58" y="301">Øving med hint på forespørsel</text>
+  <text class="p" x="58" y="317">og tilbakemelding etter hvert svar</text>
+
+  <path class="arrow" d="M150,328 V394" marker-end="url(#a)"/>
+
+  <rect class="box" x="40" y="398" width="220" height="80" rx="10"/>
+  <text class="h" x="58" y="426">Svaret rettes</text>
+  <rect fill="var(--oks)" stroke="var(--ok)" x="58" y="440" width="58" height="24" rx="12"/>
+  <text class="chip" fill="var(--ok)" style="fill:var(--ok)" x="87" y="456" text-anchor="middle">✓ riktig</text>
+  <rect fill="var(--parts)" stroke="var(--part)" x="122" y="440" width="62" height="24" rx="12"/>
+  <text class="chip" style="fill:var(--part)" x="153" y="456" text-anchor="middle">◐ delvis</text>
+  <rect fill="var(--bads)" stroke="var(--bad)" x="190" y="440" width="52" height="24" rx="12"/>
+  <text class="chip" style="fill:var(--bad)" x="216" y="456" text-anchor="middle">✕ feil</text>
+
+  <path class="arrow" d="M260,422 H354" marker-end="url(#a)"/>
+  <text class="lbl" x="307" y="412" text-anchor="middle">feil / delvis</text>
+  <path class="arrow" d="M358,458 H264" marker-end="url(#a)"/>
+  <text class="lbl" x="311" y="476" text-anchor="middle">rettes igjen</text>
+
+  <rect class="box" x="358" y="398" width="182" height="80" rx="10"/>
+  <text class="h" x="374" y="426">Øv på feilene</text>
+  <text class="p" x="374" y="446">Bare spørsmålene du</text>
+  <text class="p" x="374" y="462">bommet på, til alt er riktig</text>
+
+  <path class="arrow" d="M150,478 V564" marker-end="url(#a)"/>
+  <text class="lbl" x="160" y="526">rettede svar</text>
+
+  <rect class="box" x="40" y="568" width="500" height="104" rx="10"/>
+  <text class="h" x="58" y="596">Mestring per tema</text>
+  <text class="p" x="58" y="618">Snitt av de 20 siste rettede svarene: riktig 1, delvis 0,5, feil 0.</text>
+  <text class="p" x="58" y="636">Svar i «Øv på feilene» teller ikke, fordi du nettopp har sett fasiten.</text>
+  <rect class="accent" x="58" y="645" width="276" height="20" rx="10"/>
+  <text class="chip" style="fill:var(--pr)" x="70" y="659">Under 60 % → tema merkes «Trenger øving»</text>
+
+  <!-- Kortsløyfen -->
+  <rect class="box" x="660" y="252" width="220" height="76" rx="10"/>
+  <text class="h" x="678" y="281">«I dag»</text>
+  <text class="p" x="678" y="301">Kort som skal repeteres i dag,</text>
+  <text class="p" x="678" y="317">fra alle fag. Maks 20 nye per dag.</text>
+
+  <path class="arrow" d="M880,290 H936" marker-end="url(#a)"/>
+
+  <rect class="box" x="940" y="252" width="220" height="150" rx="10"/>
+  <text class="h" x="958" y="281">Repetisjon</text>
+  <text class="p" x="958" y="301">Snu kortet og vurder det:</text>
+  <rect fill="var(--bads)" stroke="var(--bad)" x="958" y="312" width="88" height="24" rx="12"/>
+  <text class="chip" style="fill:var(--bad)" x="1002" y="328" text-anchor="middle">Igjen</text>
+  <rect fill="var(--parts)" stroke="var(--part)" x="1054" y="312" width="88" height="24" rx="12"/>
+  <text class="chip" style="fill:var(--part)" x="1098" y="328" text-anchor="middle">Vanskelig</text>
+  <rect fill="var(--oks)" stroke="var(--ok)" x="958" y="342" width="88" height="24" rx="12"/>
+  <text class="chip" style="fill:var(--ok)" x="1002" y="358" text-anchor="middle">Bra</text>
+  <rect fill="var(--oks)" stroke="var(--ok)" x="1054" y="342" width="88" height="24" rx="12"/>
+  <text class="chip" style="fill:var(--ok)" x="1098" y="358" text-anchor="middle">Lett</text>
+  <text class="s" x="958" y="388">↺ Igjen: tilbake i samme økt</text>
+
+  <path class="arrow" d="M1050,402 V444" marker-end="url(#a)"/>
+  <text class="lbl" x="1040" y="428" text-anchor="end">Vanskelig, Bra, Lett</text>
+
+  <rect class="box" x="940" y="448" width="220" height="84" rx="10"/>
+  <text class="h" x="958" y="476">Ny repetisjonsdato</text>
+  <text class="p" x="958" y="496">Lengre opphold for hver Bra</text>
+  <text class="p" x="958" y="512">på rad: 1, 3, 7 dager … maks 180</text>
+
+  <path class="arrow" d="M940,490 H830 V332" marker-end="url(#a)"/>
+  <text class="lbl" x="885" y="482" text-anchor="middle">klar igjen</text>
+
+  <!-- Neste steg -->
+  <path class="arrowp" d="M540,620 H636" marker-end="url(#ap)"/>
+  <text class="lbl" style="fill:var(--pr)" x="588" y="610" text-anchor="middle">mestring</text>
+
+  <rect class="band" x="640" y="572" width="540" height="164" rx="14"/>
+  <text class="h bt" x="662" y="604">Neste steg</text>
+  <text class="p bt2" x="662" y="626">Hjem viser én handling: den første som gjelder.</text>
+  <text class="num" x="662" y="658" font-size="15">1</text>
+  <text class="p bt" x="684" y="658">Kort i «I dag» → start repetisjon</text>
+  <text class="num" x="662" y="684" font-size="15">2</text>
+  <text class="p bt" x="684" y="684">Temaer som «Trenger øving» → quiz fra dem, svakest først</text>
+  <text class="num" x="662" y="710" font-size="15">3</text>
+  <text class="p bt" x="684" y="710">Tema uten kilde → legg til en kilde</text>
+
+  <!-- Neste steg tilbake inn i sløyfene -->
+  <path class="arrowp" d="M700,572 V332" marker-end="url(#ap)"/>
+  <text class="lbl" style="fill:var(--pr)" x="710" y="545">1 · repetisjon</text>
+  <path class="arrowp" d="M700,736 V758 H8 V290 H36" marker-end="url(#ap)"/>
+  <text class="lbl" style="fill:var(--pr)" x="360" y="752" text-anchor="middle">2 · quiz fra temaene som trenger øving</text>
+</svg>
