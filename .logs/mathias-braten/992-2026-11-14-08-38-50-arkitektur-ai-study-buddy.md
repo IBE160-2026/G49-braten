@@ -38,7 +38,7 @@ Kjøre `bmad-architecture` for AI Study Buddy v1: lage en arkitekturspine (et by
   - størrelse og type sjekkes i nettleseren, sidetall på serveren;
   - URL-eksempelet bruker `?tab=`.
 - Beslutninger fra Mathias: Django + HTMX; ingen betaling for hosting; Haiku 5.5 beholdes; FR-25 droppes hvis ingen gratis vert oppfyller AD-16.
-- Ikke committet: arkitekturmappen og endringen i `EXPERIENCE.md`.
+- Committet og pushet til `origin/main` på Mathias' forespørsel: `600d6a0` (arkitekturmappen) og `dacdab2` (`EXPERIENCE.md`). `ux-designs/.../.working/` er bevisst holdt utenfor.
 
 ### Åpne punkter
 - OQ-1: uttrekkstest på tre egne lysbildesett (pypdf plain/layout mot pdfplumber) før 20.11. Avgjør bibliotek og `MIN_TEXT_CHARS`, skrives til `docs/quality/`. Dette er det eksisterende punktet fra 2026-10-28 i `issues.md`.
