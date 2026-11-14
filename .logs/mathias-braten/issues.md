@@ -4,7 +4,7 @@
 - [ ] 2026-10-27 [bmad-inn-i-repoet](999-2026-10-27-21-58-45-bmad-inn-i-repoet.md) — vurder project_name/communication_language i BMad-konfig
 - [x] 2026-10-28 [teknisk-research-llm-pdf](998-2026-10-28-07-43-43-teknisk-research-llm-pdf.md) — les Gemini-gratisgrensene i AI Studio (og kortkrav) (løst 2026-11-13: ikke lenger relevant, Claude Haiku 5.5 valgt)
 - [ ] 2026-10-28 [teknisk-research-llm-pdf](998-2026-10-28-07-43-43-teknisk-research-llm-pdf.md) — test PDF-uttrekk på egne forelesningslysbilder før stakkvalg
-- [ ] 2026-10-28 [teknisk-research-llm-pdf](998-2026-10-28-07-43-43-teknisk-research-llm-pdf.md) — avklar PyMuPDF AGPL-lisens hvis Python velges
+- [x] 2026-10-28 [teknisk-research-llm-pdf](998-2026-10-28-07-43-43-teknisk-research-llm-pdf.md) — avklar PyMuPDF AGPL-lisens hvis Python velges (løst 2026-11-14: PyMuPDF ikke valgt; pypdf foreløpig, se OQ-1 i arkitekturspinen)
 - [ ] 2026-10-28 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — korte ned brief (1290 ord, mål 1–2 sider) og kjør bmad-review på brief og addendum
 - [ ] 2026-10-28 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — bekreft eller rett [ASSUMPTION] om retting av åpne quiz-spørsmål
 - [ ] 2026-10-29 [brief-oppdatert-etter-research](997-2026-10-28-07-47-03-brief-oppdatert-etter-research.md) — bekreft sidegrensen 50 sider / 10 MB (merket [ASSUMPTION] i brief-en)
@@ -15,7 +15,7 @@
 - [ ] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — avklar hva slags bilder (håndskrift eller skjermbilder) hvis bilder kommer inn etter v1 (PRD §9, spørsmål 1)
 - [x] 2026-11-05 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — lag UX-skisser med bmad-ux (faglærer ba om skjermskisser), deretter arkitektur (løst 2026-11-05)
 - [ ] 2026-11-05 [ux-ai-study-buddy](995-2026-11-05-19-31-27-ux-ai-study-buddy.md) — gå gjennom de 18 utsatte UX-antakelsene (3 i DESIGN.md, 15 i EXPERIENCE.md) når skjermene bygges
-- [ ] 2026-11-05 [ux-ai-study-buddy](995-2026-11-05-19-31-27-ux-ai-study-buddy.md) — kjør bmad-architecture, og velg der også komponentbibliotek (tokenene i DESIGN.md er nøytrale)
+- [x] 2026-11-05 [ux-ai-study-buddy](995-2026-11-05-19-31-27-ux-ai-study-buddy.md) — kjør bmad-architecture, og velg der også komponentbibliotek (tokenene i DESIGN.md er nøytrale) (løst 2026-11-14: spinen ferdig; ren CSS på DESIGN.md-tokenene, ingen komponentbibliotek)
 - [x] 2026-11-09 [impeccable-installasjon](994-2026-11-09-10-54-10-impeccable-installasjon.md) — ny Claude Code-økt, så `/impeccable init` med de eksisterende DESIGN.md og EXPERIENCE.md som grunnlag (løst 2026-11-09: PRODUCT.md laget fra dokumentene uten intervju; bekreftelsen er eget punkt)
 - [x] 2026-11-09 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — fullfør de ti konseptene etter kl. 18:50, ta sammenligningsbilder og fyll oversiktssiden; deretter velger Mathias 1–3 konsepter (løst 2026-11-11: redusert til fem konsepter, alle ferdige og satt sammen)
 - [ ] 2026-11-09 [ux-ti-designkonsepter](993-2026-11-09-20-07-36-ux-ti-designkonsepter.md) — bekreft eller rett «(inferred)»-faktaene i PRODUCT.md, som ble skrevet uten intervju
@@ -33,3 +33,8 @@
 - [x] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — UX: bekreft «Bruk KI-vurderingen» som angring av overstyrt Grade (løst 2026-11-13: bekreftet av Mathias)
 - [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — UX: oppdater mockupen 14-fagskinnen med Course score på P04, overstyring av Grade og meldingene om grense og avbrudd (valgfritt)
 - [ ] 2026-11-13 [prd-ai-study-buddy](996-2026-11-05-17-16-33-prd-ai-study-buddy.md) — før levering: kjør målingene i Real mode (svartider NFR-3, innholdssjekken i NFR-5, SM-3)
+- [ ] 2026-11-14 [arkitektur-ai-study-buddy](992-2026-11-14-08-38-50-arkitektur-ai-study-buddy.md) — OQ-2: mål genereringstid i Real mode (20 og 50 sider, kald første kall) og sjekk Anthropic rate-limit-nivå før 20.11; skriv til docs/quality/
+- [ ] 2026-11-14 [arkitektur-ai-study-buddy](992-2026-11-14-08-38-50-arkitektur-ai-study-buddy.md) — OQ-3: vertssjekk for FR-25 (PythonAnywhere free: allowlist api.anthropic.com, tidsgrense ≥150 s, ≥2 samtidige, SQLite ≥3.37, planlagt backup); ellers droppes FR-25
+- [ ] 2026-11-14 [arkitektur-ai-study-buddy](992-2026-11-14-08-38-50-arkitektur-ai-study-buddy.md) — oppdater PRODUCT.md («Stack: Undecided») med Django 6.1 + HTMX 2.0 fra arkitekturen
+- [ ] 2026-11-14 [arkitektur-ai-study-buddy](992-2026-11-14-08-38-50-arkitektur-ai-study-buddy.md) — valgfritt: polér SETUP-GUIDE.md med bmad-review (structure, prose)
+- [ ] 2026-11-14 [arkitektur-ai-study-buddy](992-2026-11-14-08-38-50-arkitektur-ai-study-buddy.md) — neste steg: bmad-spec (ta inn spinen som følgedokument), deretter bmad-create-epics-and-stories
