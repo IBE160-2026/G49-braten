@@ -9,7 +9,7 @@ sources:
   - '{planning_artifacts}/ux-designs/ux-Prosjekt A-2026-11-05/DESIGN.md'
   - '{planning_artifacts}/ux-designs/ux-Prosjekt A-2026-11-05/EXPERIENCE.md'
   - '{planning_artifacts}/ux-designs/ux-Prosjekt A-2026-11-09/mockups/14-fagskinnen.html'
-updated: 2026-11-13
+updated: 2026-11-14
 ---
 
 # AI Study Buddy — Experience Spine
@@ -232,7 +232,7 @@ If step 2 of the build plan misses 30 November, Weak topics move to Should (PRD 
 | segmented-control | Detail level in D05 and the summary-block; theme in D01; presets in D06 and D11 | Exactly one option is selected. Changing the Detail level of an existing Summary regenerates only the Summary (FR-7), with no confirm. That is a Generation call: at the daily limit the control keeps the current Summary and shows the daily-limit message (NFR-7). |
 | status-label | source-row | The Source status (FR-9): «Lager studiemateriell …» with a spinner as the progress indicator, «Klar» (with «· 2 elementer fjernet» when the Reference check removed items), «Feilet». Text with an icon. Status changes update without a reload and are announced politely. A kilde is never shown as generating after its run has stopped. |
 | source-row | The «Kilder» tab in Tema | Shows the name, type, size, Detail level and status. Kilder are listed newest first. `[ASSUMPTION]` The «⋯» menu offers rename and delete. |
-| upload-panel | D05 | Offers a drop zone from 600 px («Slipp filen her»), «Velg fil», and «Lim inn tekst». The limits are shown up front («PDF eller tekstfil · maks 50 sider eller 10 MB»). Size, type and length are checked before upload (FR-3). The Detail level defaults to «Middels» `[ASSUMPTION]`, with «Gjelder sammendraget. Du kan bytte detaljnivå senere.» In Mock mode it offers «Bruk eksempeldokumentet», which uploads the Sample document in one step. At the daily limit (NFR-7) the panel shows the daily-limit message and «Last opp» stays inactive with that message beside it; nothing is uploaded or sent. |
+| upload-panel | D05 | Offers a drop zone from 600 px («Slipp filen her»), «Velg fil», and «Lim inn tekst». The limits are shown up front («PDF eller tekstfil · maks 50 sider eller 10 MB»). Size and type are checked in the browser before upload; the page and character limits are checked by the server, which keeps nothing it rejects (FR-3; architecture AD-18). The Detail level defaults to «Middels» `[ASSUMPTION]`, with «Gjelder sammendraget. Du kan bytte detaljnivå senere.» In Mock mode it offers «Bruk eksempeldokumentet», which uploads the Sample document in one step. At the daily limit (NFR-7) the panel shows the daily-limit message and «Last opp» stays inactive with that message beside it; nothing is uploaded or sent. |
 | summary-block | Each ready kilde in the «Sammendrag» tab | The full Summary at reading width, not truncated, with the Detail level control in its header. No Reference in v1. |
 | key-concept-item | Each kilde in Tema | The term, the definition and the Location («Side 14», FR-23). «Vis kilde» opens the reference. «Forklar enklere» (Should, FR-19) opens «Enklere forklaring» below, with «Basert på side 14» and «Lag ny». Once saved, the Simpler explanation shows instantly next time. Making one, and «Lag ny», are Generation calls; showing a saved one is not (NFR-7). The «⋯» menu offers «Slett» (FR-24). `[ASSUMPTION: the quote opens on demand]` |
 | reference | feedback-panel, the back of a flashcard, key-concept-item | The Location first, then the verbatim quote in the Source's language. Never a link that leaves the app. |
@@ -241,7 +241,7 @@ If step 2 of the build plan misses 30 November, Weak topics move to Should (PRD 
 | topic-picker | D10, D11 | A checkbox list of the fag's tema with mastery, trend and the number of Questions. Weak topics are preselected in D10 («Temaene som trenger øving er valgt. Svakeste først.»). The footer counts the selection («2 temaer valgt · 43 spørsmål»), and the start button repeats it («Start quiz · 43 spørsmål»). |
 | empty-state | Hjem, Fagoversikt, Tema, Repetisjon | A heading, one sentence and one primary action: «Ingen fag ennå» / «Lag ett fag for hvert emne du tar, og legg temaer inn under det.» / «Nytt fag». |
 | inline-message | Where a problem happens: upload, generation, grading, network, the Key | Appears in place, never as a toast. It says what happened and what to do, and stays until solved or dismissed. It is announced politely, or assertively when it blocks the current action. |
-| skeleton | First load of Hjem, Fagoversikt and Tema | Shown only if loading takes more than 300 ms. Its shapes match the final layout, and it is replaced in place. |
+| skeleton | Not built in v1 | Pages are rendered complete on the server, so there is nothing to show a skeleton in (architecture AD-13). |
 
 ### Tema-tabs: Sammendrag, Quiz, Test deg selv, Kilder
 
@@ -249,7 +249,7 @@ Every tema gives direct access to its summary, quiz and self-test. A tema is the
 
 | Component | Use | Behavioral rules |
 |---|---|---|
-| tema-tabs | P05, directly under the band | Four tabs in this fixed order: «Sammendrag», «Quiz · 28», «Test deg selv · 22 kort», «Kilder · 2». «Sammendrag» is selected on arrival. The counts hide below 600 px so all four labels fit on a phone. ARIA tablist: ← and → move between tabs and select them, Home and End jump to the ends, and Tab moves into the panel. The selected tab is kept in the URL (for example `…/normalisering?fane=quiz`), so the browser's back button and a shared link return to it. `[ASSUMPTION: tab in the address]` The band stays above the tabs and keeps the page's one primary button whichever tab is open. |
+| tema-tabs | P05, directly under the band | Four tabs in this fixed order: «Sammendrag», «Quiz · 28», «Test deg selv · 22 kort», «Kilder · 2». «Sammendrag» is selected on arrival. The counts hide below 600 px so all four labels fit on a phone. ARIA tablist: ← and → move between tabs and select them, Home and End jump to the ends, and Tab moves into the panel. The selected tab is kept in the URL (for example `/topics/12/?tab=quiz`; URLs are English, architecture Conventions), so the browser's back button and a shared link return to it. The band stays above the tabs and keeps the page's one primary button whichever tab is open. |
 | «Sammendrag» tab | P05 | One summary-block per ready kilde, newest first, each followed by its Key concepts with Location, «Vis kilde» and «Forklar enklere». A kilde still generating shows one dashed line: «{kilde}: sammendraget lages. Vanligvis under 2 minutter.» There is one Summary per kilde (FR-7), so a tema with several kilder shows several summaries. There is no combined summary for the whole tema (FR-23). |
 | «Quiz» tab | P05 | A tool-card «Quiz i {tema}» naming how many Questions are ready and of which kinds, with «Velg antall og start» (secondary, opens D06). Under it, quiz-history. |
 | quiz-history | The «Quiz» tab, under the heading «Tidligere quizer» | PRD FR-27. One row per earlier Quiz in this tema, newest first: date, «3 av 6 riktige · 1 delvis», the answer strip with the Grade of each Answer (an overridden Grade carries its mark), and one quiet action: «Øv på feilene (N)» on the newest row when it has misses, otherwise «Se resultatet» (P07). The note under it says «Runder med «Øv på feilene» teller ikke i mestringen.» With no Quiz yet, the list is replaced by «Du har ikke tatt en quiz i dette temaet ennå.» |
@@ -280,7 +280,7 @@ Every tema gives direct access to its summary, quiz and self-test. A tema is the
 | Wrong credentials | P01 | An inline-message above the fields: «Feil e-post eller passord.» |
 | Email in use | P02 | Under the field: «Det finnes allerede en konto med denne e-postadressen.» and a «Logg inn» link. |
 | Sign-up closed | P01, P02, on the Hosted instance (FR-25) | «Opprett konto» is hidden. A direct visit shows «Registrering er stengt på denne installasjonen.» |
-| First load | Hjem, Fagoversikt, Tema | A skeleton, replaced in place. |
+| First load | Hjem, Fagoversikt, Tema | The page arrives complete; no skeleton in v1 (architecture AD-13). |
 | No fag | Hjem | The empty-state «Ingen fag ennå» with «Nytt fag». No band, no forecast. The fag-rail reads «Ingen fag ennå» and keeps «Nytt fag»; the fag-switcher is hidden. |
 | One to seven fag | Hjem, fag-rail | Normal rows. |
 | Eight fag or more | Hjem, fag-rail | Compact fag-forecast-rows; the fag-rail fits 8 above the account at 800 px height. `[ASSUMPTION: the threshold for compact rows]` |
@@ -290,13 +290,13 @@ Every tema gives direct access to its summary, quiz and self-test. A tema is the
 | No kilder | Tema | The band «Legg til den første kilden». The empty-state «Ingen kilder ennå» / «Legg til en PDF, en tekstfil eller tekst du limer inn. Quiz og kort kommer når studiemateriellet er klart.» Quiz and Flashcard actions are hidden. |
 | No Flashcards yet | Hjem | No Review band, and the forecast shows zeros. |
 | Generating (v1) | Tema | In v1 generation runs while the Student waits (FR-9). The source-row reads «Lager studiemateriell …» with a spinner and «Vanligvis under 2 minutter. Hold siden åpen til det er klart.» (NFR-3). The tabs and other kilder work as normal meanwhile; that kilde's Questions and Flashcards are not used until ready. |
-| Generation interrupted | Tema | If the Student closed or left the page while generating, the kilde shows «Feilet» on return, with «Genereringen stoppet fordi siden ble lukket. Prøv igjen.» and «Prøv igjen». It never shows as generating forever (FR-9). |
+| Generation interrupted | Tema | Leaving or closing the page does not stop generation; on return the kilde shows its current status. If a run has not finished 5 minutes after it started, the kilde shows «Feilet» with «Genereringen ble ikke ferdig. Prøv igjen.» and «Prøv igjen». It never shows as generating forever (FR-9; architecture AD-5). |
 | Generating in the background (Should) | Tema | With FR-26 built, the hint becomes «Vanligvis under 2 minutter. Du kan gå fra siden imens.» On return, the source-row shows the current status, and Study material that finished meanwhile is shown. |
 | Items removed by the Reference check | Tema | «Klar · 2 elementer fjernet», and under the material: «2 elementer ble fjernet fordi kildehenvisningen ikke stemte.» (FR-8) |
 | Generation failed | Tema | «Feilet», with «Kunne ikke lage studiemateriell fordi svaret fra KI-tjenesten ble avbrutt. Prøv igjen.» and «Prøv igjen», without a new upload. Nothing from the failed attempt is shown (FR-9). |
 | Rate limit from the AI provider | Tema | «Feilet», with «KI-tjenesten har mange forespørsler akkurat nå. Vent noen minutter og prøv igjen.» and «Prøv igjen». No partial Study material is saved (FR-9). |
 | Daily limit reached | D05, Tema («Prøv igjen», the Detail level, «Forklar enklere», «Lag ny») | An inline-message where the action was: «Du har brukt alle 20 genereringene for i dag. Grensen nullstilles ved midnatt.» No call is sent, and the control that would send one stays inactive with the message beside it. Quizzes, grading, Repetisjon and the Study material already made keep working. The limit applies in Mock mode too (NFR-7). |
-| Upload rejected | D05 | In the upload-panel: the reason and the limit («Filen har 70 sider. Grensen er 50 sider, så last opp ett kapittel om gangen.») and «Velg en annen fil». Nothing is uploaded. |
+| Upload rejected | D05 | In the upload-panel: the reason and the limit («Filen har 70 sider. Grensen er 50 sider, så last opp ett kapittel om gangen.») and «Velg en annen fil». Nothing is kept. |
 | Privacy notice declined | D04 | The dialog closes and nothing is uploaded. The notice shows again at the next upload (FR-22). |
 | Mock mode | All | The mode-banner (FR-20). |
 | Mock mode, another file | D05, Tema | «I demomodus lages studiemateriell bare for eksempeldokumentet. Legg inn en API-nøkkel for å bruke egne filer.» with «Bruk eksempeldokumentet». The file is stored (FR-20). |
@@ -334,7 +334,7 @@ Every tema gives direct access to its summary, quiz and self-test. A tema is the
 - **Gestures:** none is ever the only way to do something. No swipe in v1. `[ASSUMPTION]`
 - **Pace:** the Student sets it. Nothing moves on by itself, except when the time runs out in an exam.
 - **Saving:** Answers, ratings and Grade overrides save the moment they are given (FR-10, FR-12). Only forms have save buttons.
-- **Generation:** in v1 it runs while the Student waits on the Tema page, with a progress indicator. The rest of the page stays usable, but leaving the page stops the run (FR-9). Background generation is FR-26 (Should).
+- **Generation:** in v1 it runs while the Student waits on the Tema page, with a progress indicator. The rest of the page stays usable. Leaving the page does not stop the run: it finishes, or is shown as failed if it has not finished after 5 minutes (FR-9; architecture AD-5). Background generation is FR-26 (Should).
 - **Daily limit:** at most 20 Generation calls per day (NFR-7). The message comes before anything is sent, never after a wait.
 - **Destructive actions:** a confirm dialog comes first (FR-2, FR-24). No undo in v1.
 - **Motion:**
