@@ -1,0 +1,35 @@
+{% load ui %}
+{# fag-rail (from 1024 px): Hjem, «I dag», every fag with due count and mastery, «Nytt fag», the account. #}
+<nav class="fag-rail" aria-label="Hovedmeny">
+  <a class="brand fag-rail-brand" href="{% url 'web:home' %}">{% icon "mark" "brand" %}<span>AI Study Buddy</span></a>
+  <a class="rail-link" href="{% url 'web:home' %}"{% if nav_current == "home" %} aria-current="page"{% endif %}>{% icon "home" %}Hjem</a>
+  {# Plain text until Repetisjon exists (story 9). #}
+  <p class="rail-link rail-link--text">{% icon "calendar" %}<span>I dag · <b>0</b></span></p>
+  <h2 class="rail-heading">Fag<span aria-hidden="true">kort i dag</span></h2>
+  {% if shell_courses %}
+    <ul class="fag-rail-list" role="list">
+      {% for c in shell_courses %}
+        <li>
+          <a class="fag-rail-row" href="{% url 'web:course' c.id %}"{% if current_course.id == c.id %} aria-current="page"{% endif %}>
+            <span class="fag-rail-name">{{ c.name }}</span>
+            <span class="fag-rail-due fag-rail-due--zero"><span class="visually-hidden">, ingen kort i dag</span><span aria-hidden="true">0</span></span>
+            <span class="fag-rail-sub" aria-hidden="true">
+              <span class="fag-rail-code">{{ c.code }}</span>
+              <span class="rail-meter rail-meter--none"></span>
+              <span class="fag-rail-pct">–</span>
+            </span>
+            <span class="visually-hidden">{% if c.code %}, {{ c.code }}{% endif %}, mestring: ikke nok data ennå</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="fag-rail-empty">Ingen fag ennå. Lag ett fag for hvert emne du tar.</p>
+  {% endif %}
+  <a class="rail-add" href="{% url 'courses:create' %}?next={{ request.path|urlencode }}" hx-get="{% url 'courses:create' %}?next={{ request.path|urlencode }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "plus" %}Nytt fag</a>
+  <button class="rail-account" type="button" popovertarget="account-menu" aria-label="Kontomeny for {{ user.email }}">
+    <span class="avatar" aria-hidden="true">{{ user.email|first|upper }}</span>
+    <span class="rail-account-email">{{ user.email }}</span>
+    {% icon "chev-up" %}
+  </button>
+</nav>

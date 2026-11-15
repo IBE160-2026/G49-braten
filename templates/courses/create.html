@@ -1,0 +1,9 @@
+{% extends "layouts/shell.html" %}
+{% block title %}Nytt fag – AI Study Buddy{% endblock %}
+{% partialdef fields %}
+{% include "components/text_input.html" with field=form.name %}
+{% include "components/text_input.html" with field=form.code %}
+{% endpartialdef %}
+{% block content %}
+{% with as_page=True %}{% partialdef dialog inline %}{% url 'courses:create' as action %}{% include "components/dialog.html" with title="Nytt fag" body="courses/create.html#fields" submit_label="Lag fag" action=action %}{% endpartialdef %}{% endwith %}
+{% endblock %}

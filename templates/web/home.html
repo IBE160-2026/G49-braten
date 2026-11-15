@@ -1,12 +1,31 @@
-{% extends "layouts/base.html" %}
-{% block title %}Hjem · AI Study Buddy{% endblock %}
-{% block body %}
-<main class="placeholder">
-  <h1 class="auth-title">Hjem</h1>
-  <p>Du er logget inn som <strong>{{ user.email }}</strong>.</p>
-  <form method="post" action="{% url 'accounts:sign_out' %}">
-    {% csrf_token %}
-    <button class="button-primary" type="submit">Logg ut</button>
-  </form>
-</main>
+{% extends "layouts/shell.html" %}
+{% load ui %}
+{% block title %}Hjem – AI Study Buddy{% endblock %}
+{% block content %}
+<h1 class="page-title">Hjem</h1>
+{% if shell_courses %}
+  <section class="course-list" aria-labelledby="course-list-heading">
+    <h2 class="section-heading" id="course-list-heading">Fagene dine</h2>
+    <ul class="course-rows" role="list">
+      {% for course in shell_courses %}
+        <li class="course-row">
+          <a class="course-row-link" href="{% url 'web:course' course.id %}">
+            <span class="course-row-name">{{ course.name }}</span>
+            {% if course.code %}<span class="course-row-code">{{ course.code }}</span>{% endif %}
+            <span class="course-row-mastery">
+              <span class="mastery-meter mastery-meter--none" aria-hidden="true"></span>
+              <span>Ikke nok data ennå</span>
+            </span>
+          </a>
+          {% with course_id=course.id|stringformat:"s" %}
+            {% include "components/menu.html" with menu_id="course-menu-"|add:course_id trigger_label="Flere valg for "|add:course.name items="courses/course_menu_items.html" %}
+          {% endwith %}
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% else %}
+  {% url 'courses:create' as create_url %}
+  {% include "components/empty_state.html" with heading="Ingen fag ennå" text="Lag ett fag for hvert emne du tar, og legg temaer inn under det." action_label="Nytt fag" action_url=create_url|add:"?next=/" action_dialog=True %}
+{% endif %}
 {% endblock %}

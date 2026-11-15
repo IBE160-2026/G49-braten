@@ -1,0 +1,9 @@
+{% load ui %}{% comment %}
+empty-state: a heading, one sentence and at most one primary action.
+  heading, text; action_label + action_url (+ action_dialog to open it in the #dialog slot)
+{% endcomment %}
+<section class="empty-state" aria-labelledby="empty-state-heading">
+  <h2 class="empty-state-heading" id="empty-state-heading">{{ heading }}</h2>
+  <p>{{ text }}</p>
+  {% if action_url %}<a class="button-primary" href="{{ action_url }}"{% if action_dialog %} hx-get="{{ action_url }}" hx-target="#dialog" hx-swap="innerHTML"{% endif %}>{% icon "plus" %}{{ action_label }}</a>{% endif %}
+</section>

@@ -1,0 +1,11 @@
+{% load ui %}{% comment %}
+breadcrumb: from 600 px every level but the current one is a link; below 600 px a back link to the parent.
+  crumbs: [{label, url}, …] from the top down; current: the current page's label
+{% endcomment %}
+<nav class="breadcrumb" aria-label="Brødsmuler">
+  <ol>
+    {% for crumb in crumbs %}<li><a href="{{ crumb.url }}">{{ crumb.label }}</a></li>{% endfor %}
+    <li><span aria-current="page">{{ current }}</span></li>
+  </ol>
+</nav>
+{% with parent=crumbs|last %}<a class="back-link" href="{{ parent.url }}">{% icon "chev-l" %}{{ parent.label }}</a>{% endwith %}

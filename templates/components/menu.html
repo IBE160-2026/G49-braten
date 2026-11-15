@@ -1,0 +1,9 @@
+{% load ui %}{% comment %}
+menu (D07 «⋯»): a native popover (AD-18) opened by an icon button; app.js places it at its trigger.
+  menu_id, trigger_label: the popover id and the trigger's accessible name
+  items: a template with the menu items (.menu-item links or buttons)
+{% endcomment %}
+<button class="icon-button menu-trigger" type="button" popovertarget="{{ menu_id }}" aria-label="{{ trigger_label }}">{% icon "more" %}</button>
+<div id="{{ menu_id }}" class="menu" popover data-anchored aria-label="{{ trigger_label }}">
+  {% include items %}
+</div>

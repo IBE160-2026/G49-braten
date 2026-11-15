@@ -1,0 +1,10 @@
+{% load ui %}
+{# top-bar (below 1024 px): the app name to Hjem, «I dag · N», and the avatar for D01. #}
+<header class="top-bar">
+  <a class="brand" href="{% url 'web:home' %}">{% icon "mark" "brand" %}<span>AI Study Buddy</span></a>
+  {# Plain text until Repetisjon exists (story 9). #}
+  <p class="today-chip">{% icon "calendar" %}<span>I dag · <b>0</b></span></p>
+  <button class="avatar-button" type="button" popovertarget="account-menu" aria-label="Kontomeny for {{ user.email }}">
+    <span class="avatar" aria-hidden="true">{{ user.email|first|upper }}</span>
+  </button>
+</header>

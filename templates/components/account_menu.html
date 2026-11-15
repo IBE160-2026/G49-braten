@@ -1,0 +1,21 @@
+{% load ui %}
+{# D01 Kontomeny: a native popover menu (AD-18) with «Utseende» and «Logg ut». #}
+<div id="account-menu" class="menu account-menu" popover data-anchored aria-label="Kontomeny">
+  <p class="account-menu-who"><span class="avatar" aria-hidden="true">{{ user.email|first|upper }}</span><span>{{ user.email }}</span></p>
+  <div class="menu-separator"></div>
+  <form class="account-menu-theme" method="post" action="{% url 'web:theme' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <p class="menu-label" id="account-menu-theme-label">Utseende</p>
+    <div class="segmented-control" role="group" aria-labelledby="account-menu-theme-label">
+      <button type="submit" name="theme" value="system" aria-pressed="{% if theme %}false{% else %}true{% endif %}">System</button>
+      <button type="submit" name="theme" value="light" aria-pressed="{% if theme == 'light' %}true{% else %}false{% endif %}">Lys</button>
+      <button type="submit" name="theme" value="dark" aria-pressed="{% if theme == 'dark' %}true{% else %}false{% endif %}">Mørk</button>
+    </div>
+  </form>
+  <div class="menu-separator"></div>
+  <form method="post" action="{% url 'accounts:sign_out' %}">
+    {% csrf_token %}
+    <button class="menu-item" type="submit">{% icon "logout" %}Logg ut</button>
+  </form>
+</div>

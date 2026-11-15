@@ -1,0 +1,5 @@
+{% extends "layouts/shell.html" %}
+{% block title %}Slette faget {{ course.name }}? – AI Study Buddy{% endblock %}
+{% block content %}
+{% with as_page=True %}{% partialdef dialog inline %}{% url 'courses:delete' course.id as action %}{% with title="Slette faget "|add:course.name|add:"?" %}{% include "components/dialog.html" with title=title lead="Alt i faget slettes. Dette kan ikke angres." submit_label="Slett faget" alert=True action=action %}{% endwith %}{% endpartialdef %}{% endwith %}
+{% endblock %}

@@ -1,3 +1,11 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/1-project-skeleton-environment-settings-and-test-harness.md`
   summary: Add HTTPS hardening for non-local environments (SECURE_SSL_REDIRECT, HSTS, SECURE_PROXY_SSL_HEADER, a guard against ALLOWED_HOSTS=*), to be settled with the host for the Hosted instance.
   evidence: Story 1 sets only the AD-14 guards; a Hosted instance behind a TLS proxy needs these, and the right values depend on the host chosen in architecture OQ-3 (story 18).
+
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/3-shell-courses-and-a-basic-home.md`
+  summary: Story 3b — Topics and Sources (models with student FK and cascade), Fagoversikt P04 with «Nytt tema» (D03), a basic Topic page listing Sources, rename/delete for Topics and Sources with D09 naming what goes, and the Course delete dialog counting Topics and Sources.
+  evidence: Split from story 3 at the Author's choice (2026-11-15) because shell + Courses + Topics + Sources in one spec would be ~3000 tokens; 3b builds on 3a's shell and dialog pattern and must land before story 4.
+
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/3-shell-courses-and-a-basic-home.md`
+  summary: Add a browser test harness (e.g. Playwright, run Key-free) covering app.js — dialog opens on swap into #dialog, Esc/Avbryt empties the slot and returns focus, failure messages show.
+  evidence: The only check of app.js is a source-text regex; deleting `showModal()` would leave every dialog invisible with JS on and no test would fail.

@@ -1,0 +1,11 @@
+{% extends layout %}
+{% load ui %}
+{% block title %}Fant ikke siden – AI Study Buddy{% endblock %}
+{% block content %}
+<div class="not-found">
+  <p class="not-found-code">Feil 404</p>
+  <h1 class="page-title">Fant ikke siden</h1>
+  <p>Sjekk adressen, eller velg et fag i listen. Fagene dine og dagens kort står der som før.</p>
+  <a class="button-primary button-lg" href="{% url 'web:home' %}">{% icon "home" %}Til Hjem</a>
+</div>
+{% endblock %}

@@ -1,0 +1,5 @@
+{% load ui %}
+{# D07 for a fag: «Gi nytt navn» (D08) and «Slett» (D09). next brings rename back to this page. #}
+{% url 'courses:rename' course.id as rename_url %}{% url 'courses:delete' course.id as delete_url %}
+<a class="menu-item" href="{{ rename_url }}?next={{ request.path|urlencode }}" hx-get="{{ rename_url }}?next={{ request.path|urlencode }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "pencil" %}Gi nytt navn</a>
+<a class="menu-item menu-item--destructive" href="{{ delete_url }}?next={{ request.path|urlencode }}" hx-get="{{ delete_url }}?next={{ request.path|urlencode }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "trash" %}Slett</a>

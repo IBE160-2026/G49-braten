@@ -8,21 +8,12 @@ from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import redirect, render, resolve_url
 from django.urls import reverse
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
 from accounts.forms import SignInForm, SignUpForm
-
-
-def safe_next(request) -> str:
-    """`next` when it is a relative URL on this site, otherwise ""."""
-    url = request.POST.get(REDIRECT_FIELD_NAME) or request.GET.get(REDIRECT_FIELD_NAME) or ""
-    # allowed_hosts=None: any URL naming a host or scheme is refused, so only relative paths pass.
-    if url.startswith("/") and url_has_allowed_host_and_scheme(url, allowed_hosts=None):
-        return url
-    return ""
+from core.http import safe_next
 
 
 class SignInView(LoginView):

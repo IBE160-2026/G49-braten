@@ -284,10 +284,10 @@ def test_fr1_sign_out_requires_csrf(student):
 
 
 def test_fr1_home_shows_signed_in_email_and_sign_out_button(client, student):
+    # The email and «Logg ut» live in the account menu D01 (story 3).
     client.force_login(student("ida@example.no"))
     content = client.get("/").content.decode()
-    assert "Du er logget inn som" in content
-    assert "ida@example.no" in content
+    assert 'aria-label="Kontomeny for ida@example.no"' in content
     assert f'action="{SIGN_OUT}"' in content
     assert "Logg ut" in content
 

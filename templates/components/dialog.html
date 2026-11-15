@@ -1,0 +1,26 @@
+{% load ui %}{% comment %}
+dialog (AD-13, AD-18): one form, rendered as a full page (as_page) or as a <dialog> for the #dialog slot.
+  title, action, cancel_url, submit_label: required
+  body: a template (or "template#partial") with the fields
+  lead: one sentence under the title; alert: a confirm-delete (alertdialog, no close icon, destructive button)
+  form: the bound form, so the title keeps focus only when there is no error to fix
+{% endcomment %}
+{% if as_page %}<div class="dialog-page"><section class="dialog dialog--page" aria-labelledby="dialog-title"{% if lead %} aria-describedby="dialog-lead"{% endif %}>{% else %}<dialog class="dialog"{% if alert %} role="alertdialog"{% endif %} aria-labelledby="dialog-title"{% if lead %} aria-describedby="dialog-lead"{% endif %}>{% endif %}
+  <form class="dialog-form" method="post" action="{{ action }}" novalidate{% if not as_page %} hx-post="{{ action }}" hx-target="#dialog" hx-swap="innerHTML" hx-disabled-elt="find button[type='submit']" hx-sync="this:drop"{% endif %}>
+    {% csrf_token %}
+    <div class="dialog-head">
+      {% if as_page %}<h1{% else %}<h2{% endif %} class="dialog-title" id="dialog-title" tabindex="-1"{% if not form.errors and not as_page %} autofocus{% endif %}>{{ title }}{% if as_page %}</h1>{% else %}</h2>{% endif %}
+      {% if not alert %}<a class="icon-button" href="{{ cancel_url }}" data-dialog-close aria-label="Lukk">{% icon "x" %}</a>{% endif %}
+    </div>
+    <div class="dialog-body">
+      <div class="dialog-messages"></div>
+      {% if lead %}<p class="dialog-lead" id="dialog-lead">{{ lead }}</p>{% endif %}
+      {% if body %}{% include body %}{% endif %}
+    </div>
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <div class="dialog-foot">
+      <a class="button-secondary" href="{{ cancel_url }}" data-dialog-close>Avbryt</a>
+      {% if alert %}<button class="button-destructive" type="submit">{% icon "trash" %}{{ submit_label }}</button>{% else %}<button class="button-primary" type="submit">{{ submit_label }}</button>{% endif %}
+    </div>
+  </form>
+{% if as_page %}</section></div>{% else %}</dialog>{% endif %}

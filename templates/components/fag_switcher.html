@@ -1,0 +1,25 @@
+{% load ui %}
+{# fag-switcher (below 1024 px, hidden with no fag): the current fag or «Alle fag», opening the fag list. #}
+<nav class="fag-switcher" aria-label="Bytt fag">
+  <span class="fag-switcher-label" aria-hidden="true">Fag</span>
+  <button class="fag-switcher-button" type="button" popovertarget="fag-switcher-list" aria-haspopup="listbox">
+    <span class="fag-switcher-name">
+      {% if current_course %}{{ current_course.name }}{% if current_course.code %}<small>{{ current_course.code }}</small>{% endif %}{% else %}Alle fag<small>{{ shell_courses|length }} fag</small>{% endif %}
+    </span>
+    <span class="fag-switcher-due"><b>0</b> i dag</span>
+    {% icon "chev-down" %}
+  </button>
+  <div id="fag-switcher-list" class="menu fag-switcher-list" popover data-anchored role="listbox" aria-label="Fag">
+    <a class="menu-item" role="option" href="{% url 'web:home' %}" aria-selected="{% if current_course %}false{% else %}true{% endif %}">{% icon "home" %}Hjem · alle fag</a>
+    <div class="menu-separator" role="presentation"></div>
+    {% for c in shell_courses %}
+      <a class="menu-item fag-switcher-option" role="option" href="{% url 'web:course' c.id %}" aria-selected="{% if current_course.id == c.id %}true{% else %}false{% endif %}">
+        <span class="fag-switcher-option-name">{{ c.name }}{% if c.code %} <small>{{ c.code }}</small>{% endif %}</span>
+        <span class="fag-switcher-option-meta">0 i dag · –</span>
+        <span class="visually-hidden">, ingen kort i dag, mestring: ikke nok data ennå</span>
+      </a>
+    {% endfor %}
+    <div class="menu-separator" role="presentation"></div>
+    <a class="menu-item" role="option" aria-selected="false" href="{% url 'courses:create' %}?next={{ request.path|urlencode }}" hx-get="{% url 'courses:create' %}?next={{ request.path|urlencode }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "plus" %}Nytt fag</a>
+  </div>
+</nav>

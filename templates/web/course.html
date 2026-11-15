@@ -1,0 +1,15 @@
+{% extends "layouts/shell.html" %}
+{% load ui %}
+{% block title %}{{ course.name }} – AI Study Buddy{% endblock %}
+{% block content %}
+{% include "components/breadcrumb.html" with crumbs=breadcrumb current=course.name %}
+<div class="page-head">
+  <div class="page-head-text">
+    <h1 class="page-title">{{ course.name }}</h1>
+    {% if course.code %}<p class="page-meta">{{ course.code }}</p>{% endif %}
+  </div>
+  {% include "components/menu.html" with menu_id="course-actions" trigger_label="Flere valg for "|add:course.name items="courses/course_menu_items.html" %}
+</div>
+{# Story 3b adds «Nytt tema» (D03) to this empty-state. #}
+{% include "components/empty_state.html" with heading="Ingen temaer ennå" text="Et tema samler kildene, kortene og spørsmålene for én del av faget." %}
+{% endblock %}

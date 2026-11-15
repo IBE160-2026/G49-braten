@@ -1,13 +1,25 @@
-{% load static %}<!doctype html>
-<html lang="nb">
+{% load static ui %}<!doctype html>
+<html lang="nb"{% if theme %} data-theme="{{ theme }}"{% endif %}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}AI Study Buddy{% endblock %}</title>
+  <meta name="htmx-config" content='{"historyRestoreAsHxRequest": false}'>
+  <link rel="preload" href="{% static 'fonts/public-sans/public-sans-latin-wght-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
   <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <script src="{% static 'vendor/htmx-2.0.11.min.js' %}" defer></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
 </head>
 <body class="{% block body_class %}{% endblock %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 {% block body %}{% endblock %}
+{# The one dialog slot (AD-18): under HTMX a dialog partial is swapped in here and opened by app.js. #}
+<div id="dialog"></div>
+{# Permanent live regions (AD-18), filled only through swaps of their contents. #}
+<div id="live-polite" class="live-region" aria-live="polite"></div>
+<div id="live-assertive" class="live-region" aria-live="assertive"></div>
+{# Fixed messages app.js shows when htmx gets no answer or an error status (AD-18). #}
+<template id="message-network-error">{% message "network_error" as text %}{% include "components/inline_message.html" with variant="error" text=text %}</template>
+<template id="message-response-error">{% message "response_error" as text %}{% include "components/inline_message.html" with variant="error" text=text %}</template>
 </body>
 </html>
