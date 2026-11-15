@@ -162,7 +162,8 @@ def test_fr2_p04_has_breadcrumb_title_code_actions_and_empty_state(client_ida, i
     assert f'href="/courses/{course.id}/rename/?next=/courses/{course.id}/"' in main
     assert "Ingen temaer ennå" in main
     assert "Et tema samler kildene, kortene og spørsmålene for én del av faget." in main
-    assert "Nytt tema" not in content
+    # Story 3b: the empty-state carries «Nytt tema» (D03).
+    assert f'href="/courses/{course.id}/topics/new/?next=/courses/{course.id}/"' in main
 
 
 # ---- P12 -------------------------------------------------------------------------------

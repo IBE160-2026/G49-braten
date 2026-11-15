@@ -179,7 +179,8 @@ def test_fr2_get_delete_shows_the_confirmation_and_deletes_nothing(client_ida, i
     assert response.status_code == 200
     content = response.content.decode()
     assert "Slette faget Databaser?" in content
-    assert "Alt i faget slettes. Dette kan ikke angres." in content
+    # An empty fag names nothing under it (story 3b counts Topics and Sources).
+    assert 'id="dialog-lead">Dette kan ikke angres.</p>' in content
     assert "Slett faget" in content
     assert Course.objects.filter(pk=course.pk).exists()
 

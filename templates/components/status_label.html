@@ -1,0 +1,5 @@
+{% load ui %}{% comment %}
+status-label: the Source status (FR-9) as text with an icon.
+  status: pending, generating, ready or failed
+{% endcomment %}
+{% if status == "ready" %}<span class="status-label status-label--ready">{% icon "check" %}Klar</span>{% elif status == "failed" %}<span class="status-label status-label--failed">{% icon "alert" %}Feilet</span>{% else %}<span class="status-label status-label--generating">{% icon "loader" %}Lager studiemateriell …</span>{% endif %}

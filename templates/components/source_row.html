@@ -1,0 +1,14 @@
+{% load ui %}{% comment %}
+source-row: name, type, size, Detail level and the status-label; «⋯» with rename and delete.
+  source: the Source
+{% endcomment %}
+<li class="item-row source-row">
+  <div class="item-row-body">
+    <span class="item-row-name">{{ source.name }}</span>
+    <span class="item-row-meta">{% if source.kind == "pdf" %}PDF{% elif source.kind == "text" %}Tekstfil{% else %}Innlimt tekst{% endif %}{% if source.size_bytes %} · {{ source.size_bytes|filesizeformat }}{% endif %} · Detaljnivå: {% if source.detail_level == "short" %}kort{% elif source.detail_level == "detailed" %}detaljert{% else %}middels{% endif %}</span>
+    {% include "components/status_label.html" with status=source.status %}
+  </div>
+  {% with source_id=source.id|stringformat:"s" %}
+    {% include "components/menu.html" with menu_id="source-menu-"|add:source_id trigger_label="Flere valg for "|add:source.name items="courses/source_menu_items.html" %}
+  {% endwith %}
+</li>

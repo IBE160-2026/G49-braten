@@ -1,5 +1,6 @@
 {% extends "layouts/shell.html" %}
-{% block title %}Slette faget {{ course.name }}? – AI Study Buddy{% endblock %}
+{# D09 for a fag, a tema or a kilde: `title`, `lead` (what goes) and `submit_label` come from the view. #}
+{% block title %}{{ title }} – AI Study Buddy{% endblock %}
 {% block content %}
-{% with as_page=True %}{% partialdef dialog inline %}{% url 'courses:delete' course.id as action %}{% with title="Slette faget "|add:course.name|add:"?" %}{% include "components/dialog.html" with title=title lead="Alt i faget slettes. Dette kan ikke angres." submit_label="Slett faget" alert=True action=action %}{% endwith %}{% endpartialdef %}{% endwith %}
+{% with as_page=True %}{% partialdef dialog inline %}{% include "components/dialog.html" with title=title lead=lead submit_label=submit_label alert=True action=action %}{% endpartialdef %}{% endwith %}
 {% endblock %}

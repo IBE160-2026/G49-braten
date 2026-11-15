@@ -482,6 +482,41 @@ form.htmx-request button[type="submit"]::before {
   .course-row-mastery { grid-row: 1 / span 2; grid-column: 2; margin-top: 0; }
 }
 
+/* item rows: tema rows on Fagoversikt and source-rows on Tema (same list frame as the fag rows) */
+.section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 12px; }
+.section-head .section-heading { margin-bottom: 0; }
+.item-rows {
+  list-style: none; margin: 0; padding: 0;
+  border: 1px solid var(--line); border-radius: var(--rounded-lg);
+  background: var(--ground); box-shadow: var(--shadow-card);
+}
+.item-row { display: flex; align-items: center; gap: 4px; padding-right: 6px; min-width: 0; }
+.item-row + .item-row { border-top: 1px solid var(--line); }
+.item-row-link, .item-row-body {
+  flex: 1; min-width: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px 16px;
+  padding: 14px 16px; color: var(--ink); text-decoration: none;
+}
+.item-row:first-child .item-row-link { border-top-left-radius: var(--rounded-lg); }
+.item-row:last-child .item-row-link { border-bottom-left-radius: var(--rounded-lg); }
+.item-row-link:hover { background: var(--ground-2); }
+.item-row-link:focus-visible { outline-offset: -2px; }
+.item-row-name { font-size: 17px; font-weight: 700; line-height: 1.3; }
+.item-row-meta { font-size: 14px; color: var(--ink-3); }
+.item-row-aside { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-2); }
+@media (min-width: 600px) {
+  .topic-row .item-row-link { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+}
+
+/* status-label: text with an icon (FR-9) */
+.status-label { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.status-label .icon { width: 16px; height: 16px; flex: none; }
+.status-label--ready { color: var(--ok); }
+.status-label--failed { color: var(--bad); }
+@media (prefers-reduced-motion: no-preference) {
+  .status-label--generating .icon { animation: spin 1.2s linear infinite; }
+}
+
 .not-found { display: grid; gap: 14px; justify-items: start; max-width: 560px; padding: 32px 0 24px; }
 .not-found-code { font-size: 14px; font-weight: 650; color: var(--ink-3); }
 .not-found p { color: var(--ink-2); font-size: 17px; max-width: 44ch; }

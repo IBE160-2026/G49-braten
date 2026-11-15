@@ -1,4 +1,4 @@
-"""D02 «Nytt fag» and D08 «Gi nytt navn» (FR-2). Error text comes from core.messages by code."""
+"""D02 «Nytt fag», D03 «Nytt tema» and D08 «Gi nytt navn» (FR-2). Error text comes from core.messages by code."""
 
 from django import forms
 
@@ -7,12 +7,12 @@ from core.messages import MESSAGES
 from courses.models import CODE_MAX_LENGTH, NAME_MAX_LENGTH
 
 
-def name_field(**widget_attrs):
+def name_field(required_code: str = "course_name_required", **widget_attrs):
     return forms.CharField(
         label="Navn",
         max_length=NAME_MAX_LENGTH,
         error_messages={
-            "required": MESSAGES["course_name_required"],
+            "required": MESSAGES[required_code],
             "max_length": MESSAGES["course_name_too_long"],
         },
         widget=forms.TextInput(
@@ -48,3 +48,13 @@ class CourseForm(FocusFirstErrorMixin, forms.Form):
 
 class RenameCourseForm(FocusFirstErrorMixin, forms.Form):
     name = name_field()
+
+
+class TopicForm(FocusFirstErrorMixin, forms.Form):
+    """D03 «Nytt tema», and D08 for a tema."""
+
+    name = name_field("topic_name_required")
+
+
+class RenameSourceForm(FocusFirstErrorMixin, forms.Form):
+    name = name_field("source_name_required")

@@ -1,0 +1,23 @@
+{% extends "layouts/shell.html" %}
+{% load ui %}
+{% block title %}{{ topic.name }} – {{ course.name }} – AI Study Buddy{% endblock %}
+{% block content %}
+{% include "components/breadcrumb.html" with crumbs=breadcrumb current=topic.name %}
+<div class="page-head">
+  <div class="page-head-text">
+    <h1 class="page-title">{{ topic.name }}</h1>
+  </div>
+  {% include "components/menu.html" with menu_id="topic-actions" trigger_label="Flere valg for "|add:topic.name items="courses/topic_menu_items.html" %}
+</div>
+{# Story 4 adds «Legg til kilde» and the band; the tabs come with Study material. #}
+<section class="source-list" aria-labelledby="source-list-heading">
+  <h2 class="section-heading" id="source-list-heading">Kilder</h2>
+  {% if sources %}
+    <ul class="item-rows" role="list">
+      {% for source in sources %}{% include "components/source_row.html" with source=source %}{% endfor %}
+    </ul>
+  {% else %}
+    {% include "components/empty_state.html" with heading="Ingen kilder ennå" text="Legg til en PDF, en tekstfil eller tekst du limer inn. Quiz og kort kommer når studiemateriellet er klart." %}
+  {% endif %}
+</section>
+{% endblock %}

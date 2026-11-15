@@ -1,0 +1,16 @@
+{% load ui %}{% comment %}
+topic row on Fagoversikt (the basic tema-forecast-row): the name links to the Tema page; «⋯» is a separate target.
+  topic: the Topic
+{% endcomment %}
+<li class="item-row topic-row">
+  <a class="item-row-link" href="{% url 'web:topic' topic.id %}">
+    <span class="item-row-name">{{ topic.name }}</span>
+    <span class="item-row-aside">
+      <span class="mastery-meter mastery-meter--none" aria-hidden="true"></span>
+      <span>Ikke nok data ennå</span>
+    </span>
+  </a>
+  {% with topic_id=topic.id|stringformat:"s" %}
+    {% include "components/menu.html" with menu_id="topic-menu-"|add:topic_id trigger_label="Flere valg for "|add:topic.name items="courses/topic_menu_items.html" %}
+  {% endwith %}
+</li>

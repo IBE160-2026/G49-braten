@@ -9,3 +9,7 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/3-shell-courses-and-a-basic-home.md`
   summary: Add a browser test harness (e.g. Playwright, run Key-free) covering app.js — dialog opens on swap into #dialog, Esc/Avbryt empties the slot and returns focus, failure messages show.
   evidence: The only check of app.js is a source-text regex; deleting `showModal()` would leave every dialog invisible with JS on and no test would fail.
+
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/3b-topics-and-sources.md`
+  summary: Story 4 must fit upload file names into `Source.name` (≤ 80 chars) — shorten keeping the extension, or reject with a named message.
+  evidence: `Source.name` reuses NAME_MAX_LENGTH = 80; SQLite would store longer names silently and D08 would then pre-fill a value its own form refuses.

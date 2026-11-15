@@ -10,6 +10,20 @@
   </div>
   {% include "components/menu.html" with menu_id="course-actions" trigger_label="Flere valg for "|add:course.name items="courses/course_menu_items.html" %}
 </div>
-{# Story 3b adds «Nytt tema» (D03) to this empty-state. #}
-{% include "components/empty_state.html" with heading="Ingen temaer ennå" text="Et tema samler kildene, kortene og spørsmålene for én del av faget." %}
+{% url 'courses:create_topic' course.id as create_topic_url %}
+{% with next_path=request.path|urlencode %}{% with create_topic_href=create_topic_url|add:"?next="|add:next_path %}
+{% if topics %}
+  <section class="topic-list" aria-labelledby="topic-list-heading">
+    <div class="section-head">
+      <h2 class="section-heading" id="topic-list-heading">Temaer</h2>
+      <a class="button-secondary" href="{{ create_topic_href }}" hx-get="{{ create_topic_href }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "plus" %}Nytt tema</a>
+    </div>
+    <ul class="item-rows" role="list">
+      {% for topic in topics %}{% include "components/topic_row.html" with topic=topic %}{% endfor %}
+    </ul>
+  </section>
+{% else %}
+  {% include "components/empty_state.html" with heading="Ingen temaer ennå" text="Et tema samler kildene, kortene og spørsmålene for én del av faget." action_label="Nytt tema" action_url=create_topic_href action_dialog=True %}
+{% endif %}
+{% endwith %}{% endwith %}
 {% endblock %}

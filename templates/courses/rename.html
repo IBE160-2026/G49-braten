@@ -1,8 +1,9 @@
 {% extends "layouts/shell.html" %}
-{% block title %}Gi nytt navn – {{ course.name }} – AI Study Buddy{% endblock %}
+{# D08 «Gi nytt navn» for a fag, a tema or a kilde: `item` and its `action` URL come from the view. #}
+{% block title %}Gi nytt navn – {{ item.name }} – AI Study Buddy{% endblock %}
 {% partialdef fields %}
 {% include "components/text_input.html" with field=form.name %}
 {% endpartialdef %}
 {% block content %}
-{% with as_page=True %}{% partialdef dialog inline %}{% url 'courses:rename' course.id as action %}{% include "components/dialog.html" with title="Gi nytt navn" body="courses/rename.html#fields" submit_label="Lagre" action=action %}{% endpartialdef %}{% endwith %}
+{% with as_page=True %}{% partialdef dialog inline %}{% include "components/dialog.html" with title="Gi nytt navn" body="courses/rename.html#fields" submit_label="Lagre" action=action %}{% endpartialdef %}{% endwith %}
 {% endblock %}

@@ -1,0 +1,9 @@
+{% extends "layouts/shell.html" %}
+{# D03 «Nytt tema» in `course`. #}
+{% block title %}Nytt tema – {{ course.name }} – AI Study Buddy{% endblock %}
+{% partialdef fields %}
+{% include "components/text_input.html" with field=form.name %}
+{% endpartialdef %}
+{% block content %}
+{% with as_page=True %}{% partialdef dialog inline %}{% include "components/dialog.html" with title="Nytt tema" body="courses/create_topic.html#fields" submit_label="Lag tema" action=action %}{% endpartialdef %}{% endwith %}
+{% endblock %}
