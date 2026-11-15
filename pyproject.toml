@@ -1,0 +1,25 @@
+[project]
+name = "ai-study-buddy"
+version = "0.1.0"
+description = "AI Study Buddy: turns a student's own course material into active self-testing."
+requires-python = ">=3.13"
+dependencies = [
+    "django==6.1.3",
+    "django-htmx==1.29.0",
+    "pydantic==2.14.3",
+    "python-dotenv==1.2.4",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings_test"
+testpaths = ["tests"]
+addopts = "--disable-socket"
+
+[dependency-groups]
+dev = [
+    "pytest-django==4.14.0",
+    "pytest-socket==0.8.1",
+]
