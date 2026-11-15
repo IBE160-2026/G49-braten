@@ -4,12 +4,14 @@ dialog (AD-13, AD-18): one form, rendered as a full page (as_page) or as a <dial
   body: a template (or "template#partial") with the fields
   lead: one sentence under the title; alert: a confirm-delete (alertdialog, no close icon, destructive button)
   form: the bound form, so the title keeps focus only when there is no error to fix
+  error: an error shown outside the form's fields (the title then leaves focus to the field)
+  enctype: "multipart/form-data" for a dialog that uploads a file
 {% endcomment %}
 {% if as_page %}<div class="dialog-page"><section class="dialog dialog--page" aria-labelledby="dialog-title"{% if lead %} aria-describedby="dialog-lead"{% endif %}>{% else %}<dialog class="dialog"{% if alert %} role="alertdialog"{% endif %} aria-labelledby="dialog-title"{% if lead %} aria-describedby="dialog-lead"{% endif %}>{% endif %}
-  <form class="dialog-form" method="post" action="{{ action }}" novalidate{% if not as_page %} hx-post="{{ action }}" hx-target="#dialog" hx-swap="innerHTML" hx-disabled-elt="find button[type='submit']" hx-sync="this:drop"{% endif %}>
+  <form class="dialog-form" method="post" action="{{ action }}"{% if enctype %} enctype="{{ enctype }}"{% endif %} novalidate{% if not as_page %} hx-post="{{ action }}" hx-target="#dialog" hx-swap="innerHTML" hx-disabled-elt="find button[type='submit']" hx-sync="this:drop"{% endif %}>
     {% csrf_token %}
     <div class="dialog-head">
-      {% if as_page %}<h1{% else %}<h2{% endif %} class="dialog-title" id="dialog-title" tabindex="-1"{% if not form.errors and not as_page %} autofocus{% endif %}>{{ title }}{% if as_page %}</h1>{% else %}</h2>{% endif %}
+      {% if as_page %}<h1{% else %}<h2{% endif %} class="dialog-title" id="dialog-title" tabindex="-1"{% if not form.errors and not error and not as_page %} autofocus{% endif %}>{{ title }}{% if as_page %}</h1>{% else %}</h2>{% endif %}
       {% if not alert %}<a class="icon-button" href="{{ cancel_url }}" data-dialog-close aria-label="Lukk">{% icon "x" %}</a>{% endif %}
     </div>
     <div class="dialog-body">

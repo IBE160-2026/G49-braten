@@ -1,0 +1,18 @@
+{% comment %}
+segmented-control (DESIGN.md) as a form field: one radio per option, so it works without JavaScript.
+Exactly one option is selected. Uses the D01 segmented-control look.
+  field: a ChoiceField with a RadioSelect widget
+{% endcomment %}
+<fieldset class="field segmented-field"{% if field.help_text or field.errors %} aria-describedby="{% if field.help_text %}{{ field.auto_id }}-help{% endif %}{% if field.help_text and field.errors %} {% endif %}{% if field.errors %}{{ field.auto_id }}-error{% endif %}"{% endif %}>
+  <legend>{{ field.label }}</legend>
+  <div class="segmented-control segmented-control--radio">
+    {% for radio in field %}<label for="{{ radio.id_for_label }}">{{ radio.tag }}<span>{{ radio.choice_label }}</span></label>{% endfor %}
+  </div>
+  {% if field.help_text %}<p class="help-text" id="{{ field.auto_id }}-help">{{ field.help_text }}</p>{% endif %}
+  {% if field.errors %}
+    <div class="field-error" id="{{ field.auto_id }}-error">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>
+      <div>{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>
+    </div>
+  {% endif %}
+</fieldset>

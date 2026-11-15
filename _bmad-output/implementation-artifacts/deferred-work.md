@@ -13,3 +13,13 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/3b-topics-and-sources.md`
   summary: Story 4 must fit upload file names into `Source.name` (≤ 80 chars) — shorten keeping the extension, or reject with a named message.
   evidence: `Source.name` reuses NAME_MAX_LENGTH = 80; SQLite would store longer names silently and D08 would then pre-fill a value its own form refuses.
+
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/4-upload-and-text-extraction-with-location.md`
+  summary: Run the OQ-1 extraction test on three real slide decks (pypdf 7.0.1 plain and layout mode vs pdfplumber; Æ/Ø/Å, bullet lists, a table or two-column slide) and confirm or change the plain mode and `MIN_TEXT_CHARS` = 200 in `ingestion/extract.py` and `docs/quality/oq1-pdf-extraction.md`.
+  evidence: Story 4 started without slide decks, so the Author chose provisional values (docs/quality/oq1-pdf-extraction.md, 2026-11-15); the tests only use Helvetica PDFs built with pypdf's writer.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/4-upload-and-text-extraction-with-location.md`
+  summary: Cap the request body size before Django reads a whole upload (the 10 MB check runs after it is received).
+  evidence: `_from_upload` checks `upload.size` only after the body is spooled to disk; set a server/proxy limit or `DATA_UPLOAD_MAX_MEMORY_SIZE`-style guard with the Hosted setup (OQ-3).
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/4-upload-and-text-extraction-with-location.md`
+  summary: Bound pypdf extraction work per upload (decompression bomb or pathological content streams). Unverified; medium if true.
+  evidence: Extraction runs in the request with no timeout; settle by timing a crafted 10 MB PDF with a highly compressed stream.

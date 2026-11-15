@@ -49,7 +49,7 @@ def create_source(
 ) -> Source:
     """A new `pending` Source in `topic`, owned by the Topic's Student (AD-7).
 
-    Used only by tests until upload arrives in story 4 (AD-5 step 1 calls it then).
+    Called by ingestion.services.ingest() inside its transaction (AD-5 step 1).
     """
     assert kind in SourceKind.values, kind
     assert detail_level in DetailLevel.values, detail_level

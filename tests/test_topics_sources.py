@@ -406,9 +406,11 @@ def test_fr2_p05_has_breadcrumb_back_link_title_actions_and_empty_kilder(client_
         "Legg til en PDF, en tekstfil eller tekst du limer inn. "
         "Quiz og kort kommer når studiemateriellet er klart."
     ) in main
+    # Story 4: the empty-state offers «Legg til kilde» (D05) as its one action.
     empty = main.split('class="empty-state"', 1)[1].split("</section>", 1)[0]
-    assert "<a " not in empty
-    assert "Legg til kilde" not in content
+    add_url = reverse("studymat:add_source", args=[normalisering.id])
+    assert f'hx-get="{add_url}"' in empty
+    assert "Legg til kilde" in empty
 
 
 def test_fr2_p05_rail_keeps_marking_the_fag(client_ida, databaser, normalisering):

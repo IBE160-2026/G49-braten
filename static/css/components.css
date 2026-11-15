@@ -603,3 +603,51 @@ dialog.dialog::before {
   dialog.dialog[open] { animation: dialog-in 200ms ease-out; }
   @keyframes dialog-in { from { opacity: 0; transform: translateY(12px); } }
 }
+
+/* ======================================================================
+   upload-panel (D05): file or pasted text, the limits up front, the rejection with «Velg en annen fil»
+   ====================================================================== */
+.upload-panel {
+  display: grid; gap: 16px;
+  padding: 16px;
+  border: 1px dashed var(--line-2); border-radius: var(--rounded-lg); background: var(--ground-2);
+}
+.upload-limits { font-size: 14px; color: var(--ink-2); }
+.upload-error { display: grid; gap: 10px; justify-items: start; }
+.upload-or {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 13.5px; font-weight: 650; color: var(--ink-3);
+}
+.upload-or::before, .upload-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.file-input {
+  width: 100%; max-width: 100%; min-height: var(--spacing-touch-target);
+  color: var(--ink-2); font: inherit; font-size: 15px;
+}
+.file-input::file-selector-button {
+  min-height: var(--spacing-touch-target); margin-right: 12px; padding: 0 18px;
+  border: 1px solid var(--line-control); border-radius: var(--rounded-md);
+  background: var(--ground); color: var(--link);
+  font: inherit; font-size: 15.5px; font-weight: 650; cursor: pointer;
+}
+.file-input::file-selector-button:hover { background: var(--ground-2); border-color: var(--link); }
+.file-input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--rounded-md); }
+.file-input[aria-invalid="true"]::file-selector-button { border-color: var(--bad); }
+.text-area { min-height: 132px; resize: vertical; line-height: 1.5; }
+
+/* segmented-control as radios (D05 Detail level): same look as the D01 buttons */
+.segmented-field { border: 0; margin: 0; padding: 0; min-width: 0; }
+.segmented-field legend { padding: 0; margin-bottom: 6px; font-size: 15.5px; font-weight: 650; line-height: 1.2; color: var(--ink); }
+.segmented-control--radio { display: grid; width: 100%; }
+.segmented-control--radio > label {
+  position: relative; display: grid; place-items: center;
+  min-height: var(--spacing-touch-target); padding: 0 10px;
+  color: var(--ink-2); font-size: 14.5px; font-weight: 600; white-space: nowrap; cursor: pointer;
+}
+.segmented-control--radio > label + label { border-left: 1px solid var(--line-control); }
+.segmented-control--radio input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.segmented-control--radio > label:has(input:checked) { background: var(--segment-selected); color: #ffffff; }
+.segmented-control--radio > label:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: -3px; }
+.segmented-field .help-text { margin-top: 6px; }
+@media (min-width: 600px) {
+  .segmented-control--radio { width: auto; display: inline-grid; }
+}

@@ -1,0 +1,22 @@
+{% extends "layouts/shell.html" %}
+{# D05 «Legg til kilde» in `topic` (FR-3): the upload-panel and the Detail level. #}
+{% block title %}Legg til kilde – {{ topic.name }} – AI Study Buddy{% endblock %}
+{% partialdef fields %}
+<div class="upload-panel">
+  {% if upload_error %}
+    <div class="upload-error">
+      {% include "components/inline_message.html" with text=upload_error id="upload-error" %}
+      {% if file_rejected %}<label class="button-secondary" for="{{ form.file.id_for_label }}">Velg en annen fil</label>{% endif %}
+    </div>
+  {% endif %}
+  <p class="upload-limits">PDF eller tekstfil · maks {{ limits.pages }} sider eller {{ limits.megabytes }} MB</p>
+  {% include "components/text_input.html" with field=form.file %}
+  <p class="upload-or" aria-hidden="true"><span>eller</span></p>
+  {% include "components/text_input.html" with field=form.text %}
+  {% include "components/text_input.html" with field=form.name %}
+</div>
+{% include "components/segmented_control.html" with field=form.detail_level %}
+{% endpartialdef %}
+{% block content %}
+{% with as_page=True %}{% partialdef dialog inline %}{% include "components/dialog.html" with title="Legg til kilde" body="studymat/add_source.html#fields" submit_label="Last opp" action=action enctype="multipart/form-data" error=upload_error %}{% endpartialdef %}{% endwith %}
+{% endblock %}
