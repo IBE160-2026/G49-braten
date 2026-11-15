@@ -1,0 +1,5 @@
+{# inline-message (DESIGN.md): an icon and text on bad-soft (error) or forecast-soft (info). #}
+<div class="inline-message inline-message--{{ variant|default:'error' }}"{% if id %} id="{{ id }}"{% endif %}{% if variant != 'info' %} role="alert"{% endif %}>
+  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">{% if variant == 'info' %}<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.5h.01"/>{% else %}<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/>{% endif %}</svg>
+  <p>{{ text }}</p>
+</div>

@@ -1,3 +1,8 @@
 """URL routes. Feature apps add theirs in later stories."""
 
-urlpatterns: list = []
+from django.urls import include, path
+
+urlpatterns = [
+    path("accounts/", include("accounts.urls")),
+    path("", include("web.urls")),
+]

@@ -1,0 +1,12 @@
+{% extends "layouts/base.html" %}
+{% block title %}Hjem · AI Study Buddy{% endblock %}
+{% block body %}
+<main class="placeholder">
+  <h1 class="auth-title">Hjem</h1>
+  <p>Du er logget inn som <strong>{{ user.email }}</strong>.</p>
+  <form method="post" action="{% url 'accounts:sign_out' %}">
+    {% csrf_token %}
+    <button class="button-primary" type="submit">Logg ut</button>
+  </form>
+</main>
+{% endblock %}

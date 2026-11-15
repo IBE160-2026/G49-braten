@@ -1,0 +1,21 @@
+{% extends "layouts/auth.html" %}
+{% block title %}Opprett konto · AI Study Buddy{% endblock %}
+
+{% block content %}
+<div class="auth-panel">
+  <h1 class="auth-title">Opprett konto</h1>
+  <p class="auth-lead">Fagene, kildene og svarene dine lagres på kontoen din.</p>
+  <form class="auth-form" method="post" action="{% url 'accounts:sign_up' %}" novalidate>
+    {% csrf_token %}
+    {% if form.email_in_use %}
+      {% include "components/text_input.html" with field=form.email extra_link_url=sign_in_url extra_link_text="Logg inn" %}
+    {% else %}
+      {% include "components/text_input.html" with field=form.email %}
+    {% endif %}
+    {% include "components/text_input.html" with field=form.password %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <button class="button-primary button-lg button-block" type="submit">Opprett konto</button>
+  </form>
+</div>
+<p class="auth-alt">Har du allerede en konto? <a href="{{ sign_in_url }}">Logg inn</a></p>
+{% endblock %}

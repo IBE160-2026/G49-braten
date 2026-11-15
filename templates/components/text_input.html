@@ -1,0 +1,14 @@
+{# text-input (DESIGN.md): label above, help text and errors below in words, linked by aria-describedby (set by the form). #}
+<div class="field">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {{ field }}
+  {% if field.help_text %}<p class="help-text" id="{{ field.auto_id }}-help">{{ field.help_text }}</p>{% endif %}
+  {% if field.errors %}
+    <div class="field-error" id="{{ field.auto_id }}-error">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>
+      <div>
+        {% for error in field.errors %}<p>{{ error }}{% if forloop.first and extra_link_url %} <a href="{{ extra_link_url }}">{{ extra_link_text }}</a>{% endif %}</p>{% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>

@@ -3,3 +3,6 @@
 from config.settings import *  # noqa: F403
 
 AI_PROVIDER = "mock"
+
+# A test-only app with an owned model, so core.ownership is tested without a feature model.
+INSTALLED_APPS = [*INSTALLED_APPS, "tests.ownership_app"]  # noqa: F405

@@ -1,0 +1,38 @@
+{% extends "layouts/auth.html" %}
+{% block title %}Logg inn · AI Study Buddy{% endblock %}
+
+{% block pane %}
+<section class="auth-pane" aria-label="Om AI Study Buddy">
+  <a class="brand" href="{% url 'accounts:sign_in' %}">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h7v13H4zM13 5.5h7v13h-7z"/></svg>
+    AI Study Buddy
+  </a>
+  <p class="auth-pane-heading">Alle fagene dine i én liste, på hver side.</p>
+  <p>Når du har logget inn, står fagene i skinnen til venstre med kortene som forfaller i dag og mestringen din. Eksempelet under er Idas.</p>
+  <div class="rail-preview" aria-hidden="true" inert>
+    <p class="rail-preview-head"><span>Fag</span><span>kort i dag</span></p>
+    <ul>
+      <li><span class="name">Databaser</span><span class="due">9</span><span class="sub"><span>DAT102</span><span class="meter"><span style="width: 61%"></span></span><span class="pct">61 %</span></span></li>
+      <li><span class="name">Statistikk</span><span class="due">5</span><span class="sub"><span>STA100</span><span class="meter"><span style="width: 71%"></span></span><span class="pct">71 %</span></span></li>
+      <li><span class="name">Programmering</span><span class="due zero">0</span><span class="sub"><span>ING101</span><span class="meter"><span style="width: 76%"></span></span><span class="pct">76 %</span></span></li>
+    </ul>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="auth-panel">
+  <h1 class="auth-title">Logg inn</h1>
+  <form class="auth-form" method="post" action="{% url 'accounts:sign_in' %}" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      {% include "components/inline_message.html" with variant="error" id="form-error" text=form.non_field_errors.0 %}
+    {% endif %}
+    {% include "components/text_input.html" with field=form.username %}
+    {% include "components/text_input.html" with field=form.password %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <button class="button-primary button-lg button-block" type="submit">Logg inn</button>
+  </form>
+</div>
+<p class="auth-alt">Ny her? <a href="{% url 'accounts:sign_up' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Opprett konto</a></p>
+{% endblock %}

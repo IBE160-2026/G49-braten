@@ -76,9 +76,12 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Before the login middleware, so request.htmx exists when it answers.
+    "django_htmx.middleware.HtmxMiddleware",
+    # Sign-in required everywhere; HTMX requests get HX-Redirect (AD-7).
+    "accounts.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -119,6 +122,9 @@ DATABASES = {
 ATOMIC_REQUESTS = False
 
 AUTH_USER_MODEL = "accounts.Student"
+LOGIN_URL = "accounts:sign_in"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "accounts:sign_in"
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},

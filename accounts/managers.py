@@ -1,9 +1,14 @@
+import unicodedata
+
 from django.contrib.auth.base_user import BaseUserManager
 
 
 def normalize(email: str | None) -> str:
-    """The one email normalisation, in Python, because SQLite folds case only for A-Z."""
-    return (email or "").strip().lower()
+    """The one email normalisation, in Python, because SQLite folds case only for A-Z.
+
+    NFKC first, so a decomposed Å (A + combining ring) matches the composed one.
+    """
+    return unicodedata.normalize("NFKC", email or "").strip().lower()
 
 
 class StudentManager(BaseUserManager):

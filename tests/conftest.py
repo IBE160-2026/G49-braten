@@ -15,3 +15,17 @@ def freeze_now(monkeypatch):
         monkeypatch.setattr("core.time.now", lambda: moment)
 
     return _freeze
+
+
+PASSWORD = "lang-og-trygg-frase-42"
+
+
+@pytest.fixture
+def student(db):
+    """Factory: student("ida@example.no") creates a Student with the shared test PASSWORD."""
+    from accounts.models import Student
+
+    def _make(email: str = "ida@example.no", password: str = PASSWORD):
+        return Student.objects.create_user(email, password)
+
+    return _make

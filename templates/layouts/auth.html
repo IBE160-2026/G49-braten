@@ -1,0 +1,18 @@
+{% extends "layouts/base.html" %}
+{% block body_class %}auth-body{% endblock %}
+{% block body %}
+<div class="auth-shell">
+  {% block pane %}{% endblock %}
+  <div class="auth-main">
+    <header class="auth-top">
+      <a class="brand" href="{% url 'accounts:sign_in' %}">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h7v13H4zM13 5.5h7v13h-7z"/></svg>
+        AI Study Buddy
+      </a>
+    </header>
+    <main class="auth">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}
