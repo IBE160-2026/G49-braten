@@ -38,3 +38,6 @@
 - [ ] 2026-11-14 [arkitektur-ai-study-buddy](992-2026-11-14-08-38-50-arkitektur-ai-study-buddy.md) — oppdater PRODUCT.md («Stack: Undecided») med Django 6.1 + HTMX 2.0 fra arkitekturen
 - [ ] 2026-11-14 [arkitektur-ai-study-buddy](992-2026-11-14-08-38-50-arkitektur-ai-study-buddy.md) — valgfritt: polér SETUP-GUIDE.md med bmad-review (structure, prose)
 - [ ] 2026-11-14 [arkitektur-ai-study-buddy](992-2026-11-14-08-38-50-arkitektur-ai-study-buddy.md) — neste steg: bmad-spec (ta inn spinen som følgedokument), deretter bmad-create-epics-and-stories
+- [ ] 2026-11-16 [story-6-generering-og-referansesjekk](991-2026-11-16-18-10-57-story-6-generering-og-referansesjekk.md) — sjekk i nettleser at en ny kilde starter genereringen av seg selv (hx-post ved lasting) og at raden byttes ut
+- [ ] 2026-11-16 [story-6-generering-og-referansesjekk](991-2026-11-16-18-10-57-story-6-generering-og-referansesjekk.md) — skriv unntaket fra AD-13 (POST ved lasting for pending kilderad, valg 1A) inn i arkitekturspinen
+- [ ] 2026-11-16 [story-6-generering-og-referansesjekk](991-2026-11-16-18-10-57-story-6-generering-og-referansesjekk.md) — story 17: studymat.services.locations() bruker bare index som nøkkel; avklar dette når Word-kilder kan ha både overskrifter og avsnitt
