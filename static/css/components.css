@@ -118,6 +118,19 @@ a { color: var(--link); text-underline-offset: 2px; }
 .inline-message--info { background: var(--forecast-soft); }
 .inline-message--info .icon { color: var(--forecast-ink); }
 
+/* ---- mode-banner (FR-20): under the top-bar and on P01/P02 in Mock mode; not closable ---- */
+.mode-banner {
+  display: flex; gap: 10px; align-items: flex-start;
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--demo-bg);
+  color: var(--demo-ink);
+  border-bottom: 1px solid var(--demo-line);
+  font-size: 14px; line-height: 1.45;
+}
+.mode-banner .icon { flex: none; margin-top: 1px; color: var(--forecast-ink); }
+.mode-banner b { font-weight: 700; }
+
 /* ---- Auth layout (P01, P02) ---- */
 .auth-body { background: var(--ground-2); }
 .auth-shell { min-height: 100vh; }
@@ -651,3 +664,8 @@ dialog.dialog::before {
 @media (min-width: 600px) {
   .segmented-control--radio { width: auto; display: inline-grid; }
 }
+
+/* D05 «Bruk eksempeldokumentet» (FR-20) and a control held back by the daily limit (NFR-7). */
+.upload-sample { display: grid; gap: 10px; justify-items: start; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.upload-sample p { font-size: 14px; color: var(--ink-2); }
+button[disabled][aria-describedby] { cursor: not-allowed; opacity: .55; }

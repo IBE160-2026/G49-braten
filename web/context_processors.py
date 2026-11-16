@@ -1,5 +1,6 @@
-"""The shell context every page gets: the theme and, when signed in, the Student's fag."""
+"""The shell context every page gets: the theme, the AI mode and, when signed in, the Student's fag."""
 
+from ai import gateway
 from courses.models import Course
 
 # The theme override lives only in this cookie, rendered as <html data-theme> (Conventions).
@@ -13,7 +14,8 @@ def theme_from(request) -> str:
 
 
 def shell(request):
-    context = {"theme": theme_from(request)}
+    # `mock` shows the mode-banner (FR-20); never the Key itself.
+    context = {"theme": theme_from(request), "ai_mode": gateway.mode()}
     user = getattr(request, "user", None)
     if user is not None and user.is_authenticated:
         # Lazy and evaluated once per render: the rail, the fag-switcher and Hjem share it.

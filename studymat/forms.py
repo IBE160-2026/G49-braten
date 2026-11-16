@@ -30,7 +30,15 @@ class SegmentedRadioSelect(forms.RadioSelect):
 
 
 class AddSourceForm(FocusFirstErrorMixin, forms.Form):
-    """A file or pasted text (exactly one), an optional name for pasted text, and the Detail level."""
+    """A file or pasted text (exactly one), an optional name for pasted text, and the Detail level.
+
+    With `use_sample` (Mock mode, «Bruk eksempeldokumentet»), only the Detail level is read: the
+    Sample document takes the place of the file, and any file or text sent along is ignored.
+    """
+
+    def __init__(self, *args, use_sample: bool = False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.use_sample = use_sample
 
     file = forms.FileField(
         label="Velg fil",
@@ -77,6 +85,10 @@ class AddSourceForm(FocusFirstErrorMixin, forms.Form):
 
     def clean(self):
         cleaned = super().clean()
+        if self.use_sample:
+            for field in ("file", "text", "name"):
+                self.errors.pop(field, None)
+            return cleaned
         has_file = bool(cleaned.get("file"))
         has_text = bool((cleaned.get("text") or "").strip())
         if has_file and has_text:

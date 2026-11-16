@@ -1,8 +1,16 @@
 {% extends "layouts/shell.html" %}
-{# D05 «Legg til kilde» in `topic` (FR-3): the upload-panel and the Detail level. #}
+{% load ui %}
+{# D05 «Legg til kilde» in `topic` (FR-3): the upload-panel and the Detail level; in Mock mode «Bruk eksempeldokumentet» (FR-20); the daily limit (NFR-7). #}
 {% block title %}Legg til kilde – {{ topic.name }} – AI Study Buddy{% endblock %}
 {% partialdef fields %}
 <div class="upload-panel">
+  {% if daily_limit_message %}{% include "components/inline_message.html" with text=daily_limit_message id="daily-limit" %}{% endif %}
+  {% if offer_sample %}
+    <div class="upload-sample">
+      <p>I demomodus kan du prøve appen med eksempeldokumentet «Databaser: normalisering».</p>
+      <button class="button-secondary" type="submit" name="use_sample" value="1"{% if daily_limit_message %} disabled aria-describedby="daily-limit"{% endif %}>{% icon "file" %}Bruk eksempeldokumentet</button>
+    </div>
+  {% endif %}
   {% if upload_error %}
     <div class="upload-error">
       {% include "components/inline_message.html" with text=upload_error id="upload-error" %}
@@ -18,5 +26,5 @@
 {% include "components/segmented_control.html" with field=form.detail_level %}
 {% endpartialdef %}
 {% block content %}
-{% with as_page=True %}{% partialdef dialog inline %}{% include "components/dialog.html" with title="Legg til kilde" body="studymat/add_source.html#fields" submit_label="Last opp" action=action enctype="multipart/form-data" error=upload_error %}{% endpartialdef %}{% endwith %}
+{% with as_page=True %}{% partialdef dialog inline %}{% include "components/dialog.html" with title="Legg til kilde" body="studymat/add_source.html#fields" submit_label="Last opp" action=action enctype="multipart/form-data" error=upload_error extra_submit=offer_sample submit_disabled=daily_limit_message submit_describedby="daily-limit" %}{% endpartialdef %}{% endwith %}
 {% endblock %}

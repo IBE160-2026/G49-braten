@@ -293,7 +293,9 @@ def test_ad18_dialog_form_guards_against_repeat_presses(client_ida):
     content = client_ida.get(CREATE, **HTMX_DIALOG).content.decode()
     assert 'hx-post="/courses/new/"' in content
     assert 'hx-target="#dialog"' in content
-    assert "hx-disabled-elt=" in content
+    assert "hx-disabled-elt=\"find .dialog-foot button[type='submit']\"" in content
+    foot = content.split('class="dialog-foot"', 1)[1].split("</div>", 1)[0]
+    assert '<button class="button-primary" type="submit"' in foot
     assert 'hx-sync="this:drop"' in content
     assert "hx-confirm" not in content
     assert "data-dialog-close" in content

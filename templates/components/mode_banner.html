@@ -1,0 +1,2 @@
+{% load ui %}{# mode-banner (DESIGN.md, FR-20): one line whenever Mock mode is on. It cannot be closed. #}
+{% if ai_mode == "mock" %}<p class="mode-banner" id="mode-banner">{% icon "info" %}<span><b>Demomodus:</b> appen bruker innspilte svar for eksempeldokumentet. Legg inn en API-nøkkel for å bruke egne filer.</span></p>{% endif %}

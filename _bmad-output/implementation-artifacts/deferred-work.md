@@ -23,3 +23,6 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/4-upload-and-text-extraction-with-location.md`
   summary: Bound pypdf extraction work per upload (decompression bomb or pathological content streams). Unverified; medium if true.
   evidence: Extraction runs in the request with no timeout; settle by timing a crafted 10 MB PDF with a highly compressed stream.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/5-ai-gateway-mock-mode-sample-document-and-daily-limit.md`
+  summary: Keep provider response text out of gateway error logs: `ai/gateway.py` logs unexpected exceptions with `logger.exception`, whose traceback may carry the values a pydantic ValidationError quotes. Unverified; medium if true.
+  evidence: Mock never raises with Source text; settle when story 10's Anthropic adapter parses real replies by checking what a failed `StudyMaterial` validation logs.

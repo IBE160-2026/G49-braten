@@ -335,3 +335,116 @@ def test_fr1_signed_out_htmx_d05_gets_hx_redirect(client, normalisering):
 
 def test_d05_other_methods_answer_405(client_ida, normalisering):
     assert client_ida.put(add_url(normalisering)).status_code == 405
+
+
+# ---- Story 5: «Bruk eksempeldokumentet» in Mock mode (FR-20) and the daily limit (NFR-7) ----
+
+SAMPLE_BUTTON = "Bruk eksempeldokumentet"
+
+
+def use_up_today(student):
+    from ai.gateway import DAILY_LIMIT
+    from ai.models import GenerationCallCount
+    from core import time
+
+    GenerationCallCount.objects.create(student=student, day=time.today(), count=DAILY_LIMIT)
+
+
+def test_fr20_d05_in_mock_mode_offers_the_sample_as_a_secondary_submit(client_ida, normalisering):
+    body = client_ida.get(add_url(normalisering), **HTMX_DIALOG).content.decode()
+    button = tag_of(body, '<button class="button-secondary" type="submit" name="use_sample"')
+    assert "disabled" not in button
+    assert SAMPLE_BUTTON in body
+    # Enter in a field submits «Last opp», not the Sample: a hidden copy of it comes first.
+    first_submit = tag_of(body, '<button class="visually-hidden" type="submit"')
+    assert 'name="use_sample"' not in first_submit
+    assert body.index(first_submit) < body.index(button)
+
+
+def test_fr20_d05_sample_ingests_the_sample_document_and_lands_on_p05(client_ida, normalisering):
+    from ai import mock
+
+    response = client_ida.post(
+        add_url(normalisering), {"use_sample": "1", "detail_level": "detailed", "text": ""}, **HTMX_DIALOG
+    )
+    assert response.status_code == 200
+    assert json.loads(response["HX-Location"])["path"] == topic_url(normalisering)
+    source = Source.objects.get()
+    assert (source.kind, source.status, source.detail_level, source.topic) == (
+        SourceKind.PDF, Status.PENDING, "detailed", normalisering,
+    )  # fmt: skip
+    assert source.content_sha256 == mock.SAMPLE_SHA256
+    assert source.name == "normalisering.pdf"
+    assert source.texts.count() == mock.SAMPLE_PAGES
+
+
+def test_fr20_d05_sample_without_htmx_redirects_and_ignores_a_sent_file(client_ida, normalisering):
+    from ai import mock
+
+    response = client_ida.post(
+        add_url(normalisering), {"use_sample": "1", "detail_level": "short", "file": pdf_file()}
+    )
+    assert response.status_code == 302 and response["Location"] == topic_url(normalisering)
+    source = Source.objects.get()
+    assert (source.content_sha256, source.detail_level) == (mock.SAMPLE_SHA256, "short")
+
+
+def test_fr20_d05_sample_still_needs_a_detail_level(client_ida, normalisering):
+    response = client_ida.post(add_url(normalisering), {"use_sample": "1"}, **HTMX_DIALOG)
+    assert "HX-Location" not in response
+    assert "Velg et detaljnivå." in response.content.decode()
+    assert counts() == (0, 0)
+
+
+def test_fr21_d05_in_real_mode_has_no_sample_and_ignores_use_sample(settings, client_ida, normalisering):
+    settings.AI_PROVIDER = "anthropic"
+    body = client_ida.get(add_url(normalisering), **HTMX_DIALOG).content.decode()
+    assert SAMPLE_BUTTON not in body
+    assert 'name="use_sample"' not in body
+    response = client_ida.post(add_url(normalisering), {"use_sample": "1", "detail_level": "medium"}, **HTMX_DIALOG)
+    assert "HX-Location" not in response
+    assert counts() == (0, 0)
+
+
+def test_nfr7_d05_at_the_daily_limit_shows_the_message_and_disables_both_submits(client_ida, ida, normalisering):
+    use_up_today(ida)
+    for response in (client_ida.get(add_url(normalisering)), client_ida.get(add_url(normalisering), **HTMX_DIALOG)):
+        assert response.status_code == 200
+        body = response.content.decode()
+        assert "Du har brukt alle 20 genereringene for i dag. Grensen nullstilles ved midnatt." in body
+        assert 'id="daily-limit"' in body
+        upload = tag_of(body, '<button class="button-primary" type="submit"')
+        sample = tag_of(body, '<button class="button-secondary" type="submit" name="use_sample"')
+        for button in (upload, sample):
+            assert "disabled" in button
+            assert 'aria-describedby="daily-limit"' in button
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"use_sample": "1", "detail_level": "medium"},
+        {"text": "Noe tekst.", "detail_level": "medium"},
+        {"file": "pdf", "detail_level": "medium"},
+    ],
+)
+def test_nfr7_d05_post_at_the_daily_limit_saves_nothing_and_rerenders(client_ida, ida, normalisering, data):
+    use_up_today(ida)
+    if data.get("file") == "pdf":
+        data = {**data, "file": pdf_file()}
+    response = client_ida.post(add_url(normalisering), data, **HTMX_DIALOG)
+    assert response.status_code == 200
+    assert "HX-Location" not in response
+    assert "Du har brukt alle 20 genereringene for i dag." in response.content.decode()
+    assert counts() == (0, 0)
+
+
+def test_nfr7_d05_below_the_limit_has_no_limit_message(client_ida, ida, normalisering):
+    from ai.gateway import DAILY_LIMIT
+    from ai.models import GenerationCallCount
+    from core import time
+
+    GenerationCallCount.objects.create(student=ida, day=time.today(), count=DAILY_LIMIT - 1)
+    body = client_ida.get(add_url(normalisering), **HTMX_DIALOG).content.decode()
+    assert 'id="daily-limit"' not in body
+    assert "disabled" not in tag_of(body, '<button class="button-primary" type="submit"')

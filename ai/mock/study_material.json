@@ -1,0 +1,234 @@
+{
+  "language": "nb",
+  "summary": "Normalisering strukturerer tabellene i en relasjonsdatabase slik at hvert faktum lagres ett sted. En tabell som blander flere temaer, gir redundans og tre slags anomalier: ved oppdatering, innsetting og sletting. Grunnlaget er funksjonelle avhengigheter og kandidatnøkler. 1NF krever atomære verdier, 2NF fjerner partielle avhengigheter av en del av nøkkelen, og 3NF fjerner transitive avhengigheter. BCNF er strengere og krever at hver determinant er en supernøkkel. Dekomponeringen skal være tapsfri og helst bevare avhengighetene. Denormalisering innfører redundans med vilje og brukes bare når målinger viser at det trengs.",
+  "key_concepts": [
+    {
+      "term": "Normalisering",
+      "definition": "En metode for å dele opp tabeller i en relasjonsdatabase slik at hvert faktum lagres ett sted og dataene holder seg konsistente.",
+      "reference": {"location_index": 1, "quote": "Normalisering er en metode for å strukturere tabeller i en relasjonsdatabase."}
+    },
+    {
+      "term": "Funksjonell avhengighet",
+      "definition": "X -> Y betyr at to rader med lik verdi for X alltid har lik verdi for Y. Avhengighetene kommer fra virkeligheten, ikke fra dataene.",
+      "reference": {"location_index": 5, "quote": "Den betyr at to rader med lik verdi for X alltid har lik verdi for Y."}
+    },
+    {
+      "term": "Kandidatnøkkel",
+      "definition": "En minimal supernøkkel: attributtene bestemmer hele raden, og ingen av dem kan fjernes uten at det slutter å gjelde.",
+      "reference": {"location_index": 6, "quote": "En kandidatnøkkel er en minimal supernøkkel: ingen attributter kan fjernes."}
+    },
+    {
+      "term": "Partiell avhengighet",
+      "definition": "Et ikke-nøkkelattributt avhenger av bare en del av en sammensatt nøkkel. Slike avhengigheter fjernes for å nå 2NF.",
+      "reference": {"location_index": 9, "quote": "En partiell avhengighet betyr at et ikke-nøkkelattributt avhenger av bare en del av nøkkelen."}
+    },
+    {
+      "term": "Transitiv avhengighet",
+      "definition": "Et attributt avhenger av nøkkelen bare via et annet ikke-nøkkelattributt. Slike avhengigheter fjernes for å nå 3NF.",
+      "reference": {"location_index": 11, "quote": "En transitiv avhengighet går fra nøkkelen via et annet ikke-nøkkelattributt."}
+    },
+    {
+      "term": "Tapsfri dekomponering",
+      "definition": "En oppdeling der en naturlig join av delene gir nøyaktig de opprinnelige radene, verken færre eller flere.",
+      "reference": {"location_index": 15, "quote": "En dekomponering er tapsfri når joinen gir nøyaktig de opprinnelige radene."}
+    },
+    {
+      "term": "Denormalisering",
+      "definition": "Å innføre redundans med vilje, for eksempel for raskere spørringer. Programmet må da selv holde kopiene like.",
+      "reference": {"location_index": 18, "quote": "Denormalisering betyr å innføre redundans med vilje, for eksempel for å få raskere spørringer."}
+    }
+  ],
+  "flashcards": [
+    {
+      "front": "Hvorfor er redundans et problem i en database?",
+      "back": "Den gjør databasen større, og kopier av samme opplysning kan bli forskjellige over tid.",
+      "reference": {"location_index": 2, "quote": "kopier av samme opplysning kan bli forskjellige over tid"}
+    },
+    {
+      "front": "Hva er en oppdateringsanomali?",
+      "back": "At samme faktum må endres i mange rader, slik at én glemt rad gir to ulike svar.",
+      "reference": {"location_index": 3, "quote": "En oppdateringsanomali oppstår når samme faktum må endres i mange rader."}
+    },
+    {
+      "front": "Hva er en slettingsanomali?",
+      "back": "At vi mister et faktum når vi sletter et annet, for eksempel opplysningene om et emne når siste oppmelding slettes.",
+      "reference": {"location_index": 3, "quote": "En slettingsanomali betyr at vi mister et faktum når vi sletter et annet."}
+    },
+    {
+      "front": "Primærnøkkel",
+      "back": "Den kandidatnøkkelen vi velger å bruke for å identifisere radene.",
+      "reference": {"location_index": 6, "quote": "Primærnøkkelen er den kandidatnøkkelen vi velger å bruke."}
+    },
+    {
+      "front": "Når er en tabell på første normalform (1NF)?",
+      "back": "Når hver celle inneholder én atomær verdi, uten lister eller gjentatte grupper.",
+      "reference": {"location_index": 7, "quote": "En tabell er på første normalform når hver celle inneholder én atomær verdi."}
+    },
+    {
+      "front": "Hvilke tabeller gir 2NF-dekomponeringen av Oppmelding?",
+      "back": "Student(studentnr, navn), Emne(emnekode, emnenavn, foreleser) og Oppmelding(studentnr, emnekode, karakter).",
+      "reference": {"location_index": 10, "quote": "Vi dekomponerer derfor i tre tabeller:"}
+    },
+    {
+      "front": "Hvordan fjerner du den transitive avhengigheten emnekode -> foreleser -> kontor?",
+      "back": "Flytt kontoret til en egen tabell Foreleser(foreleser, kontor).",
+      "reference": {"location_index": 12, "quote": "Løsningen er å flytte kontoret til en egen tabell:"}
+    },
+    {
+      "front": "Når er en tabell på BCNF?",
+      "back": "Når venstresiden i hver ikke-triviell funksjonell avhengighet er en supernøkkel.",
+      "reference": {"location_index": 11, "quote": "En tabell er på BCNF når venstresiden i hver ikke-triviell avhengighet er en supernøkkel."}
+    },
+    {
+      "front": "Når bevarer en dekomponering avhengighetene?",
+      "back": "Når hver funksjonelle avhengighet kan sjekkes i én tabell, uten joins.",
+      "reference": {"location_index": 16, "quote": "En dekomponering bevarer avhengighetene når hver av dem kan sjekkes i én tabell."}
+    },
+    {
+      "front": "Hva er en flerverdiavhengighet (X ->> Y)?",
+      "back": "At X bestemmer en mengde verdier av Y uavhengig av resten av tabellen. 4NF fjerner slike avhengigheter.",
+      "reference": {"location_index": 17, "quote": "En flerverdiavhengighet betyr at X bestemmer en mengde verdier av Y uavhengig av resten."}
+    },
+    {
+      "front": "Hva er første steg når du normaliserer i praksis?",
+      "back": "Skriv opp attributtene og de funksjonelle avhengighetene.",
+      "reference": {"location_index": 19, "quote": "Skriv opp attributtene og de funksjonelle avhengighetene."}
+    }
+  ],
+  "questions": [
+    {
+      "kind": "multiple_choice",
+      "prompt": "Hvorfor må vi oppdatere mange rader i Oppmelding når et emne bytter foreleser?",
+      "hint": "Tenk på hvor ofte opplysningene om et emne står i tabellen.",
+      "options": [
+        {"text": "Fordi emnenavn og foreleser gjentas for hver student som tar emnet.", "explanation": "Riktig. Samme faktum står i én rad per student, så alle må endres."},
+        {"text": "Fordi karakteren avhenger av foreleseren.", "explanation": "Nei. Karakteren avhenger av studentnr og emnekode, ikke av foreleseren."},
+        {"text": "Fordi tabellen ikke er på første normalform.", "explanation": "Nei. Oppmelding har atomære verdier og er på 1NF; problemet er redundans."},
+        {"text": "Fordi studentnr er primærnøkkelen.", "explanation": "Nei. Nøkkelen er (studentnr, emnekode), og det forklarer ikke gjentakelsen alene."}
+      ],
+      "correct_index": 0,
+      "model_answer": "",
+      "reference": {"location_index": 4, "quote": "Emnenavn og foreleser gjentas for hver student som tar emnet."}
+    },
+    {
+      "kind": "multiple_choice",
+      "prompt": "Hva kan dataene i én tabell fortelle om en funksjonell avhengighet?",
+      "hint": "Ett moteksempel er nok til å avvise en regel.",
+      "options": [
+        {"text": "De kan bevise at avhengigheten gjelder.", "explanation": "Nei. Dagens data kan tilfeldigvis passe, selv om regelen ikke gjelder i virkeligheten."},
+        {"text": "De kan motbevise avhengigheten, men aldri bevise den.", "explanation": "Riktig. To rader med lik X og ulik Y viser at X -> Y ikke gjelder."},
+        {"text": "De kan verken bevise eller motbevise den.", "explanation": "Nei. Ett moteksempel i dataene motbeviser avhengigheten."},
+        {"text": "De bestemmer hvilke avhengigheter som gjelder.", "explanation": "Nei. Avhengighetene kommer fra virkeligheten vi modellerer."}
+      ],
+      "correct_index": 1,
+      "model_answer": "",
+      "reference": {"location_index": 5, "quote": "Én tabell med data kan motbevise en avhengighet, men aldri bevise den."}
+    },
+    {
+      "kind": "multiple_choice",
+      "prompt": "En rad per student lister alle emnene i én kolonne. Hvordan kommer du til 1NF?",
+      "hint": "Hver celle skal ha én verdi.",
+      "options": [
+        {"text": "Legg til en kolonne for hvert emne.", "explanation": "Nei. Det gir en gjentatt gruppe i kolonner og et fast tak på antall emner."},
+        {"text": "Skill emnene med komma i samme celle.", "explanation": "Nei. En liste i en celle er nettopp det 1NF forbyr."},
+        {"text": "Lag én rad per kombinasjon av student og emne.", "explanation": "Riktig. Da har hver celle én atomær verdi."},
+        {"text": "Slett emnekolonnen.", "explanation": "Nei. Da mister vi opplysningene om hvilke emner studenten tar."}
+      ],
+      "correct_index": 2,
+      "model_answer": "",
+      "reference": {"location_index": 8, "quote": "Løsningen er å lage én rad per kombinasjon av student og emne."}
+    },
+    {
+      "kind": "multiple_choice",
+      "prompt": "Når er en tabell på 1NF automatisk også på 2NF?",
+      "hint": "Partielle avhengigheter krever en sammensatt nøkkel.",
+      "options": [
+        {"text": "Når den har flere kandidatnøkler.", "explanation": "Nei. Det er tilfellet der forskjellen mellom 3NF og BCNF viser seg."},
+        {"text": "Når den ikke har transitive avhengigheter.", "explanation": "Nei. Det er kravet for 3NF, ikke for 2NF."},
+        {"text": "Når den har færre enn fem kolonner.", "explanation": "Nei. Antall kolonner har ingenting å si."},
+        {"text": "Når kandidatnøkkelen består av ett attributt.", "explanation": "Riktig. Da finnes det ingen del av nøkkelen å avhenge av."}
+      ],
+      "correct_index": 3,
+      "model_answer": "",
+      "reference": {"location_index": 9, "quote": "Har tabellen en nøkkel med ett attributt, er den automatisk på 2NF hvis den er på 1NF."}
+    },
+    {
+      "kind": "multiple_choice",
+      "prompt": "Hva skiller BCNF fra 3NF?",
+      "hint": "Se på unntaket i den formelle definisjonen av 3NF.",
+      "options": [
+        {"text": "BCNF fjerner unntaket for nøkkelattributter.", "explanation": "Riktig. I 3NF kan A være et nøkkelattributt; i BCNF må X alltid være en supernøkkel."},
+        {"text": "BCNF tillater transitive avhengigheter.", "explanation": "Nei. BCNF er strengere enn 3NF, ikke svakere."},
+        {"text": "BCNF krever bare atomære verdier.", "explanation": "Nei. Det er kravet for 1NF."},
+        {"text": "BCNF gjelder bare tabeller med én nøkkel.", "explanation": "Nei. Forskjellen viser seg nettopp ved flere overlappende kandidatnøkler."}
+      ],
+      "correct_index": 0,
+      "model_answer": "",
+      "reference": {"location_index": 13, "quote": "BCNF er strengere enn 3NF fordi unntaket for nøkkelattributter er fjernet."}
+    },
+    {
+      "kind": "multiple_choice",
+      "prompt": "Hvorfor er Veiledning(student, fag, veileder) ikke på BCNF?",
+      "hint": "Se på avhengigheten veileder -> fag.",
+      "options": [
+        {"text": "Fordi fag ikke er et nøkkelattributt.", "explanation": "Nei. fag inngår i kandidatnøkkelen (student, fag)."},
+        {"text": "Fordi veileder ikke er en supernøkkel.", "explanation": "Riktig. veileder -> fag har en venstreside som ikke bestemmer hele raden."},
+        {"text": "Fordi tabellen har partielle avhengigheter av ikke-nøkkelattributter.", "explanation": "Nei. Alle attributtene er nøkkelattributter, så tabellen er på 3NF."},
+        {"text": "Fordi en student kan ha flere veiledere.", "explanation": "Nei. Det er tillatt; problemet er avhengigheten veileder -> fag."}
+      ],
+      "correct_index": 1,
+      "model_answer": "",
+      "reference": {"location_index": 14, "quote": "Den er ikke på BCNF fordi veileder ikke er en supernøkkel."}
+    },
+    {
+      "kind": "multiple_choice",
+      "prompt": "Hvilken normalform fjerner partielle avhengigheter?",
+      "hint": "Partiell betyr avhengig av en del av nøkkelen.",
+      "options": [
+        {"text": "1NF", "explanation": "Nei. 1NF krever atomære verdier."},
+        {"text": "3NF", "explanation": "Nei. 3NF fjerner transitive avhengigheter."},
+        {"text": "2NF", "explanation": "Riktig. 2NF fjerner avhengigheter av bare en del av nøkkelen."},
+        {"text": "4NF", "explanation": "Nei. 4NF handler om flerverdiavhengigheter."}
+      ],
+      "correct_index": 2,
+      "model_answer": "",
+      "reference": {"location_index": 20, "quote": "1NF krever atomære verdier, 2NF fjerner partielle og 3NF transitive avhengigheter."}
+    },
+    {
+      "kind": "free_text",
+      "prompt": "Gi huskeregelen for tredje normalform med egne ord.",
+      "hint": "Den nevner nøkkelen tre ganger.",
+      "options": [],
+      "correct_index": null,
+      "model_answer": "Hvert attributt skal avhenge av nøkkelen, hele nøkkelen og bare nøkkelen: ingen attributter uten nøkkel (1NF), ingen partielle (2NF) og ingen transitive avhengigheter (3NF).",
+      "reference": {"location_index": 11, "quote": "hvert attributt skal avhenge av nøkkelen, hele nøkkelen og bare nøkkelen"}
+    },
+    {
+      "kind": "free_text",
+      "prompt": "Hvordan avgjør du om en dekomponering i to tabeller er tapsfri?",
+      "hint": "Se på attributtene de to tabellene har felles.",
+      "options": [],
+      "correct_index": null,
+      "model_answer": "Det felles attributtet må være en nøkkel i minst én av de to tabellene. Da gir en naturlig join nøyaktig de opprinnelige radene.",
+      "reference": {"location_index": 15, "quote": "det felles attributtet må være en nøkkel i minst én av delene"}
+    },
+    {
+      "kind": "free_text",
+      "prompt": "Hvorfor er det ikke alltid mulig å bevare alle avhengighetene når du dekomponerer til BCNF? Bruk Veiledning som eksempel.",
+      "hint": "Hvilken avhengighet trenger både student, fag og veileder?",
+      "options": [],
+      "correct_index": null,
+      "model_answer": "BCNF-dekomponeringen av Veiledning gir tabellene (veileder, fag) og (student, veileder). Avhengigheten student, fag -> veileder kan da ikke sjekkes i én tabell, så den går tapt. Til 3NF finnes det alltid en dekomponering som bevarer avhengighetene.",
+      "reference": {"location_index": 16, "quote": "Til BCNF er det ikke alltid mulig å bevare alle avhengighetene."}
+    },
+    {
+      "kind": "free_text",
+      "prompt": "Når bør du denormalisere, og hva koster det?",
+      "hint": "Tenk på målinger og på kopiene av dataene.",
+      "options": [],
+      "correct_index": null,
+      "model_answer": "Normaliser først, og denormaliser bare når målinger viser at spørringene er for trege. Prisen er at programmet selv må holde kopiene like.",
+      "reference": {"location_index": 18, "quote": "Normaliser først, og denormaliser bare når målinger viser at det trengs."}
+    }
+  ]
+}

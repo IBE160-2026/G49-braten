@@ -1,0 +1,662 @@
+%PDF-1.3
+%âãÏÓ
+1 0 obj
+<<
+/Producer (pypdf)
+/Title (Databaser\072 normalisering)
+/Author (AI Study Buddy \050CC0 1\0560\051)
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Count 20
+/Kids [ 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R 32 0 R 34 0 R 36 0 R 38 0 R 40 0 R 42 0 R 44 0 R ]
+>>
+endobj
+3 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+4 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+/Encoding /WinAnsiEncoding
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica-Bold
+/Encoding /WinAnsiEncoding
+>>
+endobj
+6 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 7 0 R
+>>
+endobj
+7 0 obj
+<<
+/Length 666
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Databaser: normalisering) Tj ET
+BT /F1 14 Tf 48 478 Td (Forelesningsnotater i emnet databaser, del 4.) Tj ET
+BT /F1 14 Tf 48 456 Td (Normalisering er en metode for å strukturere tabeller i en relasjonsdatabase.) Tj ET
+BT /F1 14 Tf 48 434 Td (Målet er at hvert faktum lagres ett sted, slik at dataene holder seg konsistente.) Tj ET
+BT /F1 14 Tf 48 412 Td (I denne forelesningen går vi fra en uryddig tabell til tredje normalform og BCNF.) Tj ET
+BT /F1 14 Tf 48 390 Td (Underveis ser vi på funksjonelle avhengigheter, nøkler og dekomponering.) Tj ET
+BT /F1 14 Tf 48 356 Td (Utgitt av forfatteren som CC0 1.0: fritt til bruk uten vilkår.) Tj ET
+
+endstream
+endobj
+8 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 9 0 R
+>>
+endobj
+9 0 obj
+<<
+/Length 576
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Hvorfor normalisere?) Tj ET
+BT /F1 14 Tf 48 478 Td (• En tabell som blander flere temaer, lagrer de samme opplysningene mange ganger.) Tj ET
+BT /F1 14 Tf 48 456 Td (• Redundans gjør databasen større enn den trenger å være.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Verre er det at kopier av samme opplysning kan bli forskjellige over tid.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Normalisering deler tabellen opp i mindre tabeller som hver beskriver én ting.) Tj ET
+BT /F1 14 Tf 48 390 Td (• Resultatet er færre feil ved endringer og enklere regler for dataene.) Tj ET
+
+endstream
+endobj
+10 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 11 0 R
+>>
+endobj
+11 0 obj
+<<
+/Length 685
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Anomalier) Tj ET
+BT /F1 14 Tf 48 478 Td (• En oppdateringsanomali oppstår når samme faktum må endres i mange rader.) Tj ET
+BT /F1 14 Tf 48 456 Td (• Glemmer vi én rad, viser databasen to ulike svar på samme spørsmål.) Tj ET
+BT /F1 14 Tf 48 434 Td (• En innsettingsanomali betyr at vi ikke kan lagre et faktum uten et annet.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Eksempel: et nytt emne kan ikke registreres før en student har meldt seg opp.) Tj ET
+BT /F1 14 Tf 48 390 Td (• En slettingsanomali betyr at vi mister et faktum når vi sletter et annet.) Tj ET
+BT /F1 14 Tf 48 368 Td (• Eksempel: sletter vi siste oppmelding, forsvinner også opplysningene om emnet.) Tj ET
+
+endstream
+endobj
+12 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 13 0 R
+>>
+endobj
+13 0 obj
+<<
+/Length 632
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Eksempel: tabellen Oppmelding) Tj ET
+BT /F1 14 Tf 48 478 Td (Oppmelding\(studentnr, navn, emnekode, emnenavn, foreleser, karakter\)) Tj ET
+BT /F1 14 Tf 48 456 Td (• Én rad per student per emne.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Navnet til studenten gjentas i hver rad der studenten tar et emne.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Emnenavn og foreleser gjentas for hver student som tar emnet.) Tj ET
+BT /F1 14 Tf 48 390 Td (• Bytter emnet foreleser, må vi oppdatere alle radene for det emnet.) Tj ET
+BT /F1 14 Tf 48 368 Td (• Denne tabellen bruker vi som gjennomgående eksempel i resten av forelesningen.) Tj ET
+
+endstream
+endobj
+14 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 15 0 R
+>>
+endobj
+15 0 obj
+<<
+/Length 672
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Funksjonelle avhengigheter) Tj ET
+BT /F1 14 Tf 48 478 Td (• En funksjonell avhengighet skrives X -> Y og leses «X bestemmer Y».) Tj ET
+BT /F1 14 Tf 48 456 Td (• Den betyr at to rader med lik verdi for X alltid har lik verdi for Y.) Tj ET
+BT /F1 14 Tf 48 434 Td (• I Oppmelding gjelder studentnr -> navn og emnekode -> emnenavn, foreleser.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Videre gjelder studentnr, emnekode -> karakter.) Tj ET
+BT /F1 14 Tf 48 390 Td (• Avhengighetene kommer fra virkeligheten vi modellerer, ikke fra dataene i tabellen.) Tj ET
+BT /F1 14 Tf 48 368 Td (• Én tabell med data kan motbevise en avhengighet, men aldri bevise den.) Tj ET
+
+endstream
+endobj
+16 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 17 0 R
+>>
+endobj
+17 0 obj
+<<
+/Length 563
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Nøkler) Tj ET
+BT /F1 14 Tf 48 478 Td (• En supernøkkel er en mengde attributter som bestemmer alle attributtene i tabellen.) Tj ET
+BT /F1 14 Tf 48 456 Td (• En kandidatnøkkel er en minimal supernøkkel: ingen attributter kan fjernes.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Primærnøkkelen er den kandidatnøkkelen vi velger å bruke.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Et nøkkelattributt er et attributt som inngår i minst én kandidatnøkkel.) Tj ET
+BT /F1 14 Tf 48 390 Td (• I Oppmelding er \(studentnr, emnekode\) den eneste kandidatnøkkelen.) Tj ET
+
+endstream
+endobj
+18 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 19 0 R
+>>
+endobj
+19 0 obj
+<<
+/Length 571
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Første normalform \(1NF\)) Tj ET
+BT /F1 14 Tf 48 478 Td (• En tabell er på første normalform når hver celle inneholder én atomær verdi.) Tj ET
+BT /F1 14 Tf 48 456 Td (• Det skal ikke finnes lister, mengder eller gjentatte grupper i en celle.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Hver rad må kunne identifiseres entydig av en nøkkel.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Et felt som «telefoner: 900 11 222, 911 22 333» bryter med 1NF.) Tj ET
+BT /F1 14 Tf 48 390 Td (• Relasjonsmodellen forutsetter 1NF, så de fleste tabeller oppfyller den allerede.) Tj ET
+
+endstream
+endobj
+20 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 21 0 R
+>>
+endobj
+21 0 obj
+<<
+/Length 569
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Fra unormalisert til 1NF) Tj ET
+BT /F1 14 Tf 48 478 Td (• Anta at én rad per student lister alle emnene studenten tar i én kolonne.) Tj ET
+BT /F1 14 Tf 48 456 Td (• Løsningen er å lage én rad per kombinasjon av student og emne.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Alternativt flyttes den gjentatte gruppen ut i en egen tabell med fremmednøkkel.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Etter dette steget har vi tabellen Oppmelding slik den ble vist tidligere.) Tj ET
+BT /F1 14 Tf 48 390 Td (• Tabellen er nå på 1NF, men har fortsatt mye redundans.) Tj ET
+
+endstream
+endobj
+22 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 23 0 R
+>>
+endobj
+23 0 obj
+<<
+/Length 528
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Andre normalform \(2NF\)) Tj ET
+BT /F1 14 Tf 48 478 Td (• En tabell er på andre normalform når den er på 1NF og har ingen partielle avhengigheter.) Tj ET
+BT /F1 14 Tf 48 456 Td (• En partiell avhengighet betyr at et ikke-nøkkelattributt avhenger av bare en del av nøkkelen.) Tj ET
+BT /F1 14 Tf 48 434 Td (• 2NF er bare et tema når kandidatnøkkelen består av flere attributter.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Har tabellen en nøkkel med ett attributt, er den automatisk på 2NF hvis den er på 1NF.) Tj ET
+
+endstream
+endobj
+24 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 25 0 R
+>>
+endobj
+25 0 obj
+<<
+/Length 670
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Partielle avhengigheter i Oppmelding) Tj ET
+BT /F1 14 Tf 48 478 Td (• Nøkkelen er \(studentnr, emnekode\).) Tj ET
+BT /F1 14 Tf 48 456 Td (• navn avhenger bare av studentnr, altså av en del av nøkkelen.) Tj ET
+BT /F1 14 Tf 48 434 Td (• emnenavn og foreleser avhenger bare av emnekode.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Vi dekomponerer derfor i tre tabeller:) Tj ET
+BT /F1 14 Tf 48 390 Td (Student\(studentnr, navn\)) Tj ET
+BT /F1 14 Tf 48 368 Td (Emne\(emnekode, emnenavn, foreleser\)) Tj ET
+BT /F1 14 Tf 48 346 Td (Oppmelding\(studentnr, emnekode, karakter\)) Tj ET
+BT /F1 14 Tf 48 324 Td (• Nå lagres navnet til hver student bare én gang.) Tj ET
+
+endstream
+endobj
+26 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 27 0 R
+>>
+endobj
+27 0 obj
+<<
+/Length 528
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Tredje normalform \(3NF\)) Tj ET
+BT /F1 14 Tf 48 478 Td (• En tabell er på tredje normalform når den er på 2NF og har ingen transitive avhengigheter.) Tj ET
+BT /F1 14 Tf 48 456 Td (• En transitiv avhengighet går fra nøkkelen via et annet ikke-nøkkelattributt.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Formelt: for hver avhengighet X -> A er X en supernøkkel eller A et nøkkelattributt.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Huskeregel: hvert attributt skal avhenge av nøkkelen, hele nøkkelen og bare nøkkelen.) Tj ET
+
+endstream
+endobj
+28 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 29 0 R
+>>
+endobj
+29 0 obj
+<<
+/Length 646
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Transitive avhengigheter i Emne) Tj ET
+BT /F1 14 Tf 48 478 Td (• Anta at Emne også lagrer kontoret til foreleseren:) Tj ET
+BT /F1 14 Tf 48 456 Td (Emne\(emnekode, emnenavn, foreleser, kontor\)) Tj ET
+BT /F1 14 Tf 48 434 Td (• Her gjelder emnekode -> foreleser og foreleser -> kontor.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Dermed avhenger kontor transitivt av emnekode via foreleser.) Tj ET
+BT /F1 14 Tf 48 390 Td (• Løsningen er å flytte kontoret til en egen tabell:) Tj ET
+BT /F1 14 Tf 48 368 Td (Foreleser\(foreleser, kontor\)) Tj ET
+BT /F1 14 Tf 48 346 Td (• Når en foreleser bytter kontor, endrer vi nå bare én rad.) Tj ET
+
+endstream
+endobj
+30 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 31 0 R
+>>
+endobj
+31 0 obj
+<<
+/Length 489
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Boyce-Codd normalform \(BCNF\)) Tj ET
+BT /F1 14 Tf 48 478 Td (• En tabell er på BCNF når venstresiden i hver ikke-triviell avhengighet er en supernøkkel.) Tj ET
+BT /F1 14 Tf 48 456 Td (• BCNF er strengere enn 3NF fordi unntaket for nøkkelattributter er fjernet.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Forskjellen viser seg bare når tabellen har flere overlappende kandidatnøkler.) Tj ET
+BT /F1 14 Tf 48 412 Td (• De fleste tabeller som er på 3NF, er også på BCNF.) Tj ET
+
+endstream
+endobj
+32 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 33 0 R
+>>
+endobj
+33 0 obj
+<<
+/Length 585
+>>
+stream
+BT /F2 24 Tf 48 530 Td (3NF mot BCNF: et eksempel) Tj ET
+BT /F1 14 Tf 48 478 Td (Veiledning\(student, fag, veileder\)) Tj ET
+BT /F1 14 Tf 48 456 Td (• Hver veileder veileder i nøyaktig ett fag: veileder -> fag.) Tj ET
+BT /F1 14 Tf 48 434 Td (• En student har én veileder per fag: student, fag -> veileder.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Kandidatnøklene er \(student, fag\) og \(student, veileder\).) Tj ET
+BT /F1 14 Tf 48 390 Td (• Tabellen er på 3NF fordi fag er et nøkkelattributt.) Tj ET
+BT /F1 14 Tf 48 368 Td (• Den er ikke på BCNF fordi veileder ikke er en supernøkkel.) Tj ET
+
+endstream
+endobj
+34 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 35 0 R
+>>
+endobj
+35 0 obj
+<<
+/Length 603
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Dekomponering uten tap) Tj ET
+BT /F1 14 Tf 48 478 Td (• Når vi deler en tabell, må vi kunne sette den sammen igjen med en naturlig join.) Tj ET
+BT /F1 14 Tf 48 456 Td (• En dekomponering er tapsfri når joinen gir nøyaktig de opprinnelige radene.) Tj ET
+BT /F1 14 Tf 48 434 Td (• En tapsfri join gir verken færre rader eller falske ekstra rader.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Regel for to deler: det felles attributtet må være en nøkkel i minst én av delene.) Tj ET
+BT /F1 14 Tf 48 390 Td (• Student og Oppmelding har studentnr felles, og studentnr er nøkkel i Student.) Tj ET
+
+endstream
+endobj
+36 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 37 0 R
+>>
+endobj
+37 0 obj
+<<
+/Length 613
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Bevaring av avhengigheter) Tj ET
+BT /F1 14 Tf 48 478 Td (• En dekomponering bevarer avhengighetene når hver av dem kan sjekkes i én tabell.) Tj ET
+BT /F1 14 Tf 48 456 Td (• Da kan databasen håndheve reglene uten å gjøre joins ved hver endring.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Til 3NF finnes det alltid en dekomponering som er både tapsfri og bevarer avhengighetene.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Til BCNF er det ikke alltid mulig å bevare alle avhengighetene.) Tj ET
+BT /F1 14 Tf 48 390 Td (• I Veiledning går avhengigheten student, fag -> veileder tapt ved BCNF-dekomponering.) Tj ET
+
+endstream
+endobj
+38 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 39 0 R
+>>
+endobj
+39 0 obj
+<<
+/Length 590
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Fjerde normalform \(4NF\)) Tj ET
+BT /F1 14 Tf 48 478 Td (• Fjerde normalform handler om flerverdiavhengigheter, skrevet X ->> Y.) Tj ET
+BT /F1 14 Tf 48 456 Td (• En flerverdiavhengighet betyr at X bestemmer en mengde verdier av Y uavhengig av resten.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Eksempel: en foreleser har flere kurs og flere hobbyer som ikke henger sammen.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Lagres begge i én tabell, må alle kombinasjoner av kurs og hobby lagres.) Tj ET
+BT /F1 14 Tf 48 390 Td (• Løsningen er to tabeller: én for kurs og én for hobbyer.) Tj ET
+
+endstream
+endobj
+40 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 41 0 R
+>>
+endobj
+41 0 obj
+<<
+/Length 470
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Denormalisering) Tj ET
+BT /F1 14 Tf 48 478 Td (• Denormalisering betyr å innføre redundans med vilje, for eksempel for å få raskere spørringer.) Tj ET
+BT /F1 14 Tf 48 456 Td (• Det brukes ofte i rapporter og datavarehus der dataene sjelden endres.) Tj ET
+BT /F1 14 Tf 48 434 Td (• Prisen er at programmet selv må holde kopiene like.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Normaliser først, og denormaliser bare når målinger viser at det trengs.) Tj ET
+
+endstream
+endobj
+42 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 43 0 R
+>>
+endobj
+43 0 obj
+<<
+/Length 626
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Framgangsmåte i praksis) Tj ET
+BT /F1 14 Tf 48 478 Td (• 1. Skriv opp attributtene og de funksjonelle avhengighetene.) Tj ET
+BT /F1 14 Tf 48 456 Td (• 2. Finn kandidatnøklene ved å se hvilke attributter som bestemmer alle de andre.) Tj ET
+BT /F1 14 Tf 48 434 Td (• 3. Sjekk 1NF: fjern lister og gjentatte grupper.) Tj ET
+BT /F1 14 Tf 48 412 Td (• 4. Fjern partielle avhengigheter for å nå 2NF.) Tj ET
+BT /F1 14 Tf 48 390 Td (• 5. Fjern transitive avhengigheter for å nå 3NF, og vurder BCNF.) Tj ET
+BT /F1 14 Tf 48 368 Td (• 6. Kontroller at dekomponeringen er tapsfri og bevarer avhengighetene.) Tj ET
+
+endstream
+endobj
+44 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+/F2 5 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 842 595 ]
+/Parent 2 0 R
+/Contents 45 0 R
+>>
+endobj
+45 0 obj
+<<
+/Length 548
+>>
+stream
+BT /F2 24 Tf 48 530 Td (Oppsummering) Tj ET
+BT /F1 14 Tf 48 478 Td (• Normalisering fjerner redundans og hindrer anomalier ved endringer.) Tj ET
+BT /F1 14 Tf 48 456 Td (• 1NF krever atomære verdier, 2NF fjerner partielle og 3NF transitive avhengigheter.) Tj ET
+BT /F1 14 Tf 48 434 Td (• BCNF krever at hver determinant er en supernøkkel.) Tj ET
+BT /F1 14 Tf 48 412 Td (• Dekomponeringer skal være tapsfrie og helst bevare avhengighetene.) Tj ET
+BT /F1 14 Tf 48 390 Td (• Neste forelesning: indekser og hvordan databasen finner radene raskt.) Tj ET
+
+endstream
+endobj
+xref
+0 46
+0000000000 65535 f 
+0000000015 00000 n 
+0000000135 00000 n 
+0000000327 00000 n 
+0000000376 00000 n 
+0000000473 00000 n 
+0000000575 00000 n 
+0000000717 00000 n 
+0000001434 00000 n 
+0000001576 00000 n 
+0000002203 00000 n 
+0000002347 00000 n 
+0000003084 00000 n 
+0000003228 00000 n 
+0000003912 00000 n 
+0000004056 00000 n 
+0000004780 00000 n 
+0000004924 00000 n 
+0000005539 00000 n 
+0000005683 00000 n 
+0000006306 00000 n 
+0000006450 00000 n 
+0000007071 00000 n 
+0000007215 00000 n 
+0000007795 00000 n 
+0000007939 00000 n 
+0000008661 00000 n 
+0000008805 00000 n 
+0000009385 00000 n 
+0000009529 00000 n 
+0000010227 00000 n 
+0000010371 00000 n 
+0000010912 00000 n 
+0000011056 00000 n 
+0000011693 00000 n 
+0000011837 00000 n 
+0000012492 00000 n 
+0000012636 00000 n 
+0000013301 00000 n 
+0000013445 00000 n 
+0000014087 00000 n 
+0000014231 00000 n 
+0000014753 00000 n 
+0000014897 00000 n 
+0000015575 00000 n 
+0000015719 00000 n 
+trailer
+<<
+/Size 46
+/Root 3 0 R
+/Info 1 0 R
+>>
+startxref
+16319
+%%EOF
