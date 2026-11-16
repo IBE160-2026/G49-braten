@@ -1,0 +1,13 @@
+{% comment %}
+key-concept-item (FR-23): the term, the definition and the Reference; «⋯» offers «Slett» (D09, FR-24).
+  concept: the KeyConcept; lang: its Source's language
+{% endcomment %}
+{% with concept_id=concept.id|stringformat:"s" %}
+<li class="key-concept-item" id="concept-{{ concept_id }}">
+  <div class="key-concept-body">
+    <p class="key-concept-term"{% if lang %} lang="{{ lang }}"{% endif %}>{{ concept.term }}</p>
+    <p class="key-concept-definition"{% if lang %} lang="{{ lang }}"{% endif %}>{{ concept.definition }}</p>
+    {% include "components/reference.html" with item=concept lang=lang %}
+  </div>
+  {% include "components/menu.html" with menu_id="concept-menu-"|add:concept_id trigger_label="Flere valg for "|add:concept.term items="studymat/item_menu_items.html" item_kind="concept" item_id=concept.id delete_label="Slett" %}
+</li>{% endwith %}

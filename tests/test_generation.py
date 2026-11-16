@@ -225,7 +225,7 @@ def test_fr9_retry_claims_a_failed_source_again_and_reuses_source_text(client_id
 
     response = client_ida.post(generate_url(sample))
     assert response.status_code == 302
-    assert response["Location"] == reverse("web:topic", args=[sample.topic_id])
+    assert response["Location"] == reverse("web:topic", args=[sample.topic_id]) + "?tab=sources"
     sample.refresh_from_db()
     assert sample.status == Status.READY
     assert sample.failure_reason == ""
@@ -268,7 +268,7 @@ def test_fr9_a_stale_run_reads_failed_timed_out_and_retry_claims_it(client_ida, 
     assert sample.effective_status == Status.FAILED
     assert sample.effective_failure_reason == FailureReason.TIMED_OUT
 
-    page = client_ida.get(reverse("web:topic", args=[sample.topic_id])).content.decode()
+    page = client_ida.get(reverse("web:topic", args=[sample.topic_id]) + "?tab=sources").content.decode()
     assert MESSAGES["timed_out"] in page and "Prøv igjen" in page
 
     client_ida.post(generate_url(sample), **HTMX)
@@ -346,7 +346,7 @@ def test_nfr7_a_retry_post_at_the_limit_sends_nothing_and_keeps_the_reason(clien
     assert used(ida) == gateway.DAILY_LIMIT
     body = response.content.decode()
     assert MESSAGES["daily_limit"] in body
-    page = client_ida.get(reverse("web:topic", args=[sample.topic_id])).content.decode()
+    page = client_ida.get(reverse("web:topic", args=[sample.topic_id]) + "?tab=sources").content.decode()
     assert "disabled" in retry_button(page)
 
 
@@ -396,7 +396,7 @@ def test_fr9_generate_is_post_only(client_ida, sample):
 
 
 def test_fr9_a_pending_row_starts_generation_with_one_post_on_load(client_ida, sample):
-    page = client_ida.get(reverse("web:topic", args=[sample.topic_id])).content.decode()
+    page = client_ida.get(reverse("web:topic", args=[sample.topic_id]) + "?tab=sources").content.decode()
     row = page.split('id="source-%d"' % sample.id, 1)[1].split(">", 1)[0]
     assert f'hx-post="{generate_url(sample)}"' in row
     assert 'hx-trigger="load"' in row

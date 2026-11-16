@@ -1,0 +1,23 @@
+{% load ui %}{% comment %}
+summary-block («Sammendrag», FR-7, FR-8, FR-23): a ready kilde's full Summary at reading width,
+the Reference-check note, then its Key concepts. A generating kilde gets one dashed line instead
+(display only: generation starts from the «Kilder» source-row).
+  block: {source, ready, summary, key_concepts, removed_note} from web.views._summary_blocks
+{% endcomment %}
+{% with source=block.source source_id=block.source.id|stringformat:"s" %}
+{% if block.ready %}
+<article class="summary-block" id="summary-{{ source_id }}" aria-labelledby="summary-{{ source_id }}-heading">
+  <h2 class="summary-block-heading" id="summary-{{ source_id }}-heading">{{ source.name }}</h2>
+  {% if block.summary %}<div class="summary-text"{% if source.language %} lang="{{ source.language }}"{% endif %}>{{ block.summary.text|linebreaks }}</div>{% endif %}
+  {% if block.removed_note %}<p class="summary-removed">{% icon "info" %}<span>{{ block.removed_note }}</span></p>{% endif %}
+  {% if block.key_concepts %}
+  <h3 class="key-concepts-heading">Nøkkelbegreper</h3>
+  <ul class="key-concepts" role="list">
+    {% for concept in block.key_concepts %}{% include "components/key_concept_item.html" with concept=concept lang=source.language %}{% endfor %}
+  </ul>
+  {% endif %}
+</article>
+{% else %}
+<p class="summary-pending" id="summary-{{ source_id }}">{{ source.name }}: sammendraget lages. Vanligvis under 2 minutter.</p>
+{% endif %}
+{% endwith %}

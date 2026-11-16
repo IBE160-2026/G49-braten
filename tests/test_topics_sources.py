@@ -25,6 +25,11 @@ def topic_url(topic):
     return reverse("web:topic", args=[topic.id])
 
 
+def sources_tab_url(topic):
+    """P05 with «Kilder» selected, where the source-rows live (story 7)."""
+    return topic_url(topic) + "?tab=sources"
+
+
 def create_topic_url(course):
     return reverse("courses:create_topic", args=[course.id])
 
@@ -356,7 +361,7 @@ def test_fr2_delete_source_names_what_goes_and_lands_on_its_p05(client_ida, norm
     partial = client_ida.get(delete_source_url(source), **HTMX_DIALOG).content.decode()
     assert partial.lstrip().startswith('<dialog class="dialog" role="alertdialog"')
     response = client_ida.post(delete_source_url(source), **HTMX_DIALOG)
-    assert hx_location(response) == topic_url(normalisering)
+    assert hx_location(response) == sources_tab_url(normalisering)
     assert not Source.objects.exists()
     assert Topic.objects.filter(pk=normalisering.pk).exists()
 
@@ -400,6 +405,8 @@ def test_fr2_p05_has_breadcrumb_back_link_title_actions_and_empty_kilder(client_
     assert '<h1 class="page-title">Normalisering</h1>' in main
     assert f'href="{rename_topic_url(normalisering)}?next={topic_url(normalisering)}"' in main
     assert f'href="{delete_topic_url(normalisering)}?next={topic_url(normalisering)}"' in main
+    assert "Ingen kilder ennå" in main
+    main = main_of(client_ida.get(sources_tab_url(normalisering)).content.decode())
     assert ">Kilder</h2>" in main
     assert "Ingen kilder ennå" in main
     assert (
@@ -425,7 +432,7 @@ def test_fr2_p05_lists_source_rows_newest_first_with_type_size_detail_and_status
     old = add_source(normalisering, "eldst.pdf", size_bytes=2_516_582)
     freeze_now(datetime.datetime(2026, 11, 16, 10, tzinfo=datetime.UTC))
     new = services.create_source(normalisering, "notater.txt", SourceKind.TEXT, size_bytes=4096)
-    main = main_of(client_ida.get(topic_url(normalisering)).content.decode())
+    main = main_of(client_ida.get(sources_tab_url(normalisering)).content.decode())
     assert main.index("notater.txt") < main.index("eldst.pdf")
     assert "Ingen kilder ennå" not in main
     assert "PDF ·" in main and "Tekstfil ·" in main
@@ -433,8 +440,9 @@ def test_fr2_p05_lists_source_rows_newest_first_with_type_size_detail_and_status
     assert "Detaljnivå: middels" in main
     assert main.count("Lager studiemateriell …") == 2
     for source in (old, new):
-        assert f'href="{rename_source_url(source)}?next={topic_url(normalisering)}"' in main
-        assert f'href="{delete_source_url(source)}?next={topic_url(normalisering)}"' in main
+        # next keeps the tab, so rename and delete return to «Kilder».
+        assert f'href="{rename_source_url(source)}?next={topic_url(normalisering)}%3Ftab%3Dsources"' in main
+        assert f'href="{delete_source_url(source)}?next={topic_url(normalisering)}%3Ftab%3Dsources"' in main
 
 
 @pytest.mark.parametrize(
@@ -449,7 +457,7 @@ def test_fr2_p05_lists_source_rows_newest_first_with_type_size_detail_and_status
 def test_fr9_status_label_text_per_status(client_ida, normalisering, status, text):
     source = add_source(normalisering)
     Source.objects.filter(pk=source.pk).update(status=status)
-    main = main_of(client_ida.get(topic_url(normalisering)).content.decode())
+    main = main_of(client_ida.get(sources_tab_url(normalisering)).content.decode())
     label = main.split('class="status-label', 1)[1].split("</span>", 1)[0]
     assert label.endswith(text)
 
@@ -580,7 +588,7 @@ def test_fr2_no_javascript_flow_create_rename_delete_tema_as_full_pages(client_i
         ("topic", lambda c, t, s: rename_topic_url(t), lambda c, t, s: topic_url(t)),
         ("topic", lambda c, t, s: delete_topic_url(t), lambda c, t, s: topic_url(t)),
         ("source", lambda c, t, s: rename_source_url(s), lambda c, t, s: topic_url(t)),
-        ("source", lambda c, t, s: delete_source_url(s), lambda c, t, s: topic_url(t)),
+        ("source", lambda c, t, s: delete_source_url(s), lambda c, t, s: sources_tab_url(t)),
     ],
     ids=["fag-d08", "fag-d09", "tema-d08", "tema-d09", "kilde-d08", "kilde-d09"],
 )
@@ -617,7 +625,7 @@ def test_p05_post_answers_405(client_ida, normalisering):
 
 def test_fr2_pasted_source_with_size_zero_shows_no_size(client_ida, normalisering):
     services.create_source(normalisering, "Notater", SourceKind.PASTED, size_bytes=0)
-    main = main_of(client_ida.get(topic_url(normalisering)).content.decode())
+    main = main_of(client_ida.get(sources_tab_url(normalisering)).content.decode())
     meta = main.split('class="item-row-meta">', 1)[1].split("</span>", 1)[0]
     assert meta == "Innlimt tekst · Detaljnivå: middels"
     assert "byte" not in main

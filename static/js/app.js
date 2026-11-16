@@ -166,4 +166,45 @@
     evt.preventDefault();
     next.focus();
   });
+
+  // ---- tema-tabs (P05): ← → Home End follow the neighbouring tab's link ----------
+  // Each tab is a full-page GET link (AD-13), so the keys navigate; the flag below puts focus
+  // back on the selected tab of the new page.
+
+  var TAB_FOCUS_KEY = "studybuddy:tab-focus";
+
+  document.addEventListener("keydown", function (evt) {
+    if (evt.shiftKey || evt.altKey || evt.ctrlKey || evt.metaKey) return;
+    var tab = evt.target.closest && evt.target.closest('[role="tab"]');
+    var tablist = tab && tab.closest('[role="tablist"]');
+    if (!tablist) return;
+    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+    var index = tabs.indexOf(tab);
+    var next = null;
+    if (evt.key === "ArrowRight") next = tabs[(index + 1) % tabs.length];
+    else if (evt.key === "ArrowLeft") next = tabs[(index - 1 + tabs.length) % tabs.length];
+    else if (evt.key === "Home") next = tabs[0];
+    else if (evt.key === "End") next = tabs[tabs.length - 1];
+    if (!next) return;
+    evt.preventDefault();
+    next.focus();
+    if (next.getAttribute("aria-selected") === "true") return;
+    try {
+      window.sessionStorage.setItem(TAB_FOCUS_KEY, next.id);
+    } catch (e) { /* storage blocked: the page still loads, focus starts at the top */ }
+    window.location.href = next.href;
+  });
+
+  // After a keyboard tab change, focus the newly selected tab (the script is deferred, so the
+  // document is parsed by now).
+  (function restoreTabFocus() {
+    var id = null;
+    try {
+      id = window.sessionStorage.getItem(TAB_FOCUS_KEY);
+      window.sessionStorage.removeItem(TAB_FOCUS_KEY);
+    } catch (e) { return; }
+    if (!id) return;
+    var tab = document.getElementById(id);
+    if (tab && tab.getAttribute("role") === "tab" && tab.getAttribute("aria-selected") === "true") tab.focus();
+  })();
 })();

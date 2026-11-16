@@ -1,0 +1,8 @@
+{% load ui studymat_tags %}{% comment %}
+reference (AD-6): the Location first, then the verbatim quote in «». Never a link that leaves the app.
+  item: a Key concept, Flashcard or Question (its `source` loaded); lang: the Source's language
+{% endcomment %}
+<div class="reference">
+  <p class="reference-location">{% icon "book" %}<span>{{ item|location_label }}</span></p>
+  <p class="reference-quote"{% if lang %} lang="{{ lang }}"{% endif %}>«{{ item.quote }}»</p>
+</div>

@@ -13,7 +13,7 @@ from ai import gateway
 from ai.errors import AIError, InvalidFormat
 from ai.schemas import GenerateRequest, Location
 from courses import services as courses_services
-from courses.models import Source
+from courses.models import Source, SourceKind
 from ingestion.models import SourceText
 from studymat import checks
 from studymat.models import Flashcard, KeyConcept, Question, Summary
@@ -25,6 +25,23 @@ def locations(source: Source) -> list[Location]:
     """The Source's non-empty Locations, in order (AD-6: only these get a marker)."""
     rows = SourceText.objects.filter(source=source).order_by("index", "kind").values_list("index", "text")
     return [Location(index=index, text=text) for index, text in rows if text.strip()]
+
+
+def location_label(source: Source, location_index: int) -> str:
+    """A Reference's label (EXPERIENCE.md, Voice and Tone): «Side 14 · {kilde}» for a PDF and
+    «Avsnitt 3 · {kilde}» for plain or pasted text."""
+    unit = "Side" if source.kind == SourceKind.PDF else "Avsnitt"
+    return f"{unit} {location_index} · {source.name}"
+
+
+def delete_item(student, item) -> None:
+    """FR-24, AD-8: a hard delete of one owned Key concept, Flashcard or Question.
+
+    The row is gone, so everything built on it later (Quizzes, Retry rounds, Due today) drops it by
+    FK cascade. The caller has already checked ownership (404); this refuses anything else anyway.
+    """
+    assert item.student_id == student.pk, "delete_item: not the Student's item"
+    item.delete()
 
 
 def generate(student, source: Source) -> bool:

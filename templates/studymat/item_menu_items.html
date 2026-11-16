@@ -1,0 +1,4 @@
+{% load ui %}
+{# D07 for a Key concept or Flashcard: «Slett» opens D09 (FR-24). next brings the delete back to this page and tab. #}
+{% url 'studymat:delete_item' item_kind item_id as delete_url %}
+<a class="menu-item menu-item--destructive" href="{{ delete_url }}?next={{ request.get_full_path|urlencode }}" hx-get="{{ delete_url }}?next={{ request.get_full_path|urlencode }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "trash" %}{{ delete_label }}</a>

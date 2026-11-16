@@ -9,8 +9,47 @@
   </div>
   {% include "components/menu.html" with menu_id="topic-actions" trigger_label="Flere valg for "|add:topic.name items="courses/topic_menu_items.html" %}
 </div>
-{# The band comes with the Next step; the tabs come with Study material. #}
-{% url 'studymat:add_source' topic.id as add_source_url %}
+{# The band comes with the Next step (story 13). #}
+{% url 'web:topic' topic.id as topic_url %}{% url 'studymat:add_source' topic.id as add_source_url %}
+{% include "components/tabs.html" with tabs=tabs tab=tab base_url=topic_url %}
+<section class="tab-panel" role="tabpanel" id="panel-{{ tab }}" aria-labelledby="tab-{{ tab }}" tabindex="0">
+{% if tab == "summary" %}
+  {% for block in blocks %}{% include "components/summary_block.html" with block=block %}{% endfor %}
+  {% if not has_ready %}
+    {% if counts.sources %}
+      {% include "components/empty_state.html" with heading="Ingen sammendrag ennå" text="Sammendraget for en kilde vises her når studiemateriellet er klart. Status for hver kilde står under Kilder." link_label="Gå til Kilder" link_url=topic_url|add:"?tab=sources" %}
+    {% else %}
+      {% include "components/empty_state.html" with heading="Ingen kilder ennå" text="Legg til en PDF, en tekstfil eller tekst du limer inn. Quiz og kort kommer når studiemateriellet er klart." action_label="Legg til kilde" action_url=add_source_url action_dialog=True %}
+    {% endif %}
+  {% endif %}
+{% elif tab == "quiz" %}
+  {% if counts.questions %}
+    <section class="tool-card" aria-labelledby="quiz-card-heading">
+      {% icon "hint" %}
+      <div class="tool-card-text">
+        <h2 class="tool-card-heading" id="quiz-card-heading">Quiz i {{ topic.name }}</h2>
+        <p>{{ counts.questions }} spørsmål er klar{{ counts.questions|pluralize:"t,e" }}.</p>
+      </div>
+    </section>
+  {% else %}
+    {% include "components/empty_state.html" with heading="Ingen spørsmål ennå" text="Spørsmål lages fra kildene dine når studiemateriellet er klart." %}
+  {% endif %}
+  <section class="quiz-history" aria-labelledby="quiz-history-heading">
+    <h2 class="section-heading" id="quiz-history-heading">Tidligere quizer</h2>
+    <p class="quiz-history-empty">Du har ikke tatt en quiz i dette temaet ennå.</p>
+  </section>
+{% elif tab == "selftest" %}
+  {% if flashcards %}
+    <div class="section-head">
+      <h2 class="section-heading" id="cards-heading">Kort i temaet</h2>
+    </div>
+    <ul class="flashcard-items" role="list" aria-labelledby="cards-heading">
+      {% for card in flashcards %}{% include "components/flashcard_item.html" with card=card %}{% endfor %}
+    </ul>
+  {% else %}
+    {% include "components/empty_state.html" with heading="Ingen kort ennå" text="Kort lages fra kildene dine når studiemateriellet er klart." %}
+  {% endif %}
+{% else %}
 <section class="source-list" aria-labelledby="source-list-heading">
   <div class="section-head">
     <h2 class="section-heading" id="source-list-heading">Kilder</h2>
@@ -23,5 +62,7 @@
   {% else %}
     {% include "components/empty_state.html" with heading="Ingen kilder ennå" text="Legg til en PDF, en tekstfil eller tekst du limer inn. Quiz og kort kommer når studiemateriellet er klart." action_label="Legg til kilde" action_url=add_source_url action_dialog=True %}
   {% endif %}
+</section>
+{% endif %}
 </section>
 {% endblock %}

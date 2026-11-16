@@ -26,3 +26,9 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/5-ai-gateway-mock-mode-sample-document-and-daily-limit.md`
   summary: Keep provider response text out of gateway error logs: `ai/gateway.py` logs unexpected exceptions with `logger.exception`, whose traceback may carry the values a pydantic ValidationError quotes. Unverified; medium if true.
   evidence: Mock never raises with Source text; settle when story 10's Anthropic adapter parses real replies by checking what a failed `StudyMaterial` validation logs.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/7-topic-page-with-four-tabs-and-item-deletion.md`
+  summary: Detail-level Summary regeneration on P05 (segmented control in the summary-block header, `ai.gateway.regenerate_summary`, replace only the Summary, failure keeps the old one, inactive at the daily limit; AD-5, EXP:134/232/298).
+  evidence: Story 6 handed it to story 7, but story 7 (CAP-6) does not name it and the spec was over the size limit; the Author chose on 2026-11-16 to defer it to its own story.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/7-topic-page-with-four-tabs-and-item-deletion.md`
+  summary: Add a browser/JS test harness so `static/js/app.js` behaviour (P05 tab keys ← → Home End, focus restore after a tab change) is tested, not only checked by hand.
+  evidence: The repo has no JS or browser test runner; `tests/test_shell.py` only checks app.js as source text, so a broken key handler passes every test.

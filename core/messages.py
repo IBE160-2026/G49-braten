@@ -20,6 +20,9 @@ MESSAGES: dict[str, str] = {
     "delete_lead_counted": "{items} og alle svar slettes.",
     "delete_lead_source": "Studiemateriellet fra kilden og svarene på det slettes.",
     "delete_cannot_undo": "Dette kan ikke angres.",
+    # FR-8: under a kilde's summary-block on P05 when the Reference check removed items.
+    "removed_note_one": "1 element ble fjernet fordi kildehenvisningen ikke stemte.",
+    "removed_note_other": "{n} elementer ble fjernet fordi kildehenvisningen ikke stemte.",
     # D05 «Legg til kilde» (FR-3): ingestion rejections name the limit; params are formatted by
     # ingestion.errors (thousands with a space, megabytes with a decimal comma).
     "too_many_pages": "Filen har {pages} sider. Grensen er {limit} sider, så last opp ett kapittel om gangen.",

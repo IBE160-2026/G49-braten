@@ -23,8 +23,9 @@ def add_url(topic):
     return reverse("studymat:add_source", args=[topic.id])
 
 
-def topic_url(topic):
-    return reverse("web:topic", args=[topic.id])
+def sources_tab_url(topic):
+    """P05 with «Kilder» selected: where a valid upload lands (story 7, Landing)."""
+    return reverse("web:topic", args=[topic.id]) + "?tab=sources"
 
 
 def vary(response) -> set[str]:
@@ -114,7 +115,7 @@ def test_fr3_pdf_upload_without_htmx_lands_on_p05_with_the_source_pending(client
     response = client_ida.post(
         add_url(normalisering), {"file": pdf_file(), "text": "", "detail_level": "detailed"}, follow=True
     )
-    assert response.redirect_chain == [(topic_url(normalisering), 302)]
+    assert response.redirect_chain == [(sources_tab_url(normalisering), 302)]
     source = Source.objects.get()
     assert (source.kind, source.status, source.detail_level, source.topic) == (
         SourceKind.PDF, Status.PENDING, "detailed", normalisering,
@@ -129,7 +130,7 @@ def test_fr3_pasted_text_without_htmx_lands_on_p05(client_ida, normalisering):
     response = client_ida.post(
         add_url(normalisering), {"text": "Første.\r\n\r\nAndre.", "name": "", "detail_level": "medium"}, follow=True
     )
-    assert response.redirect_chain[-1][0] == topic_url(normalisering)
+    assert response.redirect_chain[-1][0] == sources_tab_url(normalisering)
     source = Source.objects.get()
     assert (source.name, source.kind) == ("Innlimt tekst", SourceKind.PASTED)
     assert "Innlimt tekst" in main_of(response.content.decode())
@@ -140,13 +141,13 @@ def test_fr3_valid_upload_under_htmx_answers_with_hx_location_to_p05(client_ida,
         add_url(normalisering), {"text": "Noe tekst.", "name": "Mine notater", "detail_level": "short"}, **HTMX_DIALOG
     )
     assert response.status_code == 200
-    assert json.loads(response["HX-Location"])["path"] == topic_url(normalisering)
+    assert json.loads(response["HX-Location"])["path"] == sources_tab_url(normalisering)
     assert Source.objects.get().name == "Mine notater"
 
 
 def test_fr3_p05_with_sources_offers_legg_til_kilde_above_the_list(client_ida, normalisering):
     client_ida.post(add_url(normalisering), {"text": "Noe tekst.", "detail_level": "medium"})
-    main = main_of(client_ida.get(topic_url(normalisering)).content.decode())
+    main = main_of(client_ida.get(sources_tab_url(normalisering)).content.decode())
     head = main.split('class="section-head"', 1)[1].split("</div>", 1)[0]
     assert f'class="button-secondary" href="{add_url(normalisering)}" hx-get="{add_url(normalisering)}"' in head
     assert "Legg til kilde" in head
@@ -368,7 +369,7 @@ def test_fr20_d05_sample_ingests_the_sample_document_and_lands_on_p05(client_ida
         add_url(normalisering), {"use_sample": "1", "detail_level": "detailed", "text": ""}, **HTMX_DIALOG
     )
     assert response.status_code == 200
-    assert json.loads(response["HX-Location"])["path"] == topic_url(normalisering)
+    assert json.loads(response["HX-Location"])["path"] == sources_tab_url(normalisering)
     source = Source.objects.get()
     assert (source.kind, source.status, source.detail_level, source.topic) == (
         SourceKind.PDF, Status.PENDING, "detailed", normalisering,
@@ -384,7 +385,7 @@ def test_fr20_d05_sample_without_htmx_redirects_and_ignores_a_sent_file(client_i
     response = client_ida.post(
         add_url(normalisering), {"use_sample": "1", "detail_level": "short", "file": pdf_file()}
     )
-    assert response.status_code == 302 and response["Location"] == topic_url(normalisering)
+    assert response.status_code == 302 and response["Location"] == sources_tab_url(normalisering)
     source = Source.objects.get()
     assert (source.content_sha256, source.detail_level) == (mock.SAMPLE_SHA256, "short")
 

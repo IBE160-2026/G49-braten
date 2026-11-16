@@ -1,0 +1,16 @@
+{% comment %}
+flashcard in the «Test deg selv» list (FR-23): front, back and the Reference; «⋯» offers
+«Slett kortet» (D09, FR-24). P08 (story 11) may replace this list.
+  card: the Flashcard (its `source` loaded)
+{% endcomment %}
+{% with card_id=card.id|stringformat:"s" lang=card.source.language %}
+<li class="flashcard-item" id="card-{{ card_id }}">
+  <div class="flashcard-item-body">
+    <p class="flashcard-item-side">Forside</p>
+    <p class="flashcard-item-front"{% if lang %} lang="{{ lang }}"{% endif %}>{{ card.front }}</p>
+    <p class="flashcard-item-side">Bakside</p>
+    <p class="flashcard-item-back"{% if lang %} lang="{{ lang }}"{% endif %}>{{ card.back }}</p>
+    {% include "components/reference.html" with item=card lang=lang %}
+  </div>
+  {% include "components/menu.html" with menu_id="card-menu-"|add:card_id trigger_label="Flere valg for kortet "|add:card.front|truncatechars:60 items="studymat/item_menu_items.html" item_kind="card" item_id=card.id delete_label="Slett kortet" %}
+</li>{% endwith %}

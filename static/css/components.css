@@ -675,3 +675,102 @@ button[disabled][aria-describedby] { cursor: not-allowed; opacity: .55; }
 .source-row-actions { display: grid; gap: 8px; justify-items: start; }
 .source-row-actions:empty { display: none; }
 .source-row-actions form { margin: 0; }
+
+/* ======================================================================
+   P05 tema-tabs, summary-block, key-concept-item, flashcard list, reference, tool-card (story 7)
+   ====================================================================== */
+.tema-tabs {
+  display: flex; gap: 2px; margin-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin;
+}
+.tema-tab {
+  position: relative; flex: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 46px; padding: 0 12px;
+  border-radius: var(--rounded-md) var(--rounded-md) 0 0;
+  color: var(--ink-2); font-size: 15.5px; font-weight: 600; text-decoration: none; white-space: nowrap;
+}
+.tema-tab:hover { background: var(--ground-2); color: var(--ink); }
+.tema-tab:focus-visible { outline-offset: -2px; }
+/* Selected: ink, weight 700 and a 3 px ink underline, never copper (DESIGN.md). */
+.tema-tab[aria-selected="true"] { color: var(--ink); font-weight: 700; }
+.tema-tab[aria-selected="true"]::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--ink);
+}
+.tab-count {
+  display: inline-block; padding: 1px 7px; border-radius: var(--rounded-sm);
+  background: var(--ground-2); color: var(--ink-3);
+  font-size: 13.5px; font-weight: 650; font-variant-numeric: tabular-nums;
+}
+/* The separator is for screen readers («Quiz · 28»); the chip shows the number. */
+.tab-count-sep {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+/* Below 600 px the counts hide visually only, so screen readers keep them. */
+@media (max-width: 599.98px) {
+  .tab-count {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .tema-tab { padding: 0 10px; }
+}
+.tab-panel { display: grid; gap: 24px; align-content: start; container-type: inline-size; }
+.tab-panel:focus-visible { outline-offset: 4px; }
+
+/* summary-block: one per ready kilde; reading text stops at 68 ch */
+.summary-block { display: grid; gap: 14px; }
+/* A separator between a summary-block and whatever sits next to it (another block, a dashed line, an empty-state). */
+.summary-block + *, * + .summary-block { padding-top: 24px; border-top: 1px solid var(--line); }
+.summary-block-heading { font-size: 19px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
+.summary-text { max-width: 68ch; font-size: 16px; line-height: 1.62; }
+.summary-text p + p { margin-top: 0.9em; }
+.summary-removed { display: flex; align-items: flex-start; gap: 8px; max-width: 68ch; font-size: 14px; color: var(--ink-2); }
+.summary-removed .icon { width: 18px; height: 18px; margin-top: 1px; color: var(--forecast-ink); }
+.summary-pending {
+  padding: 12px 14px; border: 1px dashed var(--line-2); border-radius: var(--rounded-lg);
+  font-size: 15px; color: var(--ink-2);
+}
+.key-concepts-heading { font-size: 16px; font-weight: 700; line-height: 1.35; margin-top: 4px; }
+
+/* key-concept-item and the «Test deg selv» card list share the row frame */
+.key-concepts, .flashcard-items {
+  list-style: none; margin: 0; padding: 0;
+  border: 1px solid var(--line); border-radius: var(--rounded-lg); background: var(--ground);
+}
+.key-concept-item, .flashcard-item { display: flex; align-items: flex-start; gap: 4px; padding: 6px 6px 6px 0; min-width: 0; }
+.key-concept-item + .key-concept-item, .flashcard-item + .flashcard-item { border-top: 1px solid var(--line); }
+.key-concept-body, .flashcard-item-body { flex: 1; min-width: 0; display: grid; gap: 6px; padding: 8px 0 8px 16px; }
+.key-concept-term { font-size: 16px; font-weight: 700; line-height: 1.35; }
+.key-concept-definition, .flashcard-item-front, .flashcard-item-back { max-width: 68ch; line-height: 1.62; }
+.flashcard-item-side { font-size: 13px; font-weight: 650; color: var(--ink-3); }
+.flashcard-item-front { font-weight: 650; }
+.flashcard-item-side + .flashcard-item-front, .flashcard-item-side + .flashcard-item-back { margin-top: -4px; }
+@container (min-width: 640px) {
+  .key-concept-body { grid-template-columns: 200px minmax(0, 1fr); column-gap: 20px; }
+  .key-concept-body > :not(.key-concept-term) { grid-column: 2; }
+  .key-concept-term { grid-row: 1 / span 2; }
+}
+
+/* reference: Location first, then the quote in guillemets behind a rule. Never a link. */
+.reference {
+  display: grid; gap: 4px; max-width: 68ch; margin-top: 2px; padding: 8px 12px;
+  border: 1px solid var(--line); border-radius: var(--rounded-md); background: var(--ground);
+}
+.reference-location { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--ink-2); }
+.reference-location .icon { width: 16px; height: 16px; }
+.reference-quote { padding-left: 10px; border-left: 1px solid var(--line-2); font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+
+/* tool-card («Quiz» tab): never a primary button */
+.tool-card {
+  display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px;
+  border: 1px solid var(--line); border-radius: var(--rounded-lg); background: var(--ground);
+}
+.tool-card > .icon { color: var(--ink-2); margin-top: 2px; }
+.tool-card-text { display: grid; gap: 4px; }
+.tool-card-heading { font-size: 17px; font-weight: 700; line-height: 1.3; }
+.tool-card-text p { color: var(--ink-2); }
+.quiz-history .section-heading { margin-bottom: 8px; }
+.quiz-history-empty { color: var(--ink-2); }
+.empty-state-link { margin-top: 4px; font-weight: 650; }

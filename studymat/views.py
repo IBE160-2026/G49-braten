@@ -1,8 +1,9 @@
-"""D05 «Legg til kilde» (FR-3, FR-20, NFR-7, AD-5 step 1).
+"""D05 «Legg til kilde» (FR-3, FR-20, NFR-7, AD-5 step 1) and D09 for one item (FR-24).
 
 A GET URL (AD-18): a full page normally, and the `dialog` partial in the one #dialog slot
-under HTMX. A valid upload answers with HX-Location to the Topic's P05 (302 without HTMX);
-a rejected one renders the dialog again with the reason in the upload-panel.
+under HTMX. A valid upload answers with HX-Location to the Topic's P05 «Kilder» tab (302
+without HTMX), where its status lives; a rejected one renders the dialog again with the reason
+in the upload-panel.
 
 In Mock mode, «Bruk eksempeldokumentet» (`use_sample`) ingests the Sample document with the chosen
 Detail level. When the Student has no Generation calls left today, the dialog shows the
@@ -10,11 +11,12 @@ daily-limit message with both submits disabled, and a POST anyway saves nothing.
 """
 
 from django.core.files import File
+from django.http import Http404
 from django.shortcuts import redirect, render, resolve_url
 from django.views.decorators.http import require_http_methods, require_POST
 
 from ai import gateway, mock
-from core.http import redirect_after_submit, render_page, vary_on_htmx
+from core.http import redirect_after_submit, render_page, safe_next, vary_on_htmx
 from core.messages import MESSAGES
 from core.ownership import get_owned_or_404
 from courses.models import Source, Status, Topic
@@ -23,9 +25,22 @@ from ingestion.errors import IngestError, megabytes
 from ingestion.services import ingest
 from studymat import services
 from studymat.forms import AddSourceForm
+from studymat.models import Flashcard, KeyConcept, Question
 
 # P05 lives in `web`; studymat names it by URL name only (AD-1 governs imports).
 TOPIC_PAGE = "web:topic"
+
+# D09 for one item (FR-24): the URL kind -> (model, the P05 tab it is shown on).
+ITEM_KINDS = {
+    "concept": (KeyConcept, "summary"),
+    "card": (Flashcard, "selftest"),
+    "question": (Question, "quiz"),
+}
+
+
+def topic_tab_url(topic_id, tab: str) -> str:
+    """P05 with one tab selected (`web:topic?tab=…`)."""
+    return f"{resolve_url(TOPIC_PAGE, topic_id)}?tab={tab}"
 
 LIMITS = {"pages": extract.MAX_PAGES, "megabytes": megabytes(extract.MAX_FILE_BYTES)}
 
@@ -70,7 +85,8 @@ def add_source(request, topic_id):
                 upload_error = error.message
                 rejected_field = form.reject(error)
             else:
-                return redirect_after_submit(request, topic_url)
+                # The new kilde's status and «Prøv igjen» live on «Kilder» (story 7, Landing).
+                return redirect_after_submit(request, topic_tab_url(topic.id, "sources"))
     elif request.method == "POST":
         # At the limit a POST saves nothing and validates nothing; the dialog keeps what was typed.
         form = AddSourceForm(initial={k: request.POST.get(k) for k in ("text", "name", "detail_level") if k in request.POST})
@@ -101,7 +117,7 @@ def generate(request, source_id):
     """AD-5 step 2 for one owned Source (404 otherwise); idempotent through the claim.
 
     Under HTMX it answers with the source-row plus the #live-polite status text; otherwise 302 to
-    P05. At the daily limit a failed or stale row is not claimed and nothing is sent; a pending row
+    P05's «Kilder» tab. At the daily limit a failed or stale row is not claimed and nothing is sent; a pending row
     still runs, so the gateway marks it failed with `daily_limit` (or `needs_key` first, AD-3).
     """
     source = get_owned_or_404(Source, request.user, pk=source_id)
@@ -109,10 +125,60 @@ def generate(request, source_id):
     if not blocked or source.status == Status.PENDING:
         services.generate(request.user, source)
         source.refresh_from_db()
+    sources_tab = topic_tab_url(source.topic_id, "sources")
     if not getattr(request, "htmx", None):
-        return redirect(TOPIC_PAGE, source.topic_id)
+        return redirect(sources_tab)
     return render(
         request,
         "studymat/source_row.html",
-        {"source": source, "generation_blocked": gateway.remaining_today(request.user) == 0},
+        {
+            "source": source,
+            "generation_blocked": gateway.remaining_today(request.user) == 0,
+            # The row's «⋯» menu returns to the page, not to this POST URL.
+            "menu_next": sources_tab,
+        },
+    )
+
+
+def _delete_copy(kind: str, item) -> tuple[str, str]:
+    """D09's title and destructive button for one item (EXPERIENCE.md, dialog)."""
+    if kind == "concept":
+        return f"Slette nøkkelbegrepet {item.term}?", "Slett nøkkelbegrepet"
+    if kind == "card":
+        return "Slette kortet?", "Slett kortet"
+    return "Slette spørsmålet?", "Slett spørsmålet"
+
+
+@require_http_methods(["GET", "POST"])
+@vary_on_htmx
+def delete_item(request, kind, item_id):
+    """D09 for one Key concept, Flashcard or Question (FR-24): owned or 404, a hard delete (AD-8).
+
+    GET confirms (the `courses/delete.html` alertdialog); POST deletes and lands on a safe `next`,
+    else on the P05 tab that shows the item. No toast, no undo.
+    """
+    if kind not in ITEM_KINDS:
+        raise Http404
+    model, tab = ITEM_KINDS[kind]
+    item = get_owned_or_404(model.objects.select_related("source__topic__course"), request.user, pk=item_id)
+    topic = item.source.topic
+    next_url = safe_next(request)
+    back_url = next_url or topic_tab_url(topic.id, tab)
+    if request.method == "POST":
+        services.delete_item(request.user, item)
+        return redirect_after_submit(request, back_url)
+    title, submit_label = _delete_copy(kind, item)
+    return render_page(
+        request,
+        "courses/delete.html",
+        {
+            "item": item,
+            "title": title,
+            "lead": MESSAGES["delete_cannot_undo"],
+            "submit_label": submit_label,
+            "action": resolve_url("studymat:delete_item", kind, item.id),
+            "current_course": topic.course,
+            "next": next_url,
+            "cancel_url": back_url,
+        },
     )

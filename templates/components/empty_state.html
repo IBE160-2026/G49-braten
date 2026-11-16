@@ -1,9 +1,10 @@
 {% load ui %}{% comment %}
 empty-state: a heading, one sentence and at most one primary action.
   heading, text; action_label + action_url (+ action_dialog to open it in the #dialog slot)
+  link_label + link_url: a quiet link instead of an action (a pointer to where the answer is)
 {% endcomment %}
 <section class="empty-state" aria-labelledby="empty-state-heading">
   <h2 class="empty-state-heading" id="empty-state-heading">{{ heading }}</h2>
   <p>{{ text }}</p>
-  {% if action_url %}<a class="button-primary" href="{{ action_url }}"{% if action_dialog %} hx-get="{{ action_url }}" hx-target="#dialog" hx-swap="innerHTML"{% endif %}>{% icon "plus" %}{{ action_label }}</a>{% endif %}
+  {% if action_url %}<a class="button-primary" href="{{ action_url }}"{% if action_dialog %} hx-get="{{ action_url }}" hx-target="#dialog" hx-swap="innerHTML"{% endif %}>{% icon "plus" %}{{ action_label }}</a>{% elif link_url %}<a class="empty-state-link" href="{{ link_url }}">{{ link_label }}</a>{% endif %}
 </section>

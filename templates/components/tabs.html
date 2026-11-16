@@ -1,0 +1,9 @@
+{% comment %}
+tema-tabs (P05, FR-23): an ARIA tablist of full-page GET links (`?tab=`, AD-13), with a roving tabindex.
+  tabs: [{key, label, count}] in their fixed order; tab: the selected key; base_url: P05's URL
+Only the selected tab names its panel (aria-controls), because only that panel is rendered.
+app.js moves between tabs with ← → Home End by following the neighbouring tab's link.
+{% endcomment %}
+<div class="tema-tabs" role="tablist" aria-label="Innhold i temaet">
+  {% for t in tabs %}<a class="tema-tab" role="tab" id="tab-{{ t.key }}" href="{{ base_url }}?tab={{ t.key }}" {% if t.key == tab %}aria-selected="true" aria-controls="panel-{{ t.key }}" tabindex="0"{% else %}aria-selected="false" tabindex="-1"{% endif %}>{{ t.label }}{% if t.count %}<span class="tab-count"><span class="tab-count-sep"> · </span>{{ t.count }}</span>{% endif %}</a>{% endfor %}
+</div>

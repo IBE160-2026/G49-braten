@@ -198,7 +198,8 @@ def rename_source(request, source_id):
 @vary_on_htmx
 def delete_source(request, source_id):
     source = _owned_source(request, source_id)
-    topic_url = resolve_url(TOPIC_PAGE, source.topic_id)
+    # The page the kilde was on survives its delete: back to a safe `next`, else «Kilder».
+    back_url = safe_next(request) or f"{resolve_url(TOPIC_PAGE, source.topic_id)}?tab=sources"
     return _delete(
         request,
         source,
@@ -208,6 +209,6 @@ def delete_source(request, source_id):
         submit_label="Slett kilden",
         action=resolve_url("courses:delete_source", source.id),
         current_course=source.topic.course,
-        after_url=topic_url,
-        cancel_url=topic_url,
+        after_url=back_url,
+        cancel_url=back_url,
     )
