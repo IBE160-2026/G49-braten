@@ -10,17 +10,18 @@ daily-limit message with both submits disabled, and a POST anyway saves nothing.
 """
 
 from django.core.files import File
-from django.shortcuts import resolve_url
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import redirect, render, resolve_url
+from django.views.decorators.http import require_http_methods, require_POST
 
 from ai import gateway, mock
 from core.http import redirect_after_submit, render_page, vary_on_htmx
 from core.messages import MESSAGES
 from core.ownership import get_owned_or_404
-from courses.models import Topic
+from courses.models import Source, Status, Topic
 from ingestion import extract
 from ingestion.errors import IngestError, megabytes
 from ingestion.services import ingest
+from studymat import services
 from studymat.forms import AddSourceForm
 
 # P05 lives in `web`; studymat names it by URL name only (AD-1 governs imports).
@@ -91,4 +92,27 @@ def add_source(request, topic_id):
             "offer_sample": mock_mode,
             "daily_limit_message": MESSAGES["daily_limit"] if at_limit else None,
         },
+    )
+
+
+@require_POST
+@vary_on_htmx
+def generate(request, source_id):
+    """AD-5 step 2 for one owned Source (404 otherwise); idempotent through the claim.
+
+    Under HTMX it answers with the source-row plus the #live-polite status text; otherwise 302 to
+    P05. At the daily limit a failed or stale row is not claimed and nothing is sent; a pending row
+    still runs, so the gateway marks it failed with `daily_limit` (or `needs_key` first, AD-3).
+    """
+    source = get_owned_or_404(Source, request.user, pk=source_id)
+    blocked = gateway.remaining_today(request.user) == 0
+    if not blocked or source.status == Status.PENDING:
+        services.generate(request.user, source)
+        source.refresh_from_db()
+    if not getattr(request, "htmx", None):
+        return redirect(TOPIC_PAGE, source.topic_id)
+    return render(
+        request,
+        "studymat/source_row.html",
+        {"source": source, "generation_blocked": gateway.remaining_today(request.user) == 0},
     )

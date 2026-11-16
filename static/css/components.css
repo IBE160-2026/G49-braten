@@ -669,3 +669,9 @@ dialog.dialog::before {
 .upload-sample { display: grid; gap: 10px; justify-items: start; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
 .upload-sample p { font-size: 14px; color: var(--ink-2); }
 button[disabled][aria-describedby] { cursor: not-allowed; opacity: .55; }
+
+/* source-row: generation note, failure reason and «Prøv igjen» (FR-9) */
+.source-row-note { font-size: 14px; color: var(--ink-2); }
+.source-row-actions { display: grid; gap: 8px; justify-items: start; }
+.source-row-actions:empty { display: none; }
+.source-row-actions form { margin: 0; }

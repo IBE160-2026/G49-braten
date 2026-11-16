@@ -1,0 +1,3 @@
+{% load ui %}{# POST studymat:generate under HTMX: the source-row, and its status for #live-polite (AD-18). #}
+{% include "components/source_row.html" with source=source generation_blocked=generation_blocked %}
+{% with status=source.effective_status %}<div id="live-polite" hx-swap-oob="innerHTML">{{ source.name }}: {% if status == "ready" %}Klar{% if source.removed_count %} · {{ source.removed_count }} element{{ source.removed_count|pluralize:"er" }} fjernet{% endif %}{% elif status == "failed" %}Feilet. {{ source.effective_failure_reason|message_text }}{% else %}Lager studiemateriell …{% endif %}</div>{% endwith %}

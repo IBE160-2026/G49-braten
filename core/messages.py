@@ -39,6 +39,13 @@ MESSAGES: dict[str, str] = {
     # AI gateway errors (AD-2), keyed by courses.FailureReason; the rest arrive with stories 6 and 10.
     "needs_key": "I demomodus lages studiemateriell bare for eksempeldokumentet. Legg inn en API-nøkkel for å bruke egne filer.",
     "daily_limit": "Du har brukt alle 20 genereringene for i dag. Grensen nullstilles ved midnatt.",
+    # Generation failures on the source-row (FR-9, story 6); `timed_out` is set by AD-5.
+    "timed_out": "Genereringen ble ikke ferdig. Prøv igjen.",
+    "truncated": "Kunne ikke lage studiemateriell fordi svaret fra KI-tjenesten ble avbrutt. Prøv igjen.",
+    "rate_limited": "KI-tjenesten har mange forespørsler akkurat nå. Vent noen minutter og prøv igjen.",
+    "refused": "Kunne ikke lage studiemateriell fordi KI-tjenesten avviste forespørselen. Prøv igjen.",
+    "invalid_format": "Kunne ikke lage studiemateriell fordi svaret fra KI-tjenesten hadde feil format. Prøv igjen.",
+    "provider_unavailable": "Kunne ikke lage studiemateriell fordi KI-tjenesten ikke svarte. Prøv igjen.",
     # Shown by static/js/app.js when htmx gets no answer or an error status (AD-18).
     "network_error": "Fikk ikke kontakt med appen. Sjekk nettforbindelsen og prøv igjen.",
     "response_error": "Det du ba om, kunne ikke vises. Last inn siden på nytt og prøv igjen.",

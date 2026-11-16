@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from django.db import models
 
@@ -87,6 +89,25 @@ class FailureReason(models.TextChoices):
     TIMED_OUT = "timed_out"
 
 
+# AD-5: a run still `generating` this long after its claim is stale: it reads as failed/timed_out
+# and may be claimed again.
+STALE_AFTER = datetime.timedelta(minutes=5)
+
+
+def _stale_before() -> datetime.datetime:
+    return time.now() - STALE_AFTER
+
+
+class SourceQuerySet(OwnedQuerySet):
+    def claimable(self):
+        """Sources a generation run may claim (AD-5): pending, failed, or a stale `generating`."""
+        return self.filter(
+            models.Q(status__in=[Status.PENDING, Status.FAILED])
+            | models.Q(status=Status.GENERATING, started_at__lt=_stale_before())
+            | models.Q(status=Status.GENERATING, started_at__isnull=True)
+        )
+
+
 class Source(models.Model):
     """A kilde in a tema (PRD Source, FR-2, FR-9). Listed newest first."""
 
@@ -105,10 +126,30 @@ class Source(models.Model):
     dropped_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(default=created_now)
 
-    objects = OwnedQuerySet.as_manager()
+    objects = SourceQuerySet.as_manager()
 
     class Meta:
         ordering = ["-created_at", "-id"]
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def is_stale(self) -> bool:
+        """`generating` past STALE_AFTER: the same predicate as `claimable()` (AD-5)."""
+        return self.status == Status.GENERATING and (self.started_at is None or self.started_at < _stale_before())
+
+    @property
+    def effective_status(self) -> str:
+        """What everyone reads (AD-5): `pending` shows as generating, a stale run as failed."""
+        if self.status == Status.PENDING:
+            return Status.GENERATING
+        if self.is_stale:
+            return Status.FAILED
+        return self.status
+
+    @property
+    def effective_failure_reason(self) -> str:
+        if self.is_stale:
+            return FailureReason.TIMED_OUT
+        return self.failure_reason if self.status == Status.FAILED else ""

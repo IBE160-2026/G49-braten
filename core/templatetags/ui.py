@@ -25,3 +25,9 @@ def icon(name: str, size: str = ""):
 def message(code: str) -> str:
     """The Norwegian text for an error `code` from core.messages."""
     return MESSAGES[code]
+
+
+@register.filter
+def message_text(code: str) -> str:
+    """The Norwegian text for `code`, or "" when it has none yet (for stored failure reasons)."""
+    return MESSAGES.get(code, "")

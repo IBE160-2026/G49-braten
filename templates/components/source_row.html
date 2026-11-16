@@ -1,14 +1,34 @@
 {% load ui %}{% comment %}
 source-row: name, type, size, Detail level and the status-label; «⋯» with rename and delete.
   source: the Source
+  generation_blocked: True when the Student has no Generation calls left today (NFR-7)
+A `pending` row starts its generation with one POST on load (AD-13's second named exception);
+the claim makes a reload or a second tab safe (AD-5). A failed row offers «Prøv igjen», or for
+`needs_key` «Bruk eksempeldokumentet» (D05).
 {% endcomment %}
-<li class="item-row source-row">
+{% url 'studymat:generate' source.id as generate_url %}{% with status=source.effective_status reason=source.effective_failure_reason source_id=source.id|stringformat:"s" %}
+<li class="item-row source-row" id="source-{{ source.id }}"{% if source.status == "pending" %} hx-post="{{ generate_url }}" hx-trigger="load" hx-target="this" hx-swap="outerHTML"{% endif %}>
   <div class="item-row-body">
     <span class="item-row-name">{{ source.name }}</span>
     <span class="item-row-meta">{% if source.kind == "pdf" %}PDF{% elif source.kind == "text" %}Tekstfil{% else %}Innlimt tekst{% endif %}{% if source.size_bytes %} · {{ source.size_bytes|filesizeformat }}{% endif %} · Detaljnivå: {% if source.detail_level == "short" %}kort{% elif source.detail_level == "detailed" %}detaljert{% else %}middels{% endif %}</span>
-    {% include "components/status_label.html" with status=source.status %}
+    {% include "components/status_label.html" with status=status removed=source.removed_count %}
+    {% if status == "generating" %}
+      <p class="source-row-note">Vanligvis under 2 minutter. Hold siden åpen til det er klart.</p>
+    {% elif status == "failed" %}
+      {% with text=reason|message_text %}{% if text %}<p class="source-row-note" id="source-{{ source.id }}-reason">{{ text }}</p>{% endif %}{% endwith %}
+      <div class="source-row-actions">
+        {% if reason == "needs_key" %}
+          {% url 'studymat:add_source' source.topic_id as add_source_url %}
+          <a class="button-secondary" href="{{ add_source_url }}" hx-get="{{ add_source_url }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "file" %}Bruk eksempeldokumentet</a>
+        {% else %}
+          {% if generation_blocked and reason != "daily_limit" %}{% message "daily_limit" as limit_text %}{% include "components/inline_message.html" with text=limit_text id="source-"|add:source_id|add:"-daily-limit" %}{% endif %}
+          <form method="post" action="{{ generate_url }}" hx-post="{{ generate_url }}" hx-target="closest li" hx-swap="outerHTML" hx-disabled-elt="find button" hx-sync="this:drop">
+            {% csrf_token %}
+            <button class="button-secondary" type="submit"{% if generation_blocked %} disabled aria-describedby="source-{{ source.id }}-{% if reason == "daily_limit" %}reason{% else %}daily-limit{% endif %}"{% endif %}>Prøv igjen</button>
+          </form>
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
-  {% with source_id=source.id|stringformat:"s" %}
-    {% include "components/menu.html" with menu_id="source-menu-"|add:source_id trigger_label="Flere valg for "|add:source.name items="courses/source_menu_items.html" %}
-  {% endwith %}
-</li>
+  {% include "components/menu.html" with menu_id="source-menu-"|add:source_id trigger_label="Flere valg for "|add:source.name items="courses/source_menu_items.html" %}
+</li>{% endwith %}

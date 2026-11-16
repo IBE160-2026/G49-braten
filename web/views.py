@@ -4,6 +4,7 @@ from django.conf import settings
 from django.shortcuts import redirect, render, resolve_url
 from django.views.decorators.http import require_POST, require_safe
 
+from ai import gateway
 from core.http import render_page, safe_next, vary_on_htmx
 from core.ownership import get_owned_or_404
 from courses.models import Course, Source, Topic
@@ -51,6 +52,8 @@ def topic(request, topic_id):
             # The fag-rail keeps marking the fag while on one of its tema.
             "current_course": course,
             "sources": Source.objects.for_student(request.user).filter(topic=topic),
+            # NFR-7: a failed source-row's «Prøv igjen» is inactive at the daily limit.
+            "generation_blocked": gateway.remaining_today(request.user) == 0,
             "breadcrumb": [
                 {"label": "Hjem", "url": resolve_url("web:home")},
                 {"label": course.name, "url": resolve_url("web:course", course.id)},
