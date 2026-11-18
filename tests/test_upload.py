@@ -7,6 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
 from django.urls import reverse
 
+from accounts.services import accept_privacy
 from courses import services
 from courses.models import Source, SourceKind, Status
 from ingestion.errors import MEGABYTE
@@ -397,8 +398,9 @@ def test_fr20_d05_sample_still_needs_a_detail_level(client_ida, normalisering):
     assert counts() == (0, 0)
 
 
-def test_fr21_d05_in_real_mode_has_no_sample_and_ignores_use_sample(settings, client_ida, normalisering):
+def test_fr21_d05_in_real_mode_has_no_sample_and_ignores_use_sample(settings, client_ida, ida, normalisering):
     settings.AI_PROVIDER = "anthropic"
+    accept_privacy(ida)
     body = client_ida.get(add_url(normalisering), **HTMX_DIALOG).content.decode()
     assert SAMPLE_BUTTON not in body
     assert 'name="use_sample"' not in body

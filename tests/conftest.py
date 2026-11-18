@@ -29,3 +29,13 @@ def student(db):
         return Student.objects.create_user(email, password)
 
     return _make
+
+
+@pytest.fixture(autouse=True)
+def no_real_anthropic_client(monkeypatch):
+    """No test reaches the real Anthropic client (story 10); tests that need one install a fake."""
+
+    def refuse():
+        raise AssertionError("A test tried to build the real Anthropic client; install a fake instead.")
+
+    monkeypatch.setattr("ai.anthropic_adapter._client", refuse)

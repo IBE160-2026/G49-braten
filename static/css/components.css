@@ -617,6 +617,10 @@ dialog.dialog::before {
   @keyframes dialog-in { from { opacity: 0; transform: translateY(12px); } }
 }
 
+/* D04 «Før du laster opp» (FR-22): the promise that nothing is sent before the Student accepts. */
+.privacy-limits { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--ink-2); }
+.privacy-limits .icon { margin-top: 2px; color: var(--ink-3); }
+
 /* ======================================================================
    upload-panel (D05): file or pasted text, the limits up front, the rejection with «Velg en annen fil»
    ====================================================================== */

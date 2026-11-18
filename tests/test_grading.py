@@ -106,8 +106,24 @@ def test_nfr7_grading_at_the_daily_limit_still_works(ida):
     assert used(ida) == gateway.DAILY_LIMIT
 
 
-def test_fr21_real_mode_grading_raises_provider_unavailable_uncounted(ida, settings):
+def test_fr22_real_mode_grading_without_acceptance_raises_privacy_not_accepted_uncounted(ida, settings):
     settings.AI_PROVIDER = "anthropic"
+    with pytest.raises(errors.PrivacyNotAccepted):
+        gateway.grade_free_text(ida, request_for(MODEL))
+    assert used(ida) == 0
+
+
+def test_fr21_real_mode_grading_failure_is_uncounted(ida, settings, monkeypatch):
+    from accounts.services import accept_privacy
+    from ai import anthropic_adapter
+
+    settings.AI_PROVIDER = "anthropic"
+    accept_privacy(ida)
+
+    def unavailable(request):
+        raise errors.ProviderUnavailable()
+
+    monkeypatch.setattr(anthropic_adapter, "grade", unavailable)
     with pytest.raises(errors.ProviderUnavailable):
         gateway.grade_free_text(ida, request_for(MODEL))
     assert used(ida) == 0

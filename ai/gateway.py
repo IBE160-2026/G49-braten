@@ -2,8 +2,12 @@
 
 Operations take `student` plus one request object from `ai.schemas`. Every counted operation runs,
 in order (AD-3): the mode check (Mock mode answers only for the Sample document, otherwise
-`NeedsKey`, counting nothing), the daily counter (one committed conditional UPDATE, AD-19), then the
-send. A send that fails still counts; Mock mode counts too (NFR-7).
+`NeedsKey`, counting nothing), privacy (Real mode only: `PrivacyNotAccepted` until the Student has
+accepted the notice, AD-17), the daily counter (one committed conditional UPDATE, AD-19), then the
+send. A send that fails still counts; Mock mode counts too (NFR-7). Grading is not counted, but in
+Real mode it passes the same privacy check before anything is sent.
+
+Real mode sends through `ai.anthropic_adapter` (FR-21).
 
 No gateway call runs inside a transaction (AD-19). Calls are logged with the Student id, the
 operation and the outcome, never with Source text or the Key.
@@ -15,8 +19,8 @@ from django.conf import settings
 from django.db import connection
 from django.db.models import F
 
-from ai import mock
-from ai.errors import AIError, DailyLimitReached, NeedsKey, ProviderUnavailable
+from ai import anthropic_adapter, mock
+from ai.errors import AIError, DailyLimitReached, NeedsKey, PrivacyNotAccepted
 from ai.models import GenerationCallCount
 from ai.schemas import (
     GenerateRequest,
@@ -63,7 +67,7 @@ def grade_free_text(student, request: GradeRequest) -> GradeResponse:
     """Grade a Free-text Answer (FR-12). Never counted against the daily limit (AD-3).
 
     Mock mode grades every Source with the word-overlap rule (no `NeedsKey`, so Questions made in
-    Real mode can still be practised); Real mode raises `ProviderUnavailable` until story 10.
+    Real mode can still be practised); Real mode needs the privacy acceptance first (AD-17).
     """
     return _uncounted(student, "grade_free_text", _send_grade, request)
 
@@ -81,6 +85,7 @@ def _counted(student, operation: str, content_sha256: str, send, request):
     try:
         if mode() == MOCK and not mock.is_sample(content_sha256):
             raise NeedsKey()
+        _check_privacy(student)
         _count_call(student)
         result = send(request)
     except AIError as error:
@@ -94,9 +99,10 @@ def _counted(student, operation: str, content_sha256: str, send, request):
 
 
 def _uncounted(student, operation: str, send, request):
-    """Like `_counted`, without the mode gate and the daily counter."""
+    """Like `_counted`, without the mode gate and the daily counter; privacy still applies."""
     assert not connection.in_atomic_block, "No gateway call runs inside a transaction (AD-19)."
     try:
+        _check_privacy(student)
         result = send(request)
     except AIError as error:
         logger.info("ai %s student=%s outcome=%s", operation, student.pk, error.code)
@@ -106,6 +112,12 @@ def _uncounted(student, operation: str, send, request):
         raise
     logger.info("ai %s student=%s outcome=ok mode=%s", operation, student.pk, mode())
     return result
+
+
+def _check_privacy(student) -> None:
+    """AD-17: in Real mode no Source text leaves before the Student accepted D04. Never in Mock mode."""
+    if mode() == REAL and student.privacy_accepted_at is None:
+        raise PrivacyNotAccepted()
 
 
 def _count_call(student) -> None:
@@ -118,17 +130,16 @@ def _count_call(student) -> None:
 def _send_generate(request: GenerateRequest) -> StudyMaterial:
     if mode() == MOCK:
         return mock.study_material(request.detail_level)
-    # The Anthropic adapter arrives in story 10.
-    raise ProviderUnavailable()
+    return anthropic_adapter.generate(request)
 
 
 def _send_summary(request: SummaryRequest) -> SummaryResponse:
     if mode() == MOCK:
         return mock.summary(request.detail_level)
-    raise ProviderUnavailable()
+    return anthropic_adapter.summary(request)
 
 
 def _send_grade(request: GradeRequest) -> GradeResponse:
     if mode() == MOCK:
         return mock.grade(request)
-    raise ProviderUnavailable()
+    return anthropic_adapter.grade(request)

@@ -4,6 +4,8 @@ Reference. «Ikke rettet» shows the failure assertively with «Prøv å rette i
 heading after an Answer (app.js, data-focus-on-swap).
   answer, question, grade, grade_label, grade_icon, failure_message, wrong_choice, correct_letter,
   is_mc, lang, regrade_url, next_url, next_label
+  failure_code, question_url: `privacy_not_accepted` shows «Les og godta varselet» (D04, next = this Question)
+    instead of «Prøv å rette igjen» until the Student accepts
   can_override, override_url, override_items: «Endre vurdering» on a graded Free-text Answer (FR-12)
   overridden, ai_grade_label: the «Endret av deg» chip and the «KI-vurdering: …» line
   delete_url: «Slett spørsmålet», D09 in #dialog (FR-24)
@@ -21,10 +23,14 @@ heading after an Answer (app.js, data-focus-on-swap).
     <p class="feedback-explanation">{{ failure_message }}</p>
   {% elif grade == "not_graded" %}
     {% include "components/inline_message.html" with text=failure_message id="grading-failed" %}
+    {% if failure_code == "privacy_not_accepted" and not request.user.privacy_accepted_at %}{% url 'studymat:privacy' as privacy_url %}
+      <a class="button-secondary" href="{{ privacy_url }}?next={{ question_url|urlencode }}" hx-get="{{ privacy_url }}?next={{ question_url|urlencode }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "shield" %}{% message "privacy_notice_link" %}</a>
+    {% else %}
     <form class="feedback-retry" method="post" action="{{ regrade_url }}" hx-post="{{ regrade_url }}" hx-target="#question-card" hx-swap="innerHTML" hx-disabled-elt="find button[type='submit']" hx-sync="this:drop">
       {% csrf_token %}
       <button class="button-secondary" type="submit">{% icon "refresh" %}Prøv å rette igjen</button>
     </form>
+    {% endif %}
   {% else %}
     {% if overridden %}<p class="feedback-ai-grade">KI-vurdering: {{ ai_grade_label }}</p>{% endif %}
     <p class="feedback-explanation">{% if wrong_choice %}Riktig svar er {{ correct_letter }}. {% endif %}{% if answer.explanation %}<span{% if lang and not answer.is_mock %} lang="{{ lang }}"{% endif %}>{{ answer.explanation }}</span>{% endif %}</p>

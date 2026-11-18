@@ -47,3 +47,6 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/9-quiz-result-and-retry-round.md`
   summary: Cover the P07 strip behaviour in `static/js/app.js` (a slot click or `#q-N` hash opens and focuses its result row) with a browser/JS test.
   evidence: No JS or browser test runner exists; tests only check the `href="#q-N"`/`id="q-N"` markup, so a broken selector fails nothing.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/10-real-mode-privacy-notice-and-key-handling.md`
+  summary: `manage.py record_mock`, which re-records the Mock responses from Real mode, strips headers and Keys, and re-plants the wrong-page item (AD-4).
+  evidence: It needs real paid calls and a stable prompt, so it waits until the Author has tuned the prompt against real output (OQ-2). The `ai/mock/__init__.py` docstring still says story 10.

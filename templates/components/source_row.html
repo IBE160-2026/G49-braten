@@ -4,7 +4,9 @@ source-row: name, type, size, Detail level and the status-label; «⋯» with re
   generation_blocked: True when the Student has no Generation calls left today (NFR-7)
 A `pending` row starts its generation with one POST on load (AD-13's second named exception);
 the claim makes a reload or a second tab safe (AD-5). A failed row offers «Prøv igjen», or for
-`needs_key` «Bruk eksempeldokumentet» (D05).
+`needs_key` «Bruk eksempeldokumentet» (D05). `privacy_not_accepted` shows «Les og godta varselet»
+instead of «Prøv igjen» until the Student accepts (D04, next = this page; menu_next stands in when
+the row answers a POST).
 {% endcomment %}
 {% url 'studymat:generate' source.id as generate_url %}{% with status=source.effective_status reason=source.effective_failure_reason source_id=source.id|stringformat:"s" %}
 <li class="item-row source-row" id="source-{{ source.id }}"{% if source.status == "pending" %} hx-post="{{ generate_url }}" hx-trigger="load" hx-target="this" hx-swap="outerHTML"{% endif %}>
@@ -21,11 +23,15 @@ the claim makes a reload or a second tab safe (AD-5). A failed row offers «Prø
           {% url 'studymat:add_source' source.topic_id as add_source_url %}
           <a class="button-secondary" href="{{ add_source_url }}" hx-get="{{ add_source_url }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "file" %}Bruk eksempeldokumentet</a>
         {% else %}
+          {% if reason == "privacy_not_accepted" and not request.user.privacy_accepted_at %}{% url 'studymat:privacy' as privacy_url %}{% with privacy_next=menu_next|default:request.get_full_path %}
+            <a class="button-secondary" href="{{ privacy_url }}?next={{ privacy_next|urlencode }}" hx-get="{{ privacy_url }}?next={{ privacy_next|urlencode }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "shield" %}{% message "privacy_notice_link" %}</a>
+          {% endwith %}{% else %}
           {% if generation_blocked and reason != "daily_limit" %}{% message "daily_limit" as limit_text %}{% include "components/inline_message.html" with text=limit_text id="source-"|add:source_id|add:"-daily-limit" %}{% endif %}
           <form method="post" action="{{ generate_url }}" hx-post="{{ generate_url }}" hx-target="closest li" hx-swap="outerHTML" hx-disabled-elt="find button" hx-sync="this:drop">
             {% csrf_token %}
             <button class="button-secondary" type="submit"{% if generation_blocked %} disabled aria-describedby="source-{{ source.id }}-{% if reason == "daily_limit" %}reason{% else %}daily-limit{% endif %}"{% endif %}>Prøv igjen</button>
           </form>
+          {% endif %}
         {% endif %}
       </div>
     {% endif %}

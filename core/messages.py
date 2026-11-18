@@ -51,6 +51,9 @@ MESSAGES: dict[str, str] = {
     "provider_unavailable": "Kunne ikke lage studiemateriell fordi KI-tjenesten ikke svarte. Prøv igjen.",
     # FR-21 (EXPERIENCE.md, State Patterns «Key rejected»): on the source-row and in a Quiz.
     "key_rejected": "KI-tjenesten godtok ikke API-nøkkelen. Sjekk nøkkelen i .env og start appen på nytt.",
+    # FR-22, AD-17: the gateway refused to send before D04 «Før du laster opp» was accepted.
+    "privacy_not_accepted": "Du må godta personvernvarselet før teksten sendes til KI-tjenesten.",
+    "privacy_notice_link": "Les og godta varselet",
     # P06 Quiz (FR-10 to FR-12, story 8).
     "answer_choose_first": "Velg et svar først.",
     "answer_write_first": "Skriv et svar først.",

@@ -1,0 +1,10 @@
+{% extends "layouts/shell.html" %}
+{% load ui %}
+{# D04 «Før du laster opp» (FR-22, AD-17): the privacy notice before the first upload in Real mode. «Jeg forstår, fortsett» POSTs to studymat:privacy; «Avbryt» and Esc store and send nothing. #}
+{% block title %}Før du laster opp – AI Study Buddy{% endblock %}
+{% partialdef fields %}
+<p class="privacy-limits">{% icon "shield" "sm" %}<span>Ingenting sendes før du velger «Jeg forstår, fortsett». Velger du «Avbryt», kommer varselet igjen neste gang.</span></p>
+{% endpartialdef %}
+{% block content %}
+{% with as_page=True %}{% partialdef dialog inline %}{% include "components/dialog.html" with title="Før du laster opp" lead="Når du laster opp en kilde, sendes teksten i den til KI-tjenesten som lager studiemateriellet. Noen gratisnivåer kan bruke innsendt innhold til å forbedre leverandørens produkter. Du må godta dette før du kan laste opp." body="studymat/privacy_notice.html#fields" submit_label="Jeg forstår, fortsett" action=action cancel_url=cancel_url next=next %}{% endpartialdef %}{% endwith %}
+{% endblock %}

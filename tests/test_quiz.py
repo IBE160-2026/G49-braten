@@ -256,12 +256,12 @@ def test_fr12_grading_failure_is_not_graded_with_message_and_regrade(ida, client
     qq = position_of(quiz, "free_text")
 
     def fail(request):
-        raise errors.RateLimited()
+        raise errors.ProviderUnavailable()
 
     monkeypatch.setattr(gateway, "_send_grade", fail)
     body = client_ida.post(answer_url(quiz, qq.position), {"text": qq.question.model_answer}, **CARD).content.decode()
     answer = Answer.objects.get(question=qq.question)
-    assert (answer.grade, answer.failure) == (Grade.NOT_GRADED, "rate_limited")
+    assert (answer.grade, answer.failure) == (Grade.NOT_GRADED, "provider_unavailable")
     assert "Ikke rettet" in body and MESSAGES["grading_failed"] in body and 'role="alert"' in body
     assert "Prøv å rette igjen" in body
     # A reload shows the same.
@@ -290,15 +290,50 @@ def test_fr21_key_rejected_shows_the_key_message(ida, topic, sample, monkeypatch
     assert MESSAGES["key_rejected"] in client.get(question_url(quiz, qq.position)).content.decode()
 
 
-def test_fr21_real_mode_saves_the_text_and_shows_ikke_rettet(ida, client_ida, topic, sample, settings):
+def test_fr22_real_mode_without_acceptance_saves_the_text_and_links_to_d04(ida, client_ida, topic, sample, settings):
     quiz = make_quiz(ida, topic)
     qq = position_of(quiz, "free_text")
     settings.AI_PROVIDER = "anthropic"
     body = client_ida.post(answer_url(quiz, qq.position), {"text": "Mitt svar"}, **CARD).content.decode()
     answer = Answer.objects.get(question=qq.question)
     assert answer.text == "Mitt svar" and answer.grade == Grade.NOT_GRADED
-    assert answer.failure == "provider_unavailable"
-    assert "Ikke rettet" in body and MESSAGES["grading_failed"] in body
+    assert answer.failure == "privacy_not_accepted"
+    assert "Ikke rettet" in body and MESSAGES["privacy_not_accepted"] in body
+    here = question_url(quiz, qq.position)
+    assert MESSAGES["privacy_notice_link"] in body
+    assert f'hx-get="{reverse("studymat:privacy")}?next={here}"' in body.replace("%2F", "/")
+
+
+def test_fr22_after_acceptance_the_d04_link_goes_and_regrade_shows(ida, client_ida, topic, sample, settings):
+    from accounts.services import accept_privacy
+
+    quiz = make_quiz(ida, topic)
+    qq = position_of(quiz, "free_text")
+    settings.AI_PROVIDER = "anthropic"
+    body = client_ida.post(answer_url(quiz, qq.position), {"text": "Mitt svar"}, **CARD).content.decode()
+    assert Answer.objects.get(question=qq.question).failure == "privacy_not_accepted"
+    assert MESSAGES["privacy_notice_link"] in body and "Prøv å rette igjen" not in body
+    accept_privacy(ida)
+    page = client_ida.get(question_url(quiz, qq.position)).content.decode()
+    assert MESSAGES["privacy_notice_link"] not in page
+    assert "Prøv å rette igjen" in page
+
+
+@pytest.mark.parametrize(
+    ("error", "code"),
+    [(errors.KeyRejected, "key_rejected"), (errors.RateLimited, "rate_limited"), (errors.Refused, "grading_failed")],
+)
+def test_fr21_grading_names_key_rejected_and_rate_limited(ida, client_ida, topic, sample, monkeypatch, error, code):
+    quiz = make_quiz(ida, topic)
+    qq = position_of(quiz, "free_text")
+
+    def fail(request):
+        raise error()
+
+    monkeypatch.setattr(gateway, "_send_grade", fail)
+    body = client_ida.post(answer_url(quiz, qq.position), {"text": "svar"}, **CARD).content.decode()
+    assert MESSAGES[code] in body
+    assert MESSAGES["privacy_notice_link"] not in body
 
 
 def test_fr10_a_pending_grade_reads_as_not_graded(ida, client_ida, topic, sample):

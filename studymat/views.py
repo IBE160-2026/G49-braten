@@ -8,15 +8,23 @@ in the upload-panel.
 In Mock mode, «Bruk eksempeldokumentet» (`use_sample`) ingests the Sample document with the chosen
 Detail level. When the Student has no Generation calls left today, the dialog shows the
 daily-limit message with both submits disabled, and a POST anyway saves nothing.
+
+D04 «Før du laster opp» (FR-22, AD-17) is its own dialog URL, `studymat:privacy?next=…`. In Real
+mode, until the Student accepts, D05 shows D04 instead (with `next` = D05) and a D05 POST saves
+nothing. The gateway is the guard; D04 only asks.
 """
+
+from urllib.parse import urlsplit
 
 from django.core.files import File
 from django.http import Http404
 from django.shortcuts import redirect, render, resolve_url
+from django.urls import Resolver404, resolve, reverse
 from django.views.decorators.http import require_http_methods, require_POST
 
+from accounts import services as accounts_services
 from ai import gateway, mock
-from core.http import redirect_after_submit, render_page, safe_next, vary_on_htmx
+from core.http import DIALOG_TARGET, htmx_target, redirect_after_submit, render_page, safe_next, vary_on_htmx
 from core.messages import MESSAGES
 from core.ownership import get_owned_or_404
 from courses.models import Source, Status, Topic
@@ -27,8 +35,9 @@ from studymat import services
 from studymat.forms import AddSourceForm
 from studymat.models import Flashcard, KeyConcept, Question
 
-# P05 lives in `web`; studymat names it by URL name only (AD-1 governs imports).
+# P05 and Hjem live in `web`; studymat names them by URL name only (AD-1 governs imports).
 TOPIC_PAGE = "web:topic"
+HOME_PAGE = "web:home"
 
 # D09 for one item (FR-24): the URL kind -> (model, the P05 tab it is shown on).
 ITEM_KINDS = {
@@ -53,11 +62,67 @@ def _ingest_sample(topic, detail_level: str):
         return ingest(topic, upload=File(handle, name=mock.SAMPLE_NAME), detail_level=detail_level)
 
 
+def needs_privacy_notice(student) -> bool:
+    """D04 comes first: Real mode and the Student has not accepted the notice (FR-22)."""
+    return gateway.mode() == gateway.REAL and student.privacy_accepted_at is None
+
+
+def _render_privacy(request, next_url: str, cancel_url: str):
+    return render_page(
+        request,
+        "studymat/privacy_notice.html",
+        {
+            "action": reverse("studymat:privacy"),
+            "next": next_url,
+            "cancel_url": cancel_url,
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+@vary_on_htmx
+def privacy(request):
+    """D04 «Før du laster opp» (FR-22, AD-18 dialog). POST accepts and lands on a safe `next`, else Hjem.
+
+    «Avbryt» goes to a safe `cancel`, else to `next`, else Hjem; nothing is stored. In Mock mode the URL
+    goes straight to `next` and shows nothing.
+    """
+    next_url = safe_next(request)
+    landing = next_url or resolve_url(HOME_PAGE)
+    if gateway.mode() == gateway.MOCK or (request.method == "GET" and request.user.privacy_accepted_at):
+        # Nothing to ask: Mock mode never shows D04, and an accepted notice is not shown again.
+        return redirect_after_submit(request, landing)
+    if request.method == "POST":
+        accounts_services.accept_privacy(request.user)
+        # Accepted from D05's gate inside #dialog: open D05 in the same slot, without leaving the page.
+        topic_id = _add_source_topic(next_url)
+        if topic_id is not None and htmx_target(request) == DIALOG_TARGET:
+            topic = get_owned_or_404(Topic.objects.select_related("course"), request.user, pk=topic_id)
+            return _render_add_source(request, topic, AddSourceForm())
+        return redirect_after_submit(request, landing)
+    return _render_privacy(request, next_url, safe_next(request, "cancel") or landing)
+
+
+def _add_source_topic(url: str) -> int | None:
+    """The Topic id when `url` is D05 (`studymat:add_source`), else None."""
+    if not url:
+        return None
+    try:
+        match = resolve(urlsplit(url).path)
+    except Resolver404:
+        return None
+    if match.view_name != "studymat:add_source":
+        return None
+    return match.kwargs["topic_id"]
+
+
 @require_http_methods(["GET", "POST"])
 @vary_on_htmx
 def add_source(request, topic_id):
     topic = get_owned_or_404(Topic.objects.select_related("course"), request.user, pk=topic_id)
-    topic_url = resolve_url(TOPIC_PAGE, topic.id)
+    if needs_privacy_notice(request.user):
+        # FR-22: D04 before D05; a D05 POST saves nothing. «Avbryt» goes back to the Topic.
+        return _render_privacy(request, resolve_url("studymat:add_source", topic.id), resolve_url(TOPIC_PAGE, topic.id))
     mock_mode = gateway.mode() == gateway.MOCK
     # NFR-7: the message comes before anything is uploaded or sent (EXPERIENCE.md, D05).
     at_limit = gateway.remaining_today(request.user) == 0
@@ -92,6 +157,17 @@ def add_source(request, topic_id):
         form = AddSourceForm(initial={k: request.POST.get(k) for k in ("text", "name", "detail_level") if k in request.POST})
     else:
         form = AddSourceForm()
+    return _render_add_source(
+        request, topic, form, upload_error=upload_error, rejected_field=rejected_field, at_limit=at_limit
+    )
+
+
+def _render_add_source(request, topic, form, *, upload_error=None, rejected_field=None, at_limit=None):
+    """D05 as a page or as the #dialog partial."""
+    if at_limit is None:
+        at_limit = gateway.remaining_today(request.user) == 0
+    mock_mode = gateway.mode() == gateway.MOCK
+    topic_url = resolve_url(TOPIC_PAGE, topic.id)
     return render_page(
         request,
         "studymat/add_source.html",

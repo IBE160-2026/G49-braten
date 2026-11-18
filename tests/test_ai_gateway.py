@@ -9,9 +9,18 @@ import logging
 import pytest
 from django.db import connection, transaction
 
-from ai import errors, gateway, mock
+from accounts.services import accept_privacy
+from ai import anthropic_adapter, errors, gateway, mock
 from ai.models import GenerationCallCount
-from ai.schemas import GenerateRequest, Location, StudyMaterial, SummaryRequest, SummaryResponse
+from ai.schemas import (
+    GenerateRequest,
+    GradeRequest,
+    GradeResponse,
+    Location,
+    StudyMaterial,
+    SummaryRequest,
+    SummaryResponse,
+)
 from core import time
 from core.messages import MESSAGES
 from courses.models import DetailLevel, FailureReason
@@ -204,14 +213,81 @@ def test_nfr7_the_increment_is_committed_before_the_send(ida, monkeypatch):
     assert seen == [1]
 
 
-# ---- Matrix: Real mode (FR-21, until story 10) -------------------------------------------
+# ---- Matrix: Real mode and privacy (FR-21, FR-22, AD-17, story 10) ----------------------
 
 
-def test_fr21_real_mode_raises_provider_unavailable_and_counts_the_attempt(ida, settings):
+@pytest.fixture
+def real(settings):
     settings.AI_PROVIDER = "anthropic"
-    with pytest.raises(errors.ProviderUnavailable):
+
+
+@pytest.fixture
+def adapter(monkeypatch):
+    """Fakes the three adapter operations and records what was sent."""
+    sent = []
+    monkeypatch.setattr(anthropic_adapter, "generate", lambda r: sent.append("generate") or mock.study_material("medium"))
+    monkeypatch.setattr(anthropic_adapter, "summary", lambda r: sent.append("summary") or mock.summary("short"))
+    monkeypatch.setattr(
+        anthropic_adapter, "grade", lambda r: sent.append("grade") or GradeResponse(grade="correct", explanation="Ja.")
+    )
+    return sent
+
+
+def grade_request() -> GradeRequest:
+    return GradeRequest(prompt="Hva?", model_answer="Redundans.", answer="Redundans.", source_text="Tekst.")
+
+
+def test_fr22_real_mode_without_acceptance_sends_nothing_and_counts_nothing(ida, real, adapter, caplog):
+    with caplog.at_level(logging.INFO, logger="ai.gateway"):
+        for call in (
+            lambda: gateway.generate_study_material(ida, generate_request(sha=OTHER_SHA)),
+            lambda: gateway.regenerate_summary(ida, summary_request(sha=OTHER_SHA)),
+            lambda: gateway.grade_free_text(ida, grade_request()),
+        ):
+            with pytest.raises(errors.PrivacyNotAccepted) as caught:
+                call()
+            assert caught.value.code == "privacy_not_accepted"
+            assert caught.value.message == MESSAGES["privacy_not_accepted"]
+    assert adapter == []
+    assert used(ida) == 0
+    assert "outcome=privacy_not_accepted" in caplog.text
+
+
+def test_fr22_privacy_is_checked_before_the_counter(ida, real, adapter):
+    use_up(ida)
+    with pytest.raises(errors.PrivacyNotAccepted):
+        gateway.generate_study_material(ida, generate_request(sha=OTHER_SHA))
+    assert used(ida) == gateway.DAILY_LIMIT and adapter == []
+
+
+def test_fr21_real_mode_with_acceptance_sends_through_the_adapter(ida, real, adapter):
+    accept_privacy(ida)
+    ida.refresh_from_db()
+    assert isinstance(gateway.generate_study_material(ida, generate_request(sha=OTHER_SHA)), StudyMaterial)
+    assert isinstance(gateway.regenerate_summary(ida, summary_request(sha=OTHER_SHA)), SummaryResponse)
+    assert gateway.grade_free_text(ida, grade_request()).grade == "correct"
+    assert adapter == ["generate", "summary", "grade"]
+    # Generation and Summary count; grading never does (AD-3).
+    assert used(ida) == 2
+
+
+def test_fr21_a_failed_real_send_still_counts(ida, real, monkeypatch):
+    accept_privacy(ida)
+
+    def reject(request):
+        raise errors.KeyRejected()
+
+    monkeypatch.setattr(anthropic_adapter, "generate", reject)
+    with pytest.raises(errors.KeyRejected):
         gateway.generate_study_material(ida, generate_request(sha=OTHER_SHA))
     assert used(ida) == 1
+
+
+def test_fr20_mock_mode_never_checks_privacy(ida, adapter):
+    assert ida.privacy_accepted_at is None
+    gateway.generate_study_material(ida, generate_request())
+    gateway.grade_free_text(ida, grade_request())
+    assert adapter == []
 
 
 def test_fr21_not_yet_built_operations_raise_not_implemented(ida):

@@ -245,6 +245,8 @@ def _context(quiz, quiz_question, stored, *, error: str, typed: str) -> dict:
         "typed": typed,
         "answer_url": resolve_url("quiz:answer", *url_args),
         "regrade_url": resolve_url("quiz:regrade", *url_args),
+        # D04's `next` from the feedback-panel: back to this Question (FR-22).
+        "question_url": resolve_url("quiz:question", *url_args),
         "next_url": next_url,
         "next_label": "Neste spørsmål" if next_position else "Fullfør quiz",
     }
@@ -276,6 +278,7 @@ def _feedback(question, stored: Answer) -> dict:
         "grade_label": Grade(grade).label,
         "grade_icon": GRADE_ICONS[grade],
         "failure_message": _failure_message(stored.shown_failure) if grade == Grade.NOT_GRADED else "",
+        "failure_code": stored.shown_failure if grade == Grade.NOT_GRADED else "",
         "correct_letter": option_letter(question.correct_index),
         "wrong_choice": is_mc and grade == Grade.INCORRECT,
     }
@@ -392,8 +395,12 @@ def _options(question, stored, *, focus_first: bool) -> list[dict]:
     return rows
 
 
+# «Ikke rettet» names these failures; any other shows the grading message.
+NAMED_GRADING_FAILURES = ("key_rejected", "rate_limited", "privacy_not_accepted")
+
+
 def _failure_message(code: str) -> str:
-    """«Ikke rettet»: E:303 for a rejected Key, otherwise the grading message."""
-    if code == "key_rejected":
-        return MESSAGES["key_rejected"]
+    """«Ikke rettet»: the named message for a rejected Key, a rate limit or a missing privacy acceptance."""
+    if code in NAMED_GRADING_FAILURES:
+        return MESSAGES[code]
     return MESSAGES["grading_failed"]
