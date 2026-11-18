@@ -216,6 +216,29 @@ def test_fr24_deleting_the_source_cascades_to_its_items(ida, source):
     assert not KeyConcept.objects.exists() and not Flashcard.objects.exists() and not Question.objects.exists()
 
 
+def test_fr24_deleting_a_card_or_its_source_takes_its_review_state_and_ratings(ida, source):
+    """AD-8 (story 11): Leitner state and Ratings go with their Flashcard, and so with its Source."""
+    from courses.scope import Scope
+    from review import services as review_services
+    from review.models import Rating, Review, ReviewState
+    from review.rules import RatingValue
+
+    states = list(review_services.due_cards(ida, Scope.all()))
+    assert len(states) == 3
+    review = review_services.start(ida, Scope.all(), "/")
+    review_services.rate(review, states[0].flashcard, RatingValue.AGAIN, 1)
+    review_services.rate(review, states[1].flashcard, RatingValue.GOOD, 2)
+
+    studymat_services.delete_item(ida, states[0].flashcard)
+    assert not ReviewState.objects.filter(pk=states[0].pk).exists()
+    assert Rating.objects.filter(review=review).count() == 1
+    # The Review itself and the other cards' state stay.
+    assert Review.objects.filter(pk=review.pk).exists() and ReviewState.objects.count() == 2
+
+    services.delete_source(source)
+    assert not ReviewState.objects.exists() and not Rating.objects.exists()
+
+
 # ---- Story 8b: an optional `cancel` for «Avbryt» ------------------------------------------
 
 

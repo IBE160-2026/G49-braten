@@ -44,6 +44,20 @@
   </section>
 {% elif tab == "selftest" %}
   {% if flashcards %}
+    <section class="tool-card" aria-labelledby="cards-card-heading">
+      {% icon "cards" %}
+      <div class="tool-card-text">
+        <h2 class="tool-card-heading" id="cards-card-heading">Kort</h2>
+        <p>{{ counts.cards }} kort i temaet. {{ due_today }} forfaller i dag.</p>
+      </div>
+      <div class="tool-card-actions">
+        {% if due_today %}
+          <a class="button-secondary" href="{{ review_start_url }}">Repeter dagens kort ({{ due_today }})</a>
+        {% else %}
+          <p class="tool-card-note">Ingen kort i dag</p>
+        {% endif %}
+      </div>
+    </section>
     <div class="section-head">
       <h2 class="section-heading" id="cards-heading">Kort i temaet</h2>
     </div>

@@ -64,8 +64,8 @@ def test_fr2_rail_lists_fag_with_zero_due_and_no_mastery_yet(client_ida, ida):
     assert '<span class="fag-rail-pct">–</span>' in rail
     assert "rail-meter--none" in rail
     assert ", ingen kort i dag" in rail
-    # «I dag · 0» is plain text until Repetisjon exists.
-    assert re.search(r'<p class="rail-link rail-link--text">.*I dag · <b>0</b>', rail)
+    # «I dag · 0» links to Repetisjon for all fag (story 11).
+    assert re.search(r'<a class="rail-link" href="/reviews/start/\?next=/">.*I dag · <b>0</b>', rail)
 
 
 def test_fr2_rail_marks_hjem_as_current_on_hjem(client_ida, ida):

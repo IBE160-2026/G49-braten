@@ -329,7 +329,8 @@ def test_fr23_selftest_lists_cards_newest_source_first_with_front_back_reference
     next_param = f"{topic_url(normalisering)}%3Ftab%3Dselftest"
     assert f'hx-get="{delete_url}?next={next_param}" hx-target="#dialog"' in panel
     assert "Slett kortet</a>" in panel
-    for later in ("Repeter dagens kort", "Bla i alle kort", "Sett opp prøveeksamen"):
+    # «Repeter dagens kort» came with story 11 (tests/test_review.py); P08 and the exam come later.
+    for later in ("Bla i alle kort", "Sett opp prøveeksamen"):
         assert later not in panel
 
 

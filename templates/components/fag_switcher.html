@@ -6,7 +6,7 @@
     <span class="fag-switcher-name">
       {% if current_course %}{{ current_course.name }}{% if current_course.code %}<small>{{ current_course.code }}</small>{% endif %}{% else %}Alle fag<small>{{ shell_courses|length }} fag</small>{% endif %}
     </span>
-    <span class="fag-switcher-due"><b>0</b> i dag</span>
+    <span class="fag-switcher-due"><b>{% if current_course %}{% for c in shell_courses %}{% if c.id == current_course.id %}{{ c.due_today }}{% endif %}{% endfor %}{% else %}{{ shell_due.total }}{% endif %}</b> i dag</span>
     {% icon "chev-down" %}
   </button>
   <div id="fag-switcher-list" class="menu fag-switcher-list" popover data-anchored role="listbox" aria-label="Fag">
@@ -15,8 +15,8 @@
     {% for c in shell_courses %}
       <a class="menu-item fag-switcher-option" role="option" href="{% url 'web:course' c.id %}" aria-selected="{% if current_course.id == c.id %}true{% else %}false{% endif %}">
         <span class="fag-switcher-option-name">{{ c.name }}{% if c.code %} <small>{{ c.code }}</small>{% endif %}</span>
-        <span class="fag-switcher-option-meta">0 i dag · –</span>
-        <span class="visually-hidden">, ingen kort i dag, mestring: ikke nok data ennå</span>
+        <span class="fag-switcher-option-meta">{{ c.due_today }} i dag · –</span>
+        <span class="visually-hidden">, {% if c.due_today %}{{ c.due_today }} kort i dag{% else %}ingen kort i dag{% endif %}, mestring: ikke nok data ennå</span>
       </a>
     {% endfor %}
     <div class="menu-separator" role="presentation"></div>

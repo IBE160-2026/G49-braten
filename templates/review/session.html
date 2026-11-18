@@ -1,0 +1,70 @@
+{% extends "layouts/base.html" %}
+{% load ui studymat_tags %}
+{% comment %}
+P09 «Repetisjon» (FR-15, story 11). One template, three states:
+  card  — the current card; the back, the Reference and the rating-buttons once flipped
+          (`flipped` without JavaScript, or app.js in place). Swapped into #review-card after a rating.
+  end   — «Repetisjonen er ferdig» once nothing in the scope is due.
+  empty — «Ingen kort i dag» when a start finds nothing due (no Review was made).
+{% endcomment %}
+{% block title %}{% if state == "card" %}Kort {{ index }} av {{ total }} – Repetisjon{% else %}Repetisjon{% endif %} – AI Study Buddy{% endblock %}
+{% block body_class %}session-body{% endblock %}
+{% block body %}
+{% include "components/session_bar.html" %}
+{% include "components/mode_banner.html" %}
+<main id="main" class="session-page" tabindex="-1">
+  <div id="page-messages" class="page-messages"></div>
+  <div id="review-card">
+{% partialdef card inline %}
+{% if oob %}{% include "components/session_bar.html" %}<div id="live-polite" hx-swap-oob="innerHTML">{% if state == "card" %}Kort {{ index }} av {{ total }}{% else %}Repetisjonen er ferdig{% endif %}</div>{% endif %}
+{% if state == "card" %}
+<article class="review-card{% if flipped %} is-flipped{% endif %}" data-review-card aria-labelledby="review-front">
+  <p class="review-card-meta">
+    <span class="review-card-path">{{ course_name }} › {{ topic_name }}</span>
+    <span class="review-card-side" data-face="front"{% if flipped %} hidden{% endif %}>Forside</span>
+    <span class="review-card-side" data-face="back"{% if not flipped %} hidden{% endif %}>Bakside</span>
+  </p>
+  <h1 class="review-card-front" id="review-front" tabindex="-1"{% if lang %} lang="{{ lang }}"{% endif %}{% if not flipped %} autofocus{% endif %}>{{ card.front }}</h1>
+  <div class="review-card-back" data-face="back"{% if not flipped %} hidden{% endif %}>
+    <p class="review-card-answer" id="review-back" tabindex="-1"{% if lang %} lang="{{ lang }}"{% endif %}{% if flipped %} autofocus{% endif %}>{{ card.back }}</p>
+    {% include "components/reference.html" with item=card lang=lang %}
+  </div>
+  <div class="review-card-flip" data-face="front"{% if flipped %} hidden{% endif %}>
+    <a class="button-primary" href="{{ flip_url }}" data-flip>{% icon "flip" %}Vis svaret</a>
+    <p class="review-keys" aria-hidden="true"><kbd>Mellomrom</kbd> snur kortet</p>
+  </div>
+</article>
+<form class="review-rate" method="post" action="{{ rate_url }}" data-face="back"{% if not flipped %} hidden{% endif %} hx-post="{{ rate_url }}" hx-target="#review-card" hx-swap="innerHTML" hx-sync="this:drop" hx-disabled-elt="find fieldset">
+  {% csrf_token %}
+  <input type="hidden" name="flashcard" value="{{ card.id }}">
+  <input type="hidden" name="step" value="{{ step }}">
+  <fieldset class="rating-buttons">
+    <legend class="rating-question">Hvor godt husket du det? Hver knapp sier når kortet kommer tilbake.</legend>
+    <div class="rating-grid">
+    {% for button in buttons %}
+      <button class="rating-button" type="submit" name="rating" value="{{ button.value }}" data-key="{{ button.key }}">
+        <span class="rating-name">{{ button.label }}<kbd class="rating-key" aria-hidden="true">{{ button.key }}</kbd></span>
+        <span class="rating-when">{% icon "arrow" %}<span class="visually-hidden">, kommer tilbake </span>{{ button.when }}</span>
+      </button>
+    {% endfor %}
+    </div>
+  </fieldset>
+  <p class="review-keys" aria-hidden="true"><kbd>1</kbd>–<kbd>4</kbd> vurderer</p>
+</form>
+{% elif state == "end" %}
+<section class="review-done" aria-labelledby="review-done-heading">
+  <h1 class="review-done-heading" id="review-done-heading" tabindex="-1" autofocus>{% icon "ok" %}Repetisjonen er ferdig</h1>
+  <p class="review-done-lead">Du repeterte {{ rated }} kort. {% if next_label %}Neste kort kommer {{ next_label }}.{% else %}Ingen flere kort er planlagt.{% endif %}</p>
+  <p><a class="button-primary" href="{{ exit_url }}">Tilbake</a></p>
+</section>
+{% else %}
+<section class="review-done" aria-labelledby="review-done-heading">
+  <h1 class="page-title" id="review-done-heading">Repetisjon</h1>
+  <p class="calm-message">{% icon "ok" %}<span>Ingen kort i dag. {% if next_date %}Neste kort kommer {{ next_date|date:"j. F" }}.{% else %}Ingen flere kort er planlagt.{% endif %}</span></p>
+  <p><a class="button-secondary" href="{{ exit_url }}">Tilbake</a></p>
+</section>
+{% endif %}
+{% endpartialdef %}
+  </div>
+</main>
+{% endblock %}

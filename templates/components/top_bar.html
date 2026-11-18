@@ -2,8 +2,8 @@
 {# top-bar (below 1024 px): the app name to Hjem, «I dag · N», and the avatar for D01. #}
 <header class="top-bar">
   <a class="brand" href="{% url 'web:home' %}">{% icon "mark" "brand" %}<span>AI Study Buddy</span></a>
-  {# Plain text until Repetisjon exists (story 9). #}
-  <p class="today-chip">{% icon "calendar" %}<span>I dag · <b>0</b></span></p>
+  {# «I dag · N» opens Repetisjon for all fag (FR-15). #}
+  <a class="today-chip" href="{% url 'review:start' %}?next={{ request.get_full_path|urlencode }}">{% icon "calendar" %}<span>I dag · <b>{{ shell_due.total }}</b><span class="visually-hidden"> kort å repetere</span></span></a>
   <button class="avatar-button" type="button" popovertarget="account-menu" aria-label="Kontomeny for {{ user.email }}">
     <span class="avatar" aria-hidden="true">{{ user.email|first|upper }}</span>
   </button>

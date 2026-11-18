@@ -7,6 +7,7 @@ urlpatterns = [
     path("", include("courses.urls")),
     path("", include("studymat.urls")),
     path("", include("quiz.urls")),
+    path("", include("review.urls")),
     path("", include("web.urls")),
 ]
 

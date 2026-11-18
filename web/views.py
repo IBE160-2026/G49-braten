@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.db.models import Prefetch
 from django.shortcuts import redirect, render, resolve_url
+from django.utils.http import urlencode
 from django.views.decorators.http import require_POST, require_safe
 
 from ai import gateway
@@ -10,6 +11,8 @@ from core.http import render_page, safe_next, vary_on_htmx
 from core.ownership import get_owned_or_404
 from core.messages import MESSAGES
 from courses.models import Course, Source, Status, Topic
+from courses.scope import Scope
+from review import services as review_services
 from studymat.models import Flashcard, KeyConcept, Question
 from web.context_processors import THEME_COOKIE, THEMES
 
@@ -124,6 +127,10 @@ def topic(request, topic_id):
         context["blocks"] = _summary_blocks(listed)
         context["has_ready"] = any(block["ready"] for block in context["blocks"])
     elif tab == "selftest":
+        # «Repeter dagens kort (N)»: this tema's Due cards, from the one definition (AD-11).
+        context["due_today"] = review_services.due_cards(request.user, Scope(topic_id=topic.id)).count()
+        back_here = f"{resolve_url('web:topic', topic.id)}?tab=selftest"
+        context["review_start_url"] = f"{resolve_url('review:start')}?{urlencode({'topic': topic.id, 'next': back_here})}"
         # Newest kilde first (Source ordering), then each kilde's cards in the order they were made.
         context["flashcards"] = (
             Flashcard.objects.filter(**ready_items)

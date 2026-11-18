@@ -37,6 +37,9 @@ body {
 
 h1, h2, h3, p { margin: 0; }
 
+/* `hidden` always hides, even on elements whose class sets a display (P09 flips faces with it). */
+[hidden] { display: none !important; }
+
 a { color: var(--link); text-underline-offset: 2px; }
 
 :focus-visible {
@@ -1032,3 +1035,82 @@ button[disabled][aria-describedby] { cursor: not-allowed; opacity: .55; }
   .result-slot { border: 2px solid CanvasText; }
   .result-slot--unanswered { border-style: dashed; }
 }
+
+/* ======================================================================
+   P09 Repetisjon: review-card, rating-buttons, the end (story 11)
+   ====================================================================== */
+.session-meter {
+  width: min(180px, 100%); height: 6px; border: 0; border-radius: var(--rounded-full);
+  background: var(--rail-3); overflow: hidden; appearance: none; -webkit-appearance: none;
+}
+.session-meter::-webkit-progress-bar { background: var(--rail-3); border-radius: var(--rounded-full); }
+.session-meter::-webkit-progress-value { background: var(--rail-meter); border-radius: var(--rounded-full); }
+.session-meter::-moz-progress-bar { background: var(--rail-meter); border-radius: var(--rounded-full); }
+
+.review-card {
+  display: grid; align-content: space-between; gap: 20px; min-height: 280px;
+  padding: 20px 20px 18px; border: 1px solid var(--line); border-radius: var(--rounded-lg);
+  background: var(--ground); box-shadow: 0 1px 2px rgba(8, 28, 33, .06), 0 6px 18px rgba(8, 28, 33, .06);
+}
+.review-card-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13.5px; color: var(--ink-3); }
+.review-card-path { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.review-card-side { flex: none; font-weight: 700; color: var(--ink-2); }
+.review-card-front { font-size: 23px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
+.review-card.is-flipped .review-card-front {
+  font-size: 16px; font-weight: 650; color: var(--ink-2); padding-bottom: 14px; border-bottom: 1px solid var(--line);
+}
+.review-card-front:focus, .review-card-answer:focus { outline: none; }
+.review-card-front:focus-visible, .review-card-answer:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+.review-card-back { display: grid; gap: 16px; }
+.review-card-answer { max-width: 68ch; font-size: 20px; font-weight: 600; line-height: 1.45; }
+.review-card-flip { display: grid; justify-items: stretch; gap: 8px; }
+.review-card-flip .button-primary .icon { width: 18px; height: 18px; }
+.review-keys { display: none; font-size: 13.5px; color: var(--ink-3); text-align: center; }
+.review-keys kbd, .rating-key {
+  display: inline-block; min-width: 20px; padding: 0 5px; margin: 0 2px;
+  border: 1px solid var(--line-2); border-radius: var(--rounded-xs); background: var(--ground-2);
+  font: inherit; font-size: 12px; font-weight: 700; line-height: 18px; text-align: center; color: var(--ink-2);
+}
+@media (min-width: 600px) {
+  .review-card { min-height: 320px; padding: 24px 26px 20px; }
+  .review-card-front { font-size: 27px; }
+  .review-card-answer { font-size: 22px; }
+  .review-card-flip { justify-items: center; }
+}
+
+.review-rate { display: grid; gap: 10px; margin-top: 18px; }
+.rating-buttons { border: 0; margin: 0; padding: 0; min-width: 0; }
+.rating-question { padding: 0; margin-bottom: 10px; width: 100%; font-size: 15px; font-weight: 650; color: var(--ink-2); text-align: center; }
+.rating-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.rating-button {
+  display: grid; justify-items: center; gap: 4px; min-height: 64px; padding: 8px 10px;
+  border: 1px solid var(--line-control); border-radius: var(--rounded-md); background: var(--ground);
+  color: var(--ink); font: inherit; font-size: 16.5px; font-weight: 700; cursor: pointer;
+}
+.rating-button:hover { border-color: var(--primary); background: var(--forecast-soft); }
+.rating-button:disabled { cursor: progress; opacity: .7; }
+.rating-name { display: inline-flex; align-items: center; gap: 6px; }
+.rating-key { display: none; }
+.rating-when { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.rating-when .icon { width: 14px; height: 14px; }
+@media (min-width: 600px) {
+  .rating-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .review-keys { display: block; }
+  .rating-key { display: inline-block; }
+}
+
+.review-done { display: grid; gap: 16px; justify-items: start; }
+.review-done > * { justify-self: stretch; }
+.review-done > p:last-child { justify-self: start; }
+.review-done-heading { display: inline-flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 750; }
+.review-done-heading .icon { width: 24px; height: 24px; color: var(--ok); }
+.review-done-heading:focus { outline: none; }
+.review-done-heading:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.review-done-lead { font-size: 24px; font-weight: 750; line-height: 1.25; letter-spacing: -0.015em; }
+
+/* «I dag · N» is a link to Repetisjon (top-bar and fag-rail). */
+a.today-chip { color: var(--rail-ink); text-decoration: none; }
+a.today-chip:hover { background: var(--rail-3); }
+.tool-card-note { color: var(--ink-2); font-weight: 600; }

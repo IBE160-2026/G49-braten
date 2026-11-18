@@ -50,3 +50,9 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/10-real-mode-privacy-notice-and-key-handling.md`
   summary: `manage.py record_mock`, which re-records the Mock responses from Real mode, strips headers and Keys, and re-plants the wrong-page item (AD-4).
   evidence: It needs real paid calls and a stable prompt, so it waits until the Author has tuned the prompt against real output (OQ-2). The `ai/mock/__init__.py` docstring still says story 10.
+- source_spec: none
+  summary: Story 11b — P08 «Bla i kort»: browse a Topic's Flashcards in generation order (front first, flip to back and Reference, «Forrige»/«Neste» and ←/→, «Neste repetisjon: {dato}», the card's «⋯» with «Slett kortet»), reached from «Bla i alle kort» in the «Test deg selv» tab; browsing never writes (FR-14, AD-11).
+  evidence: Split from story 11 at the Author's choice (2026-11-18): P08 and P09 are independently shippable surfaces, and P09 (Leitner Review) is the larger, riskier half.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/11-flashcard-browsing-and-leitner-review.md`
+  summary: The forecast-chart and return-forecast in P09 (the «+1» preview under the rating-buttons, «Bra: kortet kommer tilbake …» live sentence, today's column as cards left, and «Repetert» on the end screen) — build the forecast-chart once in story 13 and add it to Repetisjon there.
+  evidence: The Author chose (2026-11-18) to build the forecast once in story 13, where Hjem and Fagoversikt need it; story 11 shows the real return time on each rating-button and the next Due date on the end screen.

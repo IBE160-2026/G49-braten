@@ -79,6 +79,16 @@ MESSAGES: dict[str, str] = {
     "band_minutes": "ca. {m} min",
     "retry_context": "Øv på feilene",
     "retry_note": "Denne runden teller ikke i mestringen.",
+    # P09 Repetisjon (FR-15, story 11): when a card returns, relative to today (review.rules.return_label).
+    "return_today": "i dag",
+    "return_tomorrow": "i morgen",
+    "return_days": "om {n} dager",
+    "return_week": "om 1 uke",
+    "return_weeks": "om {n} uker",
+    "return_month": "om 1 mnd.",
+    "return_months": "om {n} mnd.",
+    "review_context_all": "I dag · repetisjon",
+    "review_context_scoped": "{name} · repetisjon",
     # Shown by static/js/app.js when htmx gets no answer or an error status (AD-18).
     "network_error": "Fikk ikke kontakt med appen. Sjekk nettforbindelsen og prøv igjen.",
     "response_error": "Det du ba om, kunne ikke vises. Last inn siden på nytt og prøv igjen.",

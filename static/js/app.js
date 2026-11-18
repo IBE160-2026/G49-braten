@@ -220,6 +220,62 @@
     if (focusTarget) focusTarget.focus();
   });
 
+  // ---- P09 Repetisjon: Space or Enter flips the card, keys 1–4 rate it once flipped ----------
+  // «Vis svaret» is a link to `?vis=svar`, so the flip works without JavaScript; here it flips in place.
+
+  function reviewCard() {
+    return document.querySelector("[data-review-card]");
+  }
+
+  function flipCard() {
+    var card = reviewCard();
+    if (!card || card.classList.contains("is-flipped")) return false;
+    var box = document.getElementById("review-card");
+    card.classList.add("is-flipped");
+    box.querySelectorAll('[data-face="front"]').forEach(function (el) { el.hidden = true; });
+    box.querySelectorAll('[data-face="back"]').forEach(function (el) { el.hidden = false; });
+    var back = document.getElementById("review-back");
+    if (back) back.focus();
+    return true;
+  }
+
+  document.addEventListener("click", function (evt) {
+    var flip = evt.target.closest && evt.target.closest("[data-flip]");
+    if (!flip || !reviewCard()) return;
+    if (flipCard()) evt.preventDefault();
+  });
+
+  document.addEventListener("keydown", function (evt) {
+    if (evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) return;
+    var card = reviewCard();
+    if (!card || isTyping(evt.target)) return;
+    var target = evt.target;
+    if (evt.key === " " || evt.key === "Enter") {
+      if (card.classList.contains("is-flipped")) return;
+      // Enter and Space keep their own meaning on other links and buttons («Avslutt»).
+      var control = target.closest && target.closest("a, button, summary, [popover]");
+      if (control && !control.hasAttribute("data-flip")) return;
+      evt.preventDefault();
+      flipCard();
+      return;
+    }
+    if (/^[1-4]$/.test(evt.key)) {
+      if (!card.classList.contains("is-flipped")) return;
+      var button = document.querySelector('#review-card .rating-button[data-key="' + evt.key + '"]');
+      if (!button || button.disabled || button.closest("fieldset:disabled")) return;
+      evt.preventDefault();
+      button.click();
+    }
+  });
+
+  // After a rating swaps in the next card (or the end), focus its autofocus target (AD-18).
+  document.addEventListener("htmx:afterSettle", function (evt) {
+    var target = evt.detail && evt.detail.target;
+    if (!target || target.id !== "review-card") return;
+    var focusTarget = target.querySelector("[autofocus]");
+    if (focusTarget) focusTarget.focus();
+  });
+
   // ---- tema-tabs (P05): ← → Home End follow the neighbouring tab's link ----------
   // Each tab is a full-page GET link (AD-13), so the keys navigate; the flag below puts focus
   // back on the selected tab of the new page.

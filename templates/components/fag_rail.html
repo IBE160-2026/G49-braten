@@ -3,8 +3,8 @@
 <nav class="fag-rail" aria-label="Hovedmeny">
   <a class="brand fag-rail-brand" href="{% url 'web:home' %}">{% icon "mark" "brand" %}<span>AI Study Buddy</span></a>
   <a class="rail-link" href="{% url 'web:home' %}"{% if nav_current == "home" %} aria-current="page"{% endif %}>{% icon "home" %}Hjem</a>
-  {# Plain text until Repetisjon exists (story 9). #}
-  <p class="rail-link rail-link--text">{% icon "calendar" %}<span>I dag · <b>0</b></span></p>
+  {# «I dag · N» opens Repetisjon for all fag; N is the Due cards across all fag (FR-15). #}
+  <a class="rail-link" href="{% url 'review:start' %}?next={{ request.get_full_path|urlencode }}">{% icon "calendar" %}<span>I dag · <b>{{ shell_due.total }}</b><span class="visually-hidden"> kort å repetere</span></span></a>
   <h2 class="rail-heading">Fag<span aria-hidden="true">kort i dag</span></h2>
   {% if shell_courses %}
     <ul class="fag-rail-list" role="list">
@@ -12,7 +12,7 @@
         <li>
           <a class="fag-rail-row" href="{% url 'web:course' c.id %}"{% if current_course.id == c.id %} aria-current="page"{% endif %}>
             <span class="fag-rail-name">{{ c.name }}</span>
-            <span class="fag-rail-due fag-rail-due--zero"><span class="visually-hidden">, ingen kort i dag</span><span aria-hidden="true">0</span></span>
+            <span class="fag-rail-due{% if not c.due_today %} fag-rail-due--zero{% endif %}"><span class="visually-hidden">, {% if c.due_today %}{{ c.due_today }} kort i dag{% else %}ingen kort i dag{% endif %}</span><span aria-hidden="true">{{ c.due_today }}</span></span>
             <span class="fag-rail-sub" aria-hidden="true">
               <span class="fag-rail-code">{{ c.code }}</span>
               <span class="rail-meter rail-meter--none"></span>
