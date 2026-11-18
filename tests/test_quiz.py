@@ -460,3 +460,17 @@ def test_ad7_another_students_regrade_is_404(ida, jonas, topic, sample):
     client_jonas = Client()
     client_jonas.force_login(jonas)
     assert client_jonas.post(reverse("quiz:regrade", args=[quiz.id, qq.position])).status_code == 404
+
+
+# ---- Story 8b: the feedback panel's new actions --------------------------------------------
+
+
+def test_fr12_feedback_panel_offers_endre_vurdering_only_on_graded_free_text(ida, client_ida, topic, sample):
+    quiz = make_quiz(ida, topic)
+    ft = position_of(quiz, "free_text")
+    mc = position_of(quiz, "multiple_choice")
+    ft_body = client_ida.post(answer_url(quiz, ft.position), {"text": ft.question.model_answer}, **CARD).content.decode()
+    mc_body = client_ida.post(answer_url(quiz, mc.position), {"choice": 0}, **CARD).content.decode()
+    assert "Endre vurdering" in ft_body and 'aria-current="true"' in ft_body
+    assert "Endre vurdering" not in mc_body
+    assert "Slett spørsmålet" in ft_body and "Slett spørsmålet" in mc_body

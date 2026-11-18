@@ -97,6 +97,38 @@ def regrade(student, answer: Answer) -> Answer:
     return answer
 
 
+# The Grades a Student may set as an override (FR-12); also the AI Grades that may be overridden.
+OVERRIDABLE = (Grade.CORRECT, Grade.PARTIAL, Grade.INCORRECT)
+
+
+def can_override(answer: Answer | None) -> bool:
+    """A graded Free-text Answer: never Multiple-choice, «Ikke rettet» or pending (FR-12)."""
+    return (
+        answer is not None
+        and answer.question.kind == QuestionKind.FREE_TEXT
+        and answer.grade in OVERRIDABLE
+    )
+
+
+def override_grade(student, answer: Answer, grade: str | None) -> Answer:
+    """The only writer of `Answer.override_grade` (FR-12).
+
+    `None`, or the AI Grade itself, clears the override. Only `override_grade` is written: the AI
+    Grade, its Explanation and `answered_at` stay. Any other case (Multiple-choice, not graded,
+    pending, an unknown value) leaves the row as it is.
+    """
+    assert answer.student_id == student.pk, "override_grade: not the Student's Answer"
+    if not can_override(answer):
+        return answer
+    if grade is not None and grade not in OVERRIDABLE:
+        return answer
+    value = None if grade is None or grade == answer.grade else grade
+    Answer.objects.filter(pk=answer.pk).update(override_grade=value)
+    answer.refresh_from_db()
+    logger.info("quiz override student=%s answer=%s overridden=%s", student.pk, answer.pk, value is not None)
+    return answer
+
+
 def _grade(student, answer: Answer, question: Question) -> None:
     if question.kind == QuestionKind.MULTIPLE_CHOICE:
         options = question.options or []

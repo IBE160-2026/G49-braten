@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 11-18-2026 08:29
-last_updated: 11-18-2026 08:29
+last_updated: 11-18-2026 08:45
 project: Prosjekt A
 project_key: NOKEY
 tracking_system: file-system
@@ -45,7 +45,7 @@ development_status:
   1-6-study-material-generation-and-the-reference-check: done
   1-7-topic-page-with-four-tabs-and-item-deletion: done
   1-8-practice-mode-quiz-and-grading: done
-  1-8b-grade-override-and-delete-question: backlog
+  1-8b-grade-override-and-delete-question: review
   1-9-quiz-result-and-retry-round: backlog
   1-10-real-mode-privacy-notice-and-key-handling: backlog
   epic-1-retrospective: optional

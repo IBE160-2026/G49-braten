@@ -4,10 +4,14 @@ Reference. «Ikke rettet» shows the failure assertively with «Prøv å rette i
 heading after an Answer (app.js, data-focus-on-swap).
   answer, question, grade, grade_label, grade_icon, failure_message, wrong_choice, correct_letter,
   is_mc, lang, regrade_url, next_url, next_label
+  can_override, override_url, override_items: «Endre vurdering» on a graded Free-text Answer (FR-12)
+  overridden, ai_grade_label: the «Endret av deg» chip and the «KI-vurdering: …» line
+  delete_url: «Slett spørsmålet», D09 in #dialog (FR-24)
 {% endcomment %}
 <section class="feedback-panel feedback-panel--{{ grade }}" aria-live="polite" aria-labelledby="feedback-heading">
   <div class="feedback-head">
     <h2 class="feedback-heading" id="feedback-heading" tabindex="-1" data-focus-on-swap>{% icon grade_icon %}<span>{{ grade_label }}</span></h2>
+    {% if overridden %}<span class="chip">{% icon "pencil" %}Endret av deg</span>{% endif %}
     {% if answer.is_mock %}<span class="chip">Demo</span>{% endif %}
   </div>
   {% if grade == "not_graded" %}
@@ -17,6 +21,7 @@ heading after an Answer (app.js, data-focus-on-swap).
       <button class="button-secondary" type="submit">{% icon "refresh" %}Prøv å rette igjen</button>
     </form>
   {% else %}
+    {% if overridden %}<p class="feedback-ai-grade">KI-vurdering: {{ ai_grade_label }}</p>{% endif %}
     <p class="feedback-explanation">{% if wrong_choice %}Riktig svar er {{ correct_letter }}. {% endif %}{% if answer.explanation %}<span{% if lang and not answer.is_mock %} lang="{{ lang }}"{% endif %}>{{ answer.explanation }}</span>{% endif %}</p>
   {% endif %}
   {% include "components/reference.html" with item=question lang=lang %}
@@ -28,5 +33,18 @@ heading after an Answer (app.js, data-focus-on-swap).
   {% endif %}
   <div class="feedback-actions">
     <a class="button-primary" href="{{ next_url }}" data-next>{{ next_label }}{% icon "arrow" %}</a>
+    {% if can_override %}
+      <button class="button-quiet" type="button" popovertarget="override-menu">{% icon "pencil" %}Endre vurdering</button>
+      <div id="override-menu" class="menu" popover data-anchored role="group" aria-label="Endre vurdering">
+        <form method="post" action="{{ override_url }}" hx-post="{{ override_url }}" hx-target="#question-card" hx-swap="innerHTML" hx-disabled-elt="find button[type='submit']" hx-sync="this:drop">
+          {% csrf_token %}
+          {% for item in override_items %}
+            {% if item.separator %}<div class="menu-separator"></div>{% endif %}
+            <button class="menu-item" type="submit" name="grade" value="{{ item.value }}"{% if item.current %} aria-current="true"{% endif %}>{% icon item.icon %}{{ item.label }}</button>
+          {% endfor %}
+        </form>
+      </div>
+    {% endif %}
+    <a class="button-quiet button-quiet--destructive" href="{{ delete_url }}" hx-get="{{ delete_url }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "trash" %}Slett spørsmålet</a>
   </div>
 </section>

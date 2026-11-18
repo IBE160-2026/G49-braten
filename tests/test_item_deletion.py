@@ -214,3 +214,30 @@ def test_fr24_dialog_uses_no_native_confirm(client_ida, source):
 def test_fr24_deleting_the_source_cascades_to_its_items(ida, source):
     services.delete_source(source)
     assert not KeyConcept.objects.exists() and not Flashcard.objects.exists() and not Question.objects.exists()
+
+
+# ---- Story 8b: an optional `cancel` for «Avbryt» ------------------------------------------
+
+
+def test_fr24_cancel_sets_avbryt_and_next_still_sets_the_landing(client_ida, normalisering, source):
+    card = Flashcard.objects.get(front="Kort A")
+    next_url = topic_url(normalisering, "selftest")
+    url = f"{delete_url('card', card.id)}?next={next_url}&cancel=/quizzes/1/2/"
+    dialog = client_ida.get(url, **HTMX_DIALOG).content.decode()
+    assert 'href="/quizzes/1/2/" data-dialog-close>Avbryt' in dialog
+    assert f'name="next" value="{next_url}"' in dialog
+
+
+@pytest.mark.parametrize("cancel", ["https://example.com/", "//example.com/", "javascript:alert(1)", "quizzes/1/"])
+def test_fr24_cancel_refuses_anything_but_a_relative_path(client_ida, normalisering, source, cancel):
+    card = Flashcard.objects.get(front="Kort A")
+    dialog = client_ida.get(delete_url("card", card.id), {"cancel": cancel}, **HTMX_DIALOG).content.decode()
+    assert f'href="{topic_url(normalisering, "selftest")}" data-dialog-close>Avbryt' in dialog
+    assert "example.com" not in dialog
+
+
+def test_fr24_without_cancel_avbryt_follows_next_as_in_story_7(client_ida, normalisering, source):
+    concept = KeyConcept.objects.get(term="3NF")
+    next_url = topic_url(normalisering)
+    dialog = client_ida.get(f"{delete_url('concept', concept.id)}?next={next_url}", **HTMX_DIALOG).content.decode()
+    assert f'href="{next_url}" data-dialog-close>Avbryt' in dialog

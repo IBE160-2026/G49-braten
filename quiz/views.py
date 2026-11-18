@@ -8,6 +8,7 @@ redirect to the position (POST/redirect/GET). Every lookup is owned, or 404 (AD-
 
 from django.http import Http404
 from django.shortcuts import redirect, render, resolve_url
+from django.utils.http import urlencode
 from django.views.decorators.http import require_http_methods, require_POST, require_safe
 
 from core.http import htmx_target, redirect_after_submit, render_page, vary_on_htmx
@@ -22,6 +23,8 @@ from studymat.models import QuestionKind
 
 # P05 lives in `web`; quiz names it by URL name only (AD-1 governs imports).
 TOPIC_PAGE = "web:topic"
+# D09 lives in `studymat`; named by URL only, like P05.
+DELETE_ITEM = "studymat:delete_item"
 
 CARD_TARGET = "question-card"
 
@@ -140,6 +143,26 @@ def regrade(request, quiz_id, position):
     return _after_post(request, quiz, quiz_question, services.regrade(request.user, stored))
 
 
+# The «Endre vurdering» value that clears the override («Bruk KI-vurderingen»).
+USE_AI = "ai"
+
+
+@require_POST
+@vary_on_htmx
+def override(request, quiz_id, position):
+    """«Endre vurdering» (FR-12): set or clear the override on a graded Free-text Answer."""
+    quiz, quiz_question = _owned_position(request, quiz_id, position)
+    stored = _stored_answer(quiz, quiz_question.question)
+    if stored is None:
+        return _after_post(request, quiz, quiz_question, None)
+    raw = request.POST.get("grade", "")
+    if raw == USE_AI:
+        stored = services.override_grade(request.user, stored, None)
+    elif raw in services.OVERRIDABLE:
+        stored = services.override_grade(request.user, stored, raw)
+    return _after_post(request, quiz, quiz_question, stored)
+
+
 def _chosen_index(raw, count: int) -> int | None:
     try:
         index = int(raw)
@@ -196,8 +219,16 @@ def _context(quiz, quiz_question, stored, *, error: str, typed: str) -> dict:
         context["options"] = _options(question, stored, focus_first=bool(error))
     if stored is not None:
         grade = stored.shown_grade
+        overridden = bool(stored.override_grade) and stored.override_grade != stored.grade
+        can_override = services.can_override(stored)
         context.update(
             {
+                "can_override": can_override,
+                "overridden": overridden,
+                "ai_grade_label": Grade(stored.grade).label if overridden else "",
+                "override_url": resolve_url("quiz:override", *url_args),
+                "override_items": _override_items(grade, overridden) if can_override else [],
+                "delete_url": _delete_url(question.id, context["next_url"], resolve_url("quiz:question", *url_args)),
                 "grade": grade,
                 "grade_label": Grade(grade).label,
                 "grade_icon": GRADE_ICONS[grade],
@@ -207,6 +238,23 @@ def _context(quiz, quiz_question, stored, *, error: str, typed: str) -> dict:
             }
         )
     return context
+
+
+def _override_items(shown: str, overridden: bool) -> list[dict]:
+    """The «Endre vurdering» menu: the three Grades, the effective one marked, then the undo."""
+    items = [
+        {"value": value, "label": Grade(value).label, "icon": GRADE_ICONS[value], "current": value == shown}
+        for value in services.OVERRIDABLE
+    ]
+    if overridden:
+        items.append({"value": USE_AI, "label": "Bruk KI-vurderingen", "icon": "refresh", "current": False, "separator": True})
+    return items
+
+
+def _delete_url(question_id: int, next_url: str, cancel_url: str) -> str:
+    """D09 for this Question (story 7): after the delete the Quiz goes on at `next_url`."""
+    query = urlencode({"next": next_url, "cancel": cancel_url})
+    return f"{resolve_url(DELETE_ITEM, 'question', question_id)}?{query}"
 
 
 def _options(question, stored, *, focus_first: bool) -> list[dict]:

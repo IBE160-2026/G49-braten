@@ -55,9 +55,9 @@ def redirect_after_submit(request, url):
     return redirect(url)
 
 
-def safe_next(request) -> str:
-    """`next` when it is a relative URL on this site, otherwise ""."""
-    url = request.POST.get(REDIRECT_FIELD_NAME) or request.GET.get(REDIRECT_FIELD_NAME) or ""
+def safe_next(request, field: str = REDIRECT_FIELD_NAME) -> str:
+    """The `field` parameter (`next` by default) when it is a relative URL on this site, otherwise ""."""
+    url = request.POST.get(field) or request.GET.get(field) or ""
     # allowed_hosts=None: any URL naming a host or scheme is refused, so only relative paths pass.
     if url.startswith("/") and url_has_allowed_host_and_scheme(url, allowed_hosts=None):
         return url

@@ -11,4 +11,5 @@ urlpatterns = [
     path("quizzes/<int:quiz_id>/<int:position>/", views.question, name="question"),
     path("quizzes/<int:quiz_id>/<int:position>/answer/", views.answer, name="answer"),
     path("quizzes/<int:quiz_id>/<int:position>/regrade/", views.regrade, name="regrade"),
+    path("quizzes/<int:quiz_id>/<int:position>/override/", views.override, name="override"),
 ]

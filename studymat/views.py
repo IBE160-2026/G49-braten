@@ -155,7 +155,8 @@ def delete_item(request, kind, item_id):
     """D09 for one Key concept, Flashcard or Question (FR-24): owned or 404, a hard delete (AD-8).
 
     GET confirms (the `courses/delete.html` alertdialog); POST deletes and lands on a safe `next`,
-    else on the P05 tab that shows the item. No toast, no undo.
+    else on the P05 tab that shows the item. «Avbryt» goes to a safe `cancel`, else to the same
+    place. No toast, no undo.
     """
     if kind not in ITEM_KINDS:
         raise Http404
@@ -164,6 +165,8 @@ def delete_item(request, kind, item_id):
     topic = item.source.topic
     next_url = safe_next(request)
     back_url = next_url or topic_tab_url(topic.id, tab)
+    # «Avbryt» may go elsewhere than the delete lands, e.g. back to the P06 position (story 8b).
+    cancel_url = safe_next(request, "cancel") or back_url
     if request.method == "POST":
         services.delete_item(request.user, item)
         return redirect_after_submit(request, back_url)
@@ -179,6 +182,6 @@ def delete_item(request, kind, item_id):
             "action": resolve_url("studymat:delete_item", kind, item.id),
             "current_course": topic.course,
             "next": next_url,
-            "cancel_url": back_url,
+            "cancel_url": cancel_url,
         },
     )
