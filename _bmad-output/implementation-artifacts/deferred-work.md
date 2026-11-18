@@ -56,3 +56,9 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/11-flashcard-browsing-and-leitner-review.md`
   summary: The forecast-chart and return-forecast in P09 (the «+1» preview under the rating-buttons, «Bra: kortet kommer tilbake …» live sentence, today's column as cards left, and «Repetert» on the end screen) — build the forecast-chart once in story 13 and add it to Repetisjon there.
   evidence: The Author chose (2026-11-18) to build the forecast once in story 13, where Hjem and Fagoversikt need it; story 11 shows the real return time on each rating-button and the next Due date on the end screen.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/12-topic-score-course-score-weak-topics-and-quiz-history.md`
+  summary: The trend-label («Opp 4 poeng» / «etter økta 12. nov.», AD-10), the answer-history «Siste 20 svar» and the tema-forecast-panel on P05, for story 13.
+  evidence: Author's decision 2026-11-18 while planning story 12; the trend is a UX assumption not in the PRD, and the panel holds the mini forecast that story 13 builds.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/12-topic-score-course-score-weak-topics-and-quiz-history.md`
+  summary: Cover the D10 topic-picker footer update in `static/js/app.js` (checking a box updates «{t} temaer valgt · {q} spørsmål», singular for one) with a browser/JS test.
+  evidence: No JS test runner exists; tests only check the server-rendered footer and the data attributes, so a broken listener fails nothing.

@@ -10,16 +10,23 @@
   </div>
   {% include "components/menu.html" with menu_id="course-actions" trigger_label="Flere valg for "|add:course.name items="courses/course_menu_items.html" %}
 </div>
+<div class="page-mastery">
+  {% include "components/mastery_line.html" with score=mastery.score average=True meter_class="mastery-meter--wide" %}
+  <p class="mastery-explain">{% icon "info" %}{% message "mastery_explain_course" %}</p>
+</div>
 {% url 'courses:create_topic' course.id as create_topic_url %}
 {% with next_path=request.path|urlencode %}{% with create_topic_href=create_topic_url|add:"?next="|add:next_path %}
-{% if topics %}
+{% if topic_scores %}
   <section class="topic-list" aria-labelledby="topic-list-heading">
     <div class="section-head">
       <h2 class="section-heading" id="topic-list-heading">Temaer</h2>
-      <a class="button-secondary" href="{{ create_topic_href }}" hx-get="{{ create_topic_href }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "plus" %}Nytt tema</a>
+      <div class="section-actions">
+        {% if weak_quiz_url %}<a class="button-secondary" href="{{ weak_quiz_url }}" hx-get="{{ weak_quiz_url }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "refresh" %}{% message "weak_quiz_button" n=weak_count %}</a>{% endif %}
+        <a class="button-secondary" href="{{ create_topic_href }}" hx-get="{{ create_topic_href }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "plus" %}Nytt tema</a>
+      </div>
     </div>
     <ul class="item-rows" role="list">
-      {% for topic in topics %}{% include "components/topic_row.html" with topic=topic %}{% endfor %}
+      {% for ts in topic_scores %}{% include "components/topic_row.html" with topic=ts.topic score=ts %}{% endfor %}
     </ul>
   </section>
 {% else %}

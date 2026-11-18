@@ -22,9 +22,10 @@ def icon(name: str, size: str = ""):
 
 
 @register.simple_tag
-def message(code: str) -> str:
-    """The Norwegian text for an error `code` from core.messages."""
-    return MESSAGES[code]
+def message(code: str, **params) -> str:
+    """The Norwegian text for `code` from core.messages, with any `{name}` filled from `params`."""
+    text = MESSAGES[code]
+    return text.format(**params) if params else text
 
 
 @register.filter

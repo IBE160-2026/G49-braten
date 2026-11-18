@@ -1,0 +1,10 @@
+{% load ui %}{% comment %}
+The mastery figure with its meter (FR-16): «Mestring 45 %» (or «… i snitt» for a fag), or «Ikke nok data ennå».
+  score: a whole percent or None
+  average: True for a Course score («i snitt»)
+  meter_class: an extra class for the meter
+{% endcomment %}
+<span class="mastery-line">
+  {% include "components/mastery_meter.html" with score=score class=meter_class %}
+  <span class="mastery-line-text">{% if score is None %}{% message "mastery_none" %}{% elif average %}Mestring <b>{{ score }} %</b> i snitt{% else %}Mestring <b>{{ score }} %</b>{% endif %}</span>
+</span>

@@ -336,4 +336,22 @@
     if (slot && slot.hash === window.location.hash) openRowForHash();
   });
   openRowForHash();
+
+  // ---- D10 topic-picker: the footer counts the chosen tema and their Questions ----
+  // The words live in the template (data-one, data-other with {t} and {q}); only numbers come from here.
+  document.addEventListener("change", function (evt) {
+    var picker = evt.target.closest && evt.target.closest("[data-topic-picker]");
+    if (!picker) return;
+    var foot = picker.querySelector("[data-topic-picker-count]");
+    if (!foot) return;
+    var topics = 0;
+    var questions = 0;
+    picker.querySelectorAll('input[type="checkbox"]').forEach(function (box) {
+      if (!box.checked) return;
+      topics += 1;
+      questions += parseInt(box.getAttribute("data-questions"), 10) || 0;
+    });
+    var text = foot.getAttribute(topics === 1 ? "data-one" : "data-other") || "";
+    foot.textContent = text.replace("{t}", topics).replace("{q}", questions);
+  });
 })();

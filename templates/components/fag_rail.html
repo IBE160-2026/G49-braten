@@ -15,10 +15,13 @@
             <span class="fag-rail-due{% if not c.due_today %} fag-rail-due--zero{% endif %}"><span class="visually-hidden">, {% if c.due_today %}{{ c.due_today }} kort i dag{% else %}ingen kort i dag{% endif %}</span><span aria-hidden="true">{{ c.due_today }}</span></span>
             <span class="fag-rail-sub" aria-hidden="true">
               <span class="fag-rail-code">{{ c.code }}</span>
-              <span class="rail-meter rail-meter--none"></span>
-              <span class="fag-rail-pct">–</span>
+              {% with score=c.mastery.score %}
+              {% if score is None %}<span class="rail-meter rail-meter--none"></span>
+              <span class="fag-rail-pct">–</span>{% else %}<span class="rail-meter"><span class="rail-meter-fill" style="width: {{ score }}%"></span></span>
+              <span class="fag-rail-pct">{{ score }} %</span>{% endif %}
+              {% endwith %}
             </span>
-            <span class="visually-hidden">{% if c.code %}, {{ c.code }}{% endif %}, mestring: ikke nok data ennå</span>
+            <span class="visually-hidden">{% if c.code %}, {{ c.code }}{% endif %}, {% if c.mastery.score is None %}{% message "mastery_rail_none" %}{% else %}{% message "mastery_rail_label" n=c.mastery.score %}{% endif %}</span>
           </a>
         </li>
       {% endfor %}

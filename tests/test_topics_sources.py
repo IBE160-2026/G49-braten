@@ -378,7 +378,8 @@ def test_fr2_p04_lists_topics_in_creation_order_with_links_mastery_and_menus(cli
         assert f'href="{topic_url(topic)}"' in main
         assert f'href="{rename_topic_url(topic)}?next={course_url(databaser)}"' in main
         assert f'href="{delete_topic_url(topic)}?next={course_url(databaser)}"' in main
-    assert main.count("Ikke nok data ennå") == 2
+    # One per tema row, plus the Course score under the title (story 12).
+    assert main.count("Ikke nok data ennå") == 3
     assert "Ingen temaer ennå" not in main
     assert f'href="{create_topic_url(databaser)}?next={course_url(databaser)}"' in main
     assert "Nytt tema" in main

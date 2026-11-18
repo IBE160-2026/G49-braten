@@ -1,20 +1,25 @@
 """Composite pages (AD-1): Hjem P03, Fagoversikt P04, Tema P05, «Fant ikke siden» P12, and the theme."""
 
 from django.conf import settings
-from django.db.models import Prefetch
+from django.db.models import Count, Prefetch
 from django.shortcuts import redirect, render, resolve_url
 from django.utils.http import urlencode
-from django.views.decorators.http import require_POST, require_safe
+from django.views.decorators.http import require_http_methods, require_POST, require_safe
 
 from ai import gateway
-from core.http import render_page, safe_next, vary_on_htmx
+from core import time
+from core.http import redirect_after_submit, render_page, safe_next, vary_on_htmx
 from core.ownership import get_owned_or_404
 from core.messages import MESSAGES
 from courses.models import Course, Source, Status, Topic
 from courses.scope import Scope
+from progress import services as progress_services
+from quiz import services as quiz_services
+from quiz.rules import Grade
 from review import services as review_services
 from studymat.models import Flashcard, KeyConcept, Question
 from web.context_processors import THEME_COOKIE, THEMES
+from web.forms import WeakQuizForm
 
 THEME_MAX_AGE = 60 * 60 * 24 * 365
 
@@ -29,18 +34,98 @@ def home(request):
 @require_safe
 @vary_on_htmx
 def course(request, course_id):
+    """P04: the Course score under the title, the Topics Weak first (FR-16, FR-17), and
+    «Øv på svake temaer (N)» when a Weak topic has ready Questions."""
     course = get_owned_or_404(Course, request.user, pk=course_id)
+    mastery = progress_services.course_score(request.user, course.id)
+    weak = mastery.weak
+    ready = _ready_question_counts(request.user, course)
     return render_page(
         request,
         "web/course.html",
         {
             "course": course,
             "current_course": course,
-            "topics": Topic.objects.for_student(request.user).filter(course=course),
+            "mastery": mastery,
+            "topic_scores": progress_services.weak_first(mastery.topics),
+            "weak_count": len(weak),
+            "weak_quiz_url": resolve_url("web:weak_quiz", course.id) if any(ready.get(t.topic.id) for t in weak) else "",
             "breadcrumb": [{"label": "Hjem", "url": resolve_url("web:home")}],
         },
         partials=(),
     )
+
+
+def _ready_question_counts(student, course) -> dict[int, int]:
+    """{topic id: ready Questions} in the Course (FR-9: Questions count only from ready kilder)."""
+    rows = (
+        Question.objects.filter(student=student, source__topic__course=course, source__status=Status.READY)
+        .order_by()
+        .values("source__topic_id")
+        .annotate(n=Count("id"))
+    )
+    return {row["source__topic_id"]: row["n"] for row in rows}
+
+
+@require_http_methods(["GET", "POST"])
+@vary_on_htmx
+def weak_quiz(request, course_id):
+    """D10 «Øv på svake temaer» (FR-17): the topic-picker, Weak topics preselected; «Start quiz»
+    starts a Practice-mode Quiz of every ready Question of the chosen Topics (once per start token)."""
+    course = get_owned_or_404(Course, request.user, pk=course_id)
+    return_url = resolve_url("web:course", course.id)
+    ready = _ready_question_counts(request.user, course)
+    mastery = progress_services.course_score(request.user, course.id)
+    listed = [t for t in progress_services.weak_first(mastery.topics) if ready.get(t.topic.id)]
+    if not listed:
+        # Nothing has ready Questions: there is nothing to start.
+        return redirect_after_submit(request, return_url)
+    preselected = [t.topic.id for t in listed if t.is_weak]
+    form = WeakQuizForm(
+        request.POST if request.method == "POST" else None,
+        topic_ids=[t.topic.id for t in listed],
+        preselected=preselected,
+    )
+    if request.method == "POST" and form.is_valid():
+        quiz = quiz_services.start_quiz_from_topics(
+            request.user, course, form.cleaned_data["topics"], form.cleaned_data["start_token"], return_url
+        )
+        if quiz is not None:
+            return redirect_after_submit(request, resolve_url("quiz:resume", quiz.id))
+        # The chosen Topics lost their ready Questions since the dialog opened: the same form error.
+        form.add_error("topics", MESSAGES["weak_quiz_topics_required"])
+    listed_ids = {t.topic.id for t in listed}
+    chosen = {int(v) for v in (form["topics"].value() or []) if str(v).isdigit()} & listed_ids
+    rows = [
+        {
+            "score": t,
+            "questions": ready[t.topic.id],
+            "checked": t.topic.id in chosen,
+            "input_id": f"weak-topic-{t.topic.id}",
+        }
+        for t in listed
+    ]
+    return render_page(
+        request,
+        "web/weak_quiz.html",
+        {
+            "form": form,
+            "course": course,
+            "current_course": course,
+            "rows": rows,
+            "count_text": _picker_count(len(chosen), sum(r["questions"] for r in rows if r["checked"])),
+            "title": MESSAGES["weak_quiz_title"],
+            "lead": MESSAGES["weak_quiz_lead"],
+            "action": resolve_url("web:weak_quiz", course.id),
+            "cancel_url": return_url,
+        },
+    )
+
+
+def _picker_count(topics: int, questions: int) -> str:
+    """The topic-picker footer: «2 temaer valgt · 43 spørsmål»."""
+    key = "weak_quiz_count_one" if topics == 1 else "weak_quiz_count_other"
+    return MESSAGES[key].format(t=topics, q=questions)
 
 
 # P05's tema-tabs in their fixed order (EXPERIENCE.md, Tema-tabs); `?tab=` selects one.
@@ -119,6 +204,8 @@ def topic(request, topic_id):
             {"label": "Hjem", "url": resolve_url("web:home")},
             {"label": course.name, "url": resolve_url("web:course", course.id)},
         ],
+        # The Topic score under the title, on every tab (FR-16).
+        "mastery": progress_services.topic_scores(request.user, Scope(topic_id=topic.id))[topic.id],
     }
     if tab == "summary":
         listed = sources.select_related("summary").prefetch_related(
@@ -126,6 +213,8 @@ def topic(request, topic_id):
         )
         context["blocks"] = _summary_blocks(listed)
         context["has_ready"] = any(block["ready"] for block in context["blocks"])
+    elif tab == "quiz":
+        context["history"] = _history_rows(request.user, topic)
     elif tab == "selftest":
         # «Repeter dagens kort (N)»: this tema's Due cards, from the one definition (AD-11).
         context["due_today"] = review_services.due_cards(request.user, Scope(topic_id=topic.id)).count()
@@ -142,6 +231,39 @@ def topic(request, topic_id):
         # NFR-7: a failed source-row's «Prøv igjen» is inactive at the daily limit.
         context["generation_blocked"] = gateway.remaining_today(request.user) == 0
     return render_page(request, "web/topic.html", context, partials=())
+
+
+def _history_rows(student, topic) -> list[dict]:
+    """«Tidligere quizer» (FR-27): one row per Quiz with a Question from this Topic, newest first.
+    Only the newest row may offer «Øv på feilene (N)»; every other row links to its result."""
+    rows = []
+    for index, item in enumerate(quiz_services.topic_history(student, topic)):
+        outcome = item.result
+        misses = len(outcome.missed_numbers)
+        slots = []
+        for row in outcome.rows:
+            answer = row.answer
+            overridden = answer is not None and bool(answer.override_grade) and answer.override_grade != answer.grade
+            label = Grade(row.grade).label if row.grade else MESSAGES["result_unanswered"]
+            if overridden:
+                label = f"{label}, endret av deg"
+            slots.append(
+                {"number": row.number, "grade": row.grade or "unanswered", "label": label, "overridden": overridden}
+            )
+        rows.append(
+            {
+                "quiz": item.quiz,
+                "date": time.short_date(item.quiz.started_at),
+                "is_retry": item.is_retry,
+                "score": MESSAGES["history_score"].format(k=outcome.correct, n=outcome.total),
+                "partial": MESSAGES["history_partial"].format(p=outcome.partial) if outcome.partial else "",
+                "slots": slots,
+                "retry_label": MESSAGES["retry_band_button"].format(n=misses) if index == 0 and misses else "",
+                "retry_url": resolve_url("quiz:retry", item.quiz.id),
+                "result_url": resolve_url("quiz:result", item.quiz.id),
+            }
+        )
+    return rows
 
 
 def not_found(request, exception=None):

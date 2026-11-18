@@ -17,7 +17,7 @@ from ai import gateway
 from ai.errors import AIError
 from ai.schemas import GradeRequest
 from core import time
-from courses.models import Status, Topic
+from courses.models import Course, Status, Topic
 from quiz.models import Answer, Quiz, QuizKind, QuizQuestion
 from quiz.rules import Grade, grade_choice
 from studymat import services as studymat_services
@@ -45,23 +45,52 @@ def start_quiz(student, topic: Topic, n: int, start_token: str, return_url: str)
         return None
     random.shuffle(ids)
     chosen = ids[: max(1, min(n, len(ids)))]
+    return _create_practice(student, topic.course_id, chosen, start_token, return_url)
+
+
+def start_quiz_from_topics(student, course: Course, topic_ids, start_token: str, return_url: str) -> Quiz | None:
+    """D10 «Øv på svake temaer» (FR-17): a Practice-mode Quiz of every ready Question of the chosen
+    Topics, in random order. Topic ids outside `course` (or not the Student's) are ignored.
+
+    Idempotent on `start_token`. None when no ready Question is left (nothing is created).
+    """
+    assert course.student_id == student.pk, "start_quiz_from_topics: not the Student's Course"
+    existing = Quiz.objects.filter(student=student, start_token=start_token).first()
+    if existing is not None:
+        return existing
+    ids = list(
+        Question.objects.filter(
+            student=student,
+            source__topic__course=course,
+            source__topic_id__in=list(topic_ids),
+            source__status=Status.READY,
+        ).values_list("id", flat=True)
+    )
+    if not ids:
+        return None
+    random.shuffle(ids)
+    return _create_practice(student, course.id, ids, start_token, return_url)
+
+
+def _create_practice(student, course_id: int, question_ids: list[int], start_token: str, return_url: str) -> Quiz:
+    """The one create path of a Practice-mode Quiz; a concurrent start with the same token wins."""
     try:
         with transaction.atomic():
             quiz = Quiz.objects.create(
                 student=student,
-                course_id=topic.course_id,
+                course_id=course_id,
                 kind=QuizKind.PRACTICE,
                 return_url=return_url,
                 start_token=start_token,
             )
             QuizQuestion.objects.bulk_create(
                 QuizQuestion(student=student, quiz=quiz, question_id=question_id, position=position)
-                for position, question_id in enumerate(chosen, start=1)
+                for position, question_id in enumerate(question_ids, start=1)
             )
     except IntegrityError:
         # A concurrent start with the same token won; use its Quiz.
         return Quiz.objects.get(student=student, start_token=start_token)
-    logger.info("quiz start student=%s quiz=%s n=%s", student.pk, quiz.pk, len(chosen))
+    logger.info("quiz start student=%s quiz=%s n=%s", student.pk, quiz.pk, len(question_ids))
     return quiz
 
 
@@ -346,3 +375,32 @@ def result(quiz: Quiz) -> Result:
         partial=grades.count(Grade.PARTIAL),
         incorrect=grades.count(Grade.INCORRECT),
     )
+
+
+# ---- P05 «Tidligere quizer» (FR-27, AD-9) -------------------------------------------------
+
+
+@dataclass
+class HistoryItem:
+    quiz: Quiz
+    result: Result
+
+    @property
+    def is_retry(self) -> bool:
+        return self.quiz.kind == QuizKind.RETRY
+
+
+def topic_history(student, topic: Topic) -> list[HistoryItem]:
+    """Every Quiz with a QuizQuestion from `topic`, newest first (`started_at`, then `id`), with its
+    whole-Quiz result. A Quiz with no Questions left is skipped."""
+    quizzes = (
+        Quiz.objects.for_student(student)
+        .filter(Exists(QuizQuestion.objects.filter(quiz=OuterRef("pk"), question__source__topic=topic)))
+        .order_by("-started_at", "-id")
+    )
+    items = []
+    for quiz in quizzes:
+        outcome = result(quiz)
+        if outcome.rows:
+            items.append(HistoryItem(quiz=quiz, result=outcome))
+    return items

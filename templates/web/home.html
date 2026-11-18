@@ -12,10 +12,15 @@
           <a class="course-row-link" href="{% url 'web:course' course.id %}">
             <span class="course-row-name">{{ course.name }}</span>
             {% if course.code %}<span class="course-row-code">{{ course.code }}</span>{% endif %}
-            <span class="course-row-mastery">
-              <span class="mastery-meter mastery-meter--none" aria-hidden="true"></span>
-              <span>Ikke nok data ennå</span>
-            </span>
+            {% with mastery=course.mastery %}
+            <span class="course-row-mastery">{% include "components/mastery_line.html" with score=mastery.score %}</span>
+            {% if mastery.weak or mastery.weakest %}
+              <span class="course-row-practice">
+                {% with n=mastery.weak|length %}{% if n == 1 %}{% message "practice_tag_course_one" as tag_label %}{% include "components/practice_tag.html" with label=tag_label %}{% elif n %}{% message "practice_tag_course_other" n=n as tag_label %}{% include "components/practice_tag.html" with label=tag_label %}{% endif %}{% endwith %}
+                {% if mastery.weakest %}<span class="course-row-weakest">Svakest: <b>{{ mastery.weakest.topic.name }} {{ mastery.weakest.score }} %</b></span>{% endif %}
+              </span>
+            {% endif %}
+            {% endwith %}
           </a>
           {% with course_id=course.id|stringformat:"s" %}
             {% include "components/menu.html" with menu_id="course-menu-"|add:course_id trigger_label="Flere valg for "|add:course.name items="courses/course_menu_items.html" %}
@@ -23,6 +28,7 @@
         </li>
       {% endfor %}
     </ul>
+    <p class="mastery-explain">{% icon "info" %}{% message "mastery_explain_course" %}</p>
   </section>
 {% else %}
   {% url 'courses:create' as create_url %}

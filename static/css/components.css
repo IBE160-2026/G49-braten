@@ -342,6 +342,7 @@ a.rail-link:hover, .fag-rail-row:hover, .rail-add:hover, .rail-account:hover { b
 .rail-meter { position: relative; height: 4px; border-radius: var(--rounded-xs); background: var(--rail-track); overflow: hidden; }
 /* Not enough data: no fill, a dotted track. */
 .rail-meter--none { background: repeating-linear-gradient(90deg, var(--rail-track) 0 4px, transparent 4px 7px); }
+.rail-meter-fill { display: block; height: 100%; background: var(--rail-meter); }
 .fag-rail-empty { margin: 4px 10px 0; font-size: 14px; line-height: 1.45; color: var(--rail-ink-2); }
 .rail-add {
   display: flex; align-items: center; gap: 10px;
@@ -470,8 +471,29 @@ form.htmx-request button[type="submit"]::before {
 .empty-state p { color: var(--ink-2); max-width: 46ch; }
 .empty-state .button-primary { margin-top: 8px; }
 
-.mastery-meter { display: inline-block; width: 64px; height: 6px; border-radius: var(--rounded-sm); background: var(--ground-3); flex: none; }
+.mastery-meter { display: inline-block; width: 64px; height: 6px; border-radius: var(--rounded-sm); background: var(--ground-3); flex: none; overflow: hidden; }
 .mastery-meter--none { background: repeating-linear-gradient(90deg, var(--line-2) 0 6px, transparent 6px 10px); }
+/* The fill never changes colour with the level (DESIGN.md); its width is the score, set inline. */
+.mastery-meter-fill { display: block; height: 100%; background: var(--meter); }
+.mastery-meter--wide { width: 120px; }
+.mastery-line { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-2); }
+.mastery-line b { font-weight: 650; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mastery-explain { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; font-size: 13.5px; line-height: 1.45; color: var(--ink-3); }
+.mastery-explain .icon { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.course-list .mastery-explain { margin-top: 10px; }
+.page-mastery { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-top: 8px; }
+.page-mastery .mastery-line { font-size: 15px; }
+div.page-mastery { display: block; }
+
+/* practice-tag («Trenger øving», FR-17): text with an icon, never colour alone */
+.practice-tag {
+  display: inline-flex; align-items: center; gap: 5px; padding: 2px 7px;
+  border-radius: var(--rounded-sm); background: var(--practice-soft); box-shadow: inset 0 0 0 1px var(--practice-line);
+  color: var(--practice); font-size: 13.5px; font-weight: 650; line-height: 1.35; white-space: nowrap; vertical-align: middle;
+}
+.practice-tag .icon { width: 15px; height: 15px; flex: none; }
+.course-row-practice { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-top: 4px; font-size: 14px; color: var(--ink-2); }
+.course-row-weakest b { font-weight: 650; color: var(--ink); }
 
 .course-rows {
   list-style: none; margin: 0; padding: 0;
@@ -496,6 +518,7 @@ form.htmx-request button[type="submit"]::before {
   .course-row-link { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
   .course-row-code { grid-row: 2; }
   .course-row-mastery { grid-row: 1 / span 2; grid-column: 2; margin-top: 0; }
+  .course-row-practice { grid-column: 1; }
 }
 
 /* item rows: tema rows on Fagoversikt and source-rows on Tema (same list frame as the fag rows) */
@@ -778,8 +801,52 @@ button[disabled][aria-describedby] { cursor: not-allowed; opacity: .55; }
 .tool-card-text { display: grid; gap: 4px; }
 .tool-card-heading { font-size: 17px; font-weight: 700; line-height: 1.3; }
 .tool-card-text p { color: var(--ink-2); }
+.quiz-history { margin-top: 28px; }
 .quiz-history .section-heading { margin-bottom: 8px; }
 .quiz-history-empty { color: var(--ink-2); }
+/* quiz-history (FR-27): one bordered list; date and score, the answer strip, one quiet action */
+.quiz-history-rows {
+  list-style: none; margin: 0; padding: 0;
+  border: 1px solid var(--line); border-radius: var(--rounded-lg); background: var(--ground);
+}
+.quiz-history-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 14px 16px; }
+.quiz-history-row + .quiz-history-row { border-top: 1px solid var(--line); }
+.quiz-history-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13.5px; color: var(--ink-3); }
+.quiz-history-date { font-weight: 650; font-variant-numeric: tabular-nums; }
+.quiz-history-kind { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-2); font-weight: 600; }
+.quiz-history-kind .icon { width: 14px; height: 14px; }
+.quiz-history-score { font-weight: 650; font-variant-numeric: tabular-nums; }
+.quiz-history-strip { margin: 0; gap: 4px; }
+.quiz-history-strip .result-slot { width: 22px; height: 28px; font-size: 12px; }
+.quiz-history-action { justify-self: start; }
+.quiz-history-action form { margin: 0; }
+.quiz-history-note { margin-top: 10px; font-size: 13.5px; color: var(--ink-3); }
+@media (min-width: 600px) {
+  .quiz-history-row { grid-template-columns: minmax(150px, auto) minmax(0, 1fr) auto; align-items: center; gap: 8px 18px; }
+  .quiz-history-action { justify-self: end; }
+}
+
+/* section-head actions (P04: «Øv på svake temaer (N)» and «Nytt tema») */
+.section-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* topic-picker (D10): 52 px checkbox rows with name, mastery and Question count; a counting footer */
+.topic-picker { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 0; }
+.topic-picker-rows {
+  list-style: none; margin: 0; padding: 0;
+  border: 1px solid var(--line); border-bottom: 0; border-radius: var(--rounded-lg) var(--rounded-lg) 0 0;
+}
+.topic-picker-row { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 14px; }
+.topic-picker-row + .topic-picker-row { border-top: 1px solid var(--line); }
+.topic-picker-row input { width: 20px; height: 20px; flex: none; margin: 0; accent-color: var(--link); }
+.topic-picker-row label { flex: 1; min-width: 0; display: grid; gap: 4px; cursor: pointer; }
+.topic-picker-name { font-weight: 650; line-height: 1.35; }
+.topic-picker-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-size: 14px; color: var(--ink-2); }
+.topic-picker-count { font-variant-numeric: tabular-nums; }
+.topic-picker-foot {
+  padding: 10px 14px; border: 1px solid var(--line); border-radius: 0 0 var(--rounded-lg) var(--rounded-lg);
+  background: var(--ground-2); font-size: 14px; font-weight: 650; font-variant-numeric: tabular-nums;
+}
+.topic-picker .field-error { margin-top: 8px; }
 .empty-state-link { margin-top: 4px; font-weight: 650; }
 .tool-card { flex-wrap: wrap; }
 .tool-card-text { flex: 1 1 260px; min-width: 0; }
@@ -1006,6 +1073,13 @@ button[disabled][aria-describedby] { cursor: not-allowed; opacity: .55; }
 .result-slot--not_graded { background: var(--ground-3); border-color: var(--line-2); color: var(--ink-2); }
 .result-slot--unanswered { background: transparent; border-style: dashed; border-color: var(--bad); color: var(--ink-3); }
 .result-slot:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* An overridden Grade (FR-12): the new Grade with a 4 px dot centred under its slot. */
+.result-slot--overridden { position: relative; }
+.result-slot--overridden::after {
+  content: ""; position: absolute; left: 50%; bottom: -7px; width: 4px; height: 4px; margin-left: -2px;
+  border-radius: 50%; background: var(--ink-2);
+}
+.quiz-history-strip:has(.result-slot--overridden) { padding-bottom: 6px; }
 
 .result-rows { display: grid; gap: 8px; list-style: none; margin: 24px 0 0; padding: 0; }
 .result-row { border: 1px solid var(--line); border-radius: var(--rounded-lg); background: var(--ground); }

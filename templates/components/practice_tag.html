@@ -1,0 +1,5 @@
+{% load ui %}{% comment %}
+practice-tag (DESIGN.md): marks a Weak topic (FR-17). Always text with an icon, never colour alone.
+  label: the text; «Trenger øving» when left out
+{% endcomment %}
+<span class="practice-tag">{% icon "refresh" %}{% if label %}{{ label }}{% else %}{% message "practice_tag" %}{% endif %}</span>

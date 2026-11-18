@@ -1,0 +1,36 @@
+{% extends "layouts/shell.html" %}
+{% load ui %}
+{# D10 «Øv på svake temaer» (FR-17): the topic-picker, Weak topics preselected, lowest first. #}
+{% block title %}{{ title }} – {{ course.name }} – AI Study Buddy{% endblock %}
+{% partialdef fields %}
+{% with field=form.topics %}
+<fieldset class="field topic-picker" data-topic-picker{% if field.errors %} aria-describedby="{{ field.auto_id }}-error"{% endif %}>
+  <legend class="visually-hidden">{{ field.label }}</legend>
+  <ul class="topic-picker-rows" role="list">
+    {% for row in rows %}
+      <li class="topic-picker-row">
+        <input type="checkbox" name="{{ field.html_name }}" value="{{ row.score.topic.id }}" id="{{ row.input_id }}" data-questions="{{ row.questions }}"{% if row.checked %} checked{% endif %}{% if forloop.first and field.errors %} autofocus{% endif %}>
+        <label for="{{ row.input_id }}">
+          <span class="topic-picker-name">{{ row.score.topic.name }}{% if row.score.is_weak %} {% include "components/practice_tag.html" %}{% endif %}</span>
+          <span class="topic-picker-meta">
+            {% include "components/mastery_line.html" with score=row.score.score %}
+            <span class="topic-picker-count">{{ row.questions }} spørsmål</span>
+          </span>
+        </label>
+      </li>
+    {% endfor %}
+  </ul>
+  <p class="topic-picker-foot" data-topic-picker-count data-one="{% message 'weak_quiz_count_one' %}" data-other="{% message 'weak_quiz_count_other' %}" aria-live="polite">{{ count_text }}</p>
+  {% if field.errors %}
+    <div class="field-error" id="{{ field.auto_id }}-error">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>
+      <div>{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>
+    </div>
+  {% endif %}
+</fieldset>
+{{ form.start_token }}
+{% endwith %}
+{% endpartialdef %}
+{% block content %}
+{% with as_page=True %}{% partialdef dialog inline %}{% include "components/dialog.html" with title=title lead=lead body="web/weak_quiz.html#fields" submit_label="Start quiz" action=action %}{% endpartialdef %}{% endwith %}
+{% endblock %}

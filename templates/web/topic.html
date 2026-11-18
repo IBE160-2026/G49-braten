@@ -6,6 +6,11 @@
 <div class="page-head">
   <div class="page-head-text">
     <h1 class="page-title">{{ topic.name }}</h1>
+    <p class="page-mastery">
+      {% include "components/mastery_line.html" with score=mastery.score %}
+      {% if mastery.is_weak %}{% include "components/practice_tag.html" %}{% endif %}
+    </p>
+    <p class="mastery-explain">{% message "mastery_explain_topic" %}</p>
   </div>
   {% include "components/menu.html" with menu_id="topic-actions" trigger_label="Flere valg for "|add:topic.name items="courses/topic_menu_items.html" %}
 </div>
@@ -40,7 +45,31 @@
   {% endif %}
   <section class="quiz-history" aria-labelledby="quiz-history-heading">
     <h2 class="section-heading" id="quiz-history-heading">Tidligere quizer</h2>
-    <p class="quiz-history-empty">Du har ikke tatt en quiz i dette temaet ennå.</p>
+    {% if history %}
+      <ul class="quiz-history-rows" role="list">
+        {% for row in history %}
+          <li class="quiz-history-row">
+            <div class="quiz-history-text">
+              <p class="quiz-history-meta"><span class="quiz-history-date">{{ row.date }}</span>{% if row.is_retry %} <span class="quiz-history-kind">{% icon "refresh" %}{% message "retry_context" %}</span>{% endif %}</p>
+              <p class="quiz-history-score">{{ row.score }}{% if row.partial %} {{ row.partial }}{% endif %}</p>
+            </div>
+            <ol class="result-strip quiz-history-strip" aria-label="Svar">
+              {% for slot in row.slots %}<li class="result-slot result-slot--{{ slot.grade }}{% if slot.overridden %} result-slot--overridden{% endif %}" aria-label="Spørsmål {{ slot.number }}: {{ slot.label }}"><span aria-hidden="true">{{ slot.number }}</span></li>{% endfor %}
+            </ol>
+            <div class="quiz-history-action">
+              {% if row.retry_label %}
+                <form method="post" action="{{ row.retry_url }}">{% csrf_token %}<button class="button-quiet" type="submit">{% icon "refresh" %}{{ row.retry_label }}</button></form>
+              {% else %}
+                <a class="button-quiet" href="{{ row.result_url }}">{% message "history_see_result" %}</a>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      <p class="quiz-history-note">{% message "history_retry_note" %}</p>
+    {% else %}
+      <p class="quiz-history-empty">{% message "history_empty" %}</p>
+    {% endif %}
   </section>
 {% elif tab == "selftest" %}
   {% if flashcards %}

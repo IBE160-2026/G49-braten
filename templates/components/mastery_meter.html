@@ -1,0 +1,7 @@
+{% comment %}
+mastery-meter (DESIGN.md): a track with a fill at the score, or no fill and a dotted track without one.
+Decorative: the percent is always printed beside it. Never coloured by level.
+  score: a whole percent, or None for «Ikke nok data ennå»
+  class: an extra class (e.g. "mastery-meter--wide")
+{% endcomment %}
+<span class="mastery-meter{% if score is None %} mastery-meter--none{% endif %}{% if class %} {{ class }}{% endif %}" aria-hidden="true">{% if score is not None %}<span class="mastery-meter-fill" style="width: {{ score }}%"></span>{% endif %}</span>

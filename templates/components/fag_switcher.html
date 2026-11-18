@@ -15,8 +15,8 @@
     {% for c in shell_courses %}
       <a class="menu-item fag-switcher-option" role="option" href="{% url 'web:course' c.id %}" aria-selected="{% if current_course.id == c.id %}true{% else %}false{% endif %}">
         <span class="fag-switcher-option-name">{{ c.name }}{% if c.code %} <small>{{ c.code }}</small>{% endif %}</span>
-        <span class="fag-switcher-option-meta">{{ c.due_today }} i dag · –</span>
-        <span class="visually-hidden">, {% if c.due_today %}{{ c.due_today }} kort i dag{% else %}ingen kort i dag{% endif %}, mestring: ikke nok data ennå</span>
+        <span class="fag-switcher-option-meta" aria-hidden="true">{{ c.due_today }} i dag · {% if c.mastery.score is None %}–{% else %}{{ c.mastery.score }} %{% endif %}</span>
+        <span class="visually-hidden">, {% if c.due_today %}{{ c.due_today }} kort i dag{% else %}ingen kort i dag{% endif %}, {% if c.mastery.score is None %}{% message "mastery_rail_none" %}{% else %}{% message "mastery_rail_label" n=c.mastery.score %}{% endif %}</span>
       </a>
     {% endfor %}
     <div class="menu-separator" role="presentation"></div>

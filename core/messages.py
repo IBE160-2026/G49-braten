@@ -89,6 +89,28 @@ MESSAGES: dict[str, str] = {
     "return_months": "om {n} mnd.",
     "review_context_all": "I dag · repetisjon",
     "review_context_scoped": "{name} · repetisjon",
+    # Mastery (FR-16, FR-17, story 12): progress figures on the shell, Hjem, P04, P05 and D10.
+    "mastery_none": "Ikke nok data ennå",
+    "mastery_explain_course": "Mestring for et fag er snittet av temaene som har nok svar.",
+    "mastery_explain_topic": "Basert på de 20 siste svarene dine.",
+    "mastery_rail_label": "mestring {n} % i snitt",
+    "mastery_rail_none": "mestring: ikke nok data ennå",
+    "practice_tag": "Trenger øving",
+    "practice_tag_course_one": "1 tema trenger øving",
+    "practice_tag_course_other": "{n} temaer trenger øving",
+    # D10 «Øv på svake temaer» (FR-17).
+    "weak_quiz_title": "Øv på svake temaer",
+    "weak_quiz_button": "Øv på svake temaer ({n})",
+    "weak_quiz_lead": "Temaene som trenger øving er valgt. Svakeste først.",
+    "weak_quiz_topics_required": "Velg minst ett tema.",
+    "weak_quiz_count_one": "{t} tema valgt · {q} spørsmål",
+    "weak_quiz_count_other": "{t} temaer valgt · {q} spørsmål",
+    # P05 «Tidligere quizer» (FR-27).
+    "history_score": "{k} av {n} riktige",
+    "history_partial": "· {p} delvis",
+    "history_retry_note": "Runder med «Øv på feilene» teller ikke i mestringen.",
+    "history_empty": "Du har ikke tatt en quiz i dette temaet ennå.",
+    "history_see_result": "Se resultatet",
     # Shown by static/js/app.js when htmx gets no answer or an error status (AD-18).
     "network_error": "Fikk ikke kontakt med appen. Sjekk nettforbindelsen og prøv igjen.",
     "response_error": "Det du ba om, kunne ikke vises. Last inn siden på nytt og prøv igjen.",

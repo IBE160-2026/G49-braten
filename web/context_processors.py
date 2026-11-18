@@ -1,5 +1,5 @@
 """The shell context every page gets: the theme, the AI mode and, when signed in, the Student's fag
-with their Due cards («I dag · N», FR-15)."""
+with their Due cards («I dag · N», FR-15) and their Course scores (FR-16, FR-17)."""
 
 from functools import cached_property
 
@@ -7,6 +7,7 @@ from django.utils.functional import SimpleLazyObject
 
 from ai import gateway
 from courses.models import Course
+from progress import services as progress_services
 from review import services as review_services
 
 # The theme override lives only in this cookie, rendered as <html data-theme> (Conventions).
@@ -36,9 +37,13 @@ class ShellDue:
 
 
 def _courses_with_due(student, due: ShellDue) -> list:
+    """Each fag with `due_today` and `mastery` (a progress.services.CourseScore), computed on read
+    (AD-10) the first time the list is used."""
     courses = list(Course.objects.for_student(student))
+    scores = progress_services.course_scores(student)
     for course in courses:
         course.due_today = due.by_course.get(course.id, 0)
+        course.mastery = scores.get(course.id) or progress_services.CourseScore(course.id, None)
     return courses
 
 
