@@ -1,0 +1,65 @@
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created, ready for development
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
+
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when its first story starts (via build's sprint sync)
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates the next story after the previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; the status view surfaces open ones
+generated: 11-18-2026 08:29
+last_updated: 11-18-2026 08:29
+project: Prosjekt A
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/specs/spec-ai-study-buddy/stories
+development_status:
+  epic-1: in-progress
+  1-1-project-skeleton-environment-settings-and-test-harness: done
+  1-2-accounts-sign-in-and-ownership: done
+  1-3a-shell-courses-and-a-basic-home: done
+  1-3b-topics-and-sources: done
+  1-4-upload-and-text-extraction-with-location: done
+  1-5-ai-gateway-mock-mode-sample-document-and-daily-limit: done
+  1-6-study-material-generation-and-the-reference-check: done
+  1-7-topic-page-with-four-tabs-and-item-deletion: done
+  1-8-practice-mode-quiz-and-grading: done
+  1-8b-grade-override-and-delete-question: backlog
+  1-9-quiz-result-and-retry-round: backlog
+  1-10-real-mode-privacy-notice-and-key-handling: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-11-flashcard-browsing-and-leitner-review: backlog
+  2-12-topic-score-course-score-weak-topics-and-quiz-history: backlog
+  2-13-next-step-on-home-and-the-course-overview: backlog
+  2-14-examiner-path-end-to-end-and-the-readme: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-15-exam-mode-quiz: backlog
+  3-16-simpler-explanation: backlog
+  3-17-word-files: backlog
+  3-18-background-generation-and-hosted-instance: backlog
+  epic-3-retrospective: optional
