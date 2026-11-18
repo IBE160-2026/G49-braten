@@ -278,19 +278,19 @@ def test_fr24_delete_mid_quiz_goes_on_at_the_next_position(ida, client_ida, topi
     assert "2 av 4" in text_of(client_ida.get(question_url(quiz, 3)).content.decode())
 
 
-def test_fr24_delete_last_question_resumes_to_the_finish_note_or_return_url(ida, client_ida, topic, sample):
+def test_fr24_delete_last_question_goes_to_p07_or_return_url(ida, client_ida, topic, sample):
     quiz = make_quiz(ida, topic, n=2)
     first, last = QuizQuestion.objects.filter(quiz=quiz).order_by("position")
     services.save_answer(ida, quiz, first.question, chosen_index=0, text="svar")
     services.save_answer(ida, quiz, last.question, chosen_index=0, text="svar")
     url = delete_link(client_ida.get(question_url(quiz, last.position)).content.decode())
     next_url = parse_qs(urlsplit(url).query)["next"][0]
-    assert next_url == reverse("quiz:resume", args=[quiz.id])
+    assert next_url == reverse("quiz:result", args=[quiz.id])
     response = client_ida.post(urlsplit(url).path, {"next": next_url}, follow=True)
-    assert response.redirect_chain[-1][0] == services.finished_url(quiz)
-    assert "Quizen er lagret." in text_of(response.content.decode())
+    assert response.redirect_chain[-1][0] == reverse("quiz:result", args=[quiz.id])
+    assert re.search(r'result-score-n">av 1<', response.content.decode())
 
-    # The only Question left goes too: resume lands on return_url.
+    # The only Question left goes too: P07 has nothing to show and lands on return_url.
     url = delete_link(client_ida.get(question_url(quiz, first.position)).content.decode())
     next_url = parse_qs(urlsplit(url).query)["next"][0]
     response = client_ida.post(urlsplit(url).path, {"next": next_url}, follow=True)

@@ -22,10 +22,15 @@ def _now():
 
 class QuizKind(models.TextChoices):
     PRACTICE = "practice"
+    # «Øv på feilene» (FR-13, AD-9): the missed Questions of `parent_quiz`; never counts in mastery.
+    RETRY = "retry"
 
 
 class Quiz(models.Model):
-    """One Quiz. `start_token` makes D06's start idempotent; `return_url` is where it was started."""
+    """One Quiz. `start_token` makes a start idempotent; `return_url` is where it was started.
+
+    A Retry round (`kind` retry) names the Quiz whose misses it repeats in `parent_quiz`.
+    """
 
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="quizzes")
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="quizzes")
@@ -33,6 +38,9 @@ class Quiz(models.Model):
     started_at = models.DateTimeField(default=_now)
     return_url = models.CharField(max_length=500)
     start_token = models.CharField(max_length=64)
+    parent_quiz = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.CASCADE, related_name="retry_rounds"
+    )
 
     objects = OwnedQuerySet.as_manager()
 

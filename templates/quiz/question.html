@@ -5,6 +5,7 @@
 {% block body_class %}session-body{% endblock %}
 {% block body %}
 {% include "components/session_bar.html" %}
+{% if retry_note %}<p class="session-note">{% icon "info" %}<span>{{ retry_note }}</span></p>{% endif %}
 {% include "components/mode_banner.html" %}
 <main id="main" class="session-page" tabindex="-1">
   <div id="page-messages" class="page-messages"></div>

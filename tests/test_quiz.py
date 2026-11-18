@@ -10,6 +10,7 @@ import pytest
 from django.core.files import File
 from django.test import Client
 from django.urls import reverse
+from django.utils.http import urlencode
 
 from ai import errors, gateway, mock
 from ai.models import GenerationCallCount
@@ -333,7 +334,7 @@ def test_fr10_abandon_keeps_the_answers(ida, client_ida, topic, sample):
     assert resume.url == question_url(quiz, 4)
 
 
-def test_fr10_finish_goes_to_the_quiz_tab_with_the_note(ida, client_ida, topic, sample):
+def test_fr10_finish_goes_to_p07_with_the_score(ida, client_ida, topic, sample):
     quiz = make_quiz(ida, topic, n=3)
     qqs = list(QuizQuestion.objects.filter(quiz=quiz).order_by("position"))
     for qq in qqs:
@@ -342,11 +343,28 @@ def test_fr10_finish_goes_to_the_quiz_tab_with_the_note(ida, client_ida, topic, 
         client_ida.post(answer_url(quiz, qq.position), data)
     last = client_ida.get(question_url(quiz, 3)).content.decode()
     assert "Fullfør quiz" in last and "Neste spørsmål" not in last
+    assert f'href="{reverse("quiz:result", args=[quiz.id])}" data-next>Fullfør quiz' in last
     assert "Neste spørsmål" in client_ida.get(question_url(quiz, 1)).content.decode()
     response = client_ida.get(reverse("quiz:resume", args=[quiz.id]), follow=True)
-    assert response.redirect_chain[-1][0] == f"{return_url(topic)}&quiz={quiz.id}"
+    assert response.redirect_chain[-1][0] == reverse("quiz:result", args=[quiz.id])
     k = sum(1 for qq in qqs if qq.question.kind == "multiple_choice")
-    assert f"Quizen er lagret. {k} av 3 riktige." in response.content.decode()
+    body = response.content.decode()
+    assert "<h1 class=\"page-title\">Resultat</h1>" in body
+    assert f'<span class="result-score-k">{k}</span> <span class="result-score-n">av 3</span>' in body
+
+
+def test_fr10_last_position_with_an_earlier_one_unanswered_goes_to_resume(ida, client_ida, topic, sample):
+    quiz = make_quiz(ida, topic, n=3)
+    last = QuizQuestion.objects.filter(quiz=quiz).order_by("position").last()
+    q = last.question
+    data = {"choice": q.correct_index} if q.kind == "multiple_choice" else {"text": "svar"}
+    client_ida.post(answer_url(quiz, last.position), data)
+    body = client_ida.get(question_url(quiz, last.position)).content.decode()
+    resume = reverse("quiz:resume", args=[quiz.id])
+    assert f'href="{resume}" data-next>Fullfør quiz' in body
+    assert reverse("quiz:result", args=[quiz.id]) not in body
+    delete = re.search(r'<a class="button-quiet button-quiet--destructive" href="([^"]+)"', body)
+    assert delete and urlencode({"next": resume}) in delete.group(1).replace("&amp;", "&")
 
 
 def test_fr12_with_effective_grade_prefers_the_override(ida, topic, sample):
@@ -356,7 +374,9 @@ def test_fr12_with_effective_grade_prefers_the_override(ida, topic, sample):
     Answer.objects.create(student=ida, quiz=quiz, question=b, grade=Grade.INCORRECT)
     grades = dict(Answer.objects.with_effective_grade().values_list("question_id", "effective_grade"))
     assert grades == {a.pk: Grade.CORRECT, b.pk: Grade.INCORRECT}
-    assert services.finish_note(ida, quiz.id) == "Quizen er lagret. 1 av 2 riktige."
+    outcome = services.result(quiz)
+    assert (outcome.correct, outcome.incorrect, outcome.total) == (1, 1, 2)
+    assert services.missed(quiz) == [b.pk]
 
 
 def test_ad7_other_students_quiz_and_bad_position_are_404(ida, jonas, client_ida, topic, sample):
@@ -368,9 +388,8 @@ def test_ad7_other_students_quiz_and_bad_position_are_404(ida, jonas, client_ida
     assert client_jonas.get(reverse("quiz:resume", args=[quiz.id])).status_code == 404
     assert client_jonas.get(start_url(topic)).status_code == 404
     assert client_ida.get(question_url(quiz, 99)).status_code == 404
-    assert services.finish_note(jonas, quiz.id) == ""
-    assert services.finish_note(ida, "nope") == ""
-    assert "Quizen er lagret" not in client_jonas.get(return_url(topic)).content.decode()
+    assert client_jonas.get(reverse("quiz:result", args=[quiz.id])).status_code == 404
+    assert client_jonas.post(reverse("quiz:retry", args=[quiz.id])).status_code == 404
 
 
 def test_ad8_deleting_a_question_drops_it_from_the_quiz(ida, client_ida, topic, sample):

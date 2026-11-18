@@ -32,3 +32,10 @@ def option_letter(index: int | None) -> str:
     if index is None or not 0 <= index < len(OPTION_LETTERS):
         return ""
     return OPTION_LETTERS[index]
+
+
+def join_with_og(items: list[str]) -> str:
+    """«3», «3 og 4», «3, 4 og 5» (bokmål, no comma before «og»)."""
+    if len(items) <= 1:
+        return "".join(items)
+    return f"{', '.join(items[:-1])} og {items[-1]}"

@@ -23,7 +23,6 @@
     {% endif %}
   {% endif %}
 {% elif tab == "quiz" %}
-  {% if finish_note %}{% include "components/inline_message.html" with variant="info" text=finish_note id="quiz-finish-note" %}{% endif %}
   {% if counts.questions %}
     {% url 'quiz:start' topic.id as start_quiz_url %}
     <section class="tool-card" aria-labelledby="quiz-card-heading">

@@ -41,3 +41,9 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/8-practice-mode-quiz-and-grading.md`
   summary: Cover the P06 keyboard contract in `static/js/app.js` (1–4 selects the option, Enter answers, Enter on the feedback heading moves on, focus to `[data-focus-on-swap]` after an HTMX swap) with a browser/JS test.
   evidence: No JS or browser test runner exists; tests only check the markup hooks, so breaking the handlers fails nothing.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/9-quiz-result-and-retry-round.md`
+  summary: Story 9b — act on P07 rows in place: «Endre vurdering», «Prøv å rette igjen» and «Slett spørsmålet» inside an expanded result row, re-rendering the band, score, strip and rows under HTMX with the row kept open and focus on its feedback heading (no-JS: redirect to P07 `#q-{position}`).
+  evidence: Split from story 9 at the Author's choice (2026-11-18) because the full spec was ~1900 tokens; story 9 shows P07 rows read-only with a link to the P06 position, where these actions already exist (stories 8, 8b).
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/9-quiz-result-and-retry-round.md`
+  summary: Cover the P07 strip behaviour in `static/js/app.js` (a slot click or `#q-N` hash opens and focuses its result row) with a browser/JS test.
+  evidence: No JS or browser test runner exists; tests only check the `href="#q-N"`/`id="q-N"` markup, so a broken selector fails nothing.

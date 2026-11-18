@@ -1,14 +1,17 @@
-"""D06 «Start quiz» and P06 Quiz in Practice mode (FR-10 to FR-12, AD-13).
+"""D06 «Start quiz», P06 Quiz in Practice mode, and P07 «Resultat» (FR-10 to FR-13, AD-13).
 
 D06 is a GET URL like the other dialogs (AD-18): a full page normally, the `dialog` partial in the
 #dialog slot under HTMX. P06 is a full page per position (`quizzes/<id>/<position>/`). The answer
 and regrade POSTs answer under HTMX with the `card` partial for #question-card, and otherwise
-redirect to the position (POST/redirect/GET). Every lookup is owned, or 404 (AD-7).
+redirect to the position (POST/redirect/GET). P07 is a full page; «Øv på feilene» POSTs to
+`retry`, which starts a Retry round (FR-13). Every lookup is owned, or 404 (AD-7).
 """
 
 from django.http import Http404
 from django.shortcuts import redirect, render, resolve_url
+from django.utils.html import format_html
 from django.utils.http import urlencode
+from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_http_methods, require_POST, require_safe
 
 from core.http import htmx_target, redirect_after_submit, render_page, vary_on_htmx
@@ -17,8 +20,8 @@ from core.ownership import get_owned_or_404
 from courses.models import Topic
 from quiz import services
 from quiz.forms import StartQuizForm
-from quiz.models import Answer, Quiz, QuizQuestion
-from quiz.rules import Grade, option_letter
+from quiz.models import Answer, Quiz, QuizKind, QuizQuestion
+from quiz.rules import Grade, join_with_og, option_letter
 from studymat.models import QuestionKind
 
 # P05 lives in `web`; quiz names it by URL name only (AD-1 governs imports).
@@ -75,14 +78,37 @@ def start(request, topic_id):
 
 @require_safe
 def resume(request, quiz_id):
-    """The first unanswered position; with every Question answered, `return_url` with the note."""
+    """The first unanswered position; with every Question answered, P07; with none left, `return_url`."""
     quiz = get_owned_or_404(Quiz, request.user, pk=quiz_id)
     position = services.first_unanswered(quiz)
     if position is not None:
         return redirect("quiz:question", quiz.id, position)
     if not services.positions(quiz):
         return redirect(quiz.return_url)
-    return redirect(services.finished_url(quiz))
+    return redirect("quiz:result", quiz.id)
+
+
+@require_safe
+def result(request, quiz_id):
+    """P07 «Resultat» (FR-13): the score, a strip and one row per Question, and the band for
+    «Øv på feilene» when anything is missed. Read-only: acting on rows is story 9b."""
+    quiz = get_owned_or_404(Quiz, request.user, pk=quiz_id)
+    outcome = services.result(quiz)
+    if not outcome.rows:
+        # Every Question was deleted: there is nothing to show.
+        return redirect(quiz.return_url)
+    return render(request, "quiz/result.html", _result_context(quiz, outcome))
+
+
+@require_POST
+def retry(request, quiz_id):
+    """«Øv på feilene»: the Retry round's first position; with nothing missed, back to P07."""
+    quiz = get_owned_or_404(Quiz, request.user, pk=quiz_id)
+    round_ = services.start_retry(request.user, quiz)
+    if round_ is None:
+        return redirect_after_submit(request, resolve_url("quiz:result", quiz.id))
+    first = services.positions(round_)[0]
+    return redirect_after_submit(request, resolve_url("quiz:question", round_.id, first))
 
 
 def _owned_position(request, quiz_id, position) -> tuple[Quiz, QuizQuestion]:
@@ -194,50 +220,128 @@ def _context(quiz, quiz_question, stored, *, error: str, typed: str) -> dict:
     )
     index = all_positions.index(quiz_question.position) + 1
     next_position = services.next_position(quiz, quiz_question.position)
-    is_mc = question.kind == QuestionKind.MULTIPLE_CHOICE
+    if next_position:
+        next_url = resolve_url("quiz:question", quiz.id, next_position)
+    elif answered.issuperset(all_positions):
+        next_url = resolve_url("quiz:result", quiz.id)
+    else:
+        next_url = resolve_url("quiz:resume", quiz.id)
+    is_retry = quiz.kind == QuizKind.RETRY
     url_args = (quiz.id, quiz_question.position)
     context = {
         "quiz": quiz,
         "question": question,
         "topic": topic,
         "lang": question.source.language,
-        "is_mc": is_mc,
+        "is_mc": question.kind == QuestionKind.MULTIPLE_CHOICE,
         "index": index,
         "total": len(all_positions),
         "slots": [{"answered": p in answered, "current": p == quiz_question.position} for p in all_positions],
         "exit_url": quiz.return_url,
-        "context_label": f"{topic.name} · øving",
+        "context_label": MESSAGES["retry_context"] if is_retry else f"{topic.name} · øving",
+        "retry_note": MESSAGES["retry_note"] if is_retry else "",
         "answer": stored,
         "error": error,
         "typed": typed,
         "answer_url": resolve_url("quiz:answer", *url_args),
         "regrade_url": resolve_url("quiz:regrade", *url_args),
-        "next_url": resolve_url("quiz:question", quiz.id, next_position) if next_position else resolve_url("quiz:resume", quiz.id),
+        "next_url": next_url,
         "next_label": "Neste spørsmål" if next_position else "Fullfør quiz",
     }
-    if is_mc:
+    if context["is_mc"]:
         context["options"] = _options(question, stored, focus_first=bool(error))
     if stored is not None:
-        grade = stored.shown_grade
-        overridden = bool(stored.override_grade) and stored.override_grade != stored.grade
+        context.update(_feedback(question, stored))
         can_override = services.can_override(stored)
         context.update(
             {
                 "can_override": can_override,
-                "overridden": overridden,
-                "ai_grade_label": Grade(stored.grade).label if overridden else "",
                 "override_url": resolve_url("quiz:override", *url_args),
-                "override_items": _override_items(grade, overridden) if can_override else [],
-                "delete_url": _delete_url(question.id, context["next_url"], resolve_url("quiz:question", *url_args)),
-                "grade": grade,
-                "grade_label": Grade(grade).label,
-                "grade_icon": GRADE_ICONS[grade],
-                "failure_message": _failure_message(stored.shown_failure) if grade == Grade.NOT_GRADED else "",
-                "correct_letter": option_letter(question.correct_index),
-                "wrong_choice": is_mc and grade == Grade.INCORRECT,
+                "override_items": _override_items(context["grade"], context["overridden"]) if can_override else [],
+                "delete_url": _delete_url(question.id, next_url, resolve_url("quiz:question", *url_args)),
             }
         )
     return context
+
+
+def _feedback(question, stored: Answer) -> dict:
+    """What the feedback-panel shows for a stored Answer, on P06 and read-only on P07."""
+    grade = stored.shown_grade
+    overridden = bool(stored.override_grade) and stored.override_grade != stored.grade
+    is_mc = question.kind == QuestionKind.MULTIPLE_CHOICE
+    return {
+        "overridden": overridden,
+        "ai_grade_label": Grade(stored.grade).label if overridden else "",
+        "grade": grade,
+        "grade_label": Grade(grade).label,
+        "grade_icon": GRADE_ICONS[grade],
+        "failure_message": _failure_message(stored.shown_failure) if grade == Grade.NOT_GRADED else "",
+        "correct_letter": option_letter(question.correct_index),
+        "wrong_choice": is_mc and grade == Grade.INCORRECT,
+    }
+
+
+def _result_context(quiz, outcome: services.Result) -> dict:
+    rows = []
+    for row in outcome.rows:
+        question = row.question
+        item = {
+            "number": row.number,
+            "heading_id": f"q-{row.number}-heading",
+            "question": question,
+            "answer": row.answer,
+            "grade": row.grade or "unanswered",
+            "grade_label": Grade(row.grade).label if row.grade else MESSAGES["result_unanswered"],
+            "grade_icon": GRADE_ICONS.get(row.grade, ""),
+            "is_mc": question.kind == QuestionKind.MULTIPLE_CHOICE,
+            "lang": question.source.language,
+            "question_url": resolve_url("quiz:question", quiz.id, row.position),
+        }
+        if row.answer is not None:
+            item.update(_feedback(question, row.answer))
+        rows.append(item)
+    context = {
+        "quiz": quiz,
+        "exit_url": quiz.return_url,
+        "context_label": "Resultat",
+        "score_k": outcome.correct,
+        "score_n": outcome.total,
+        "lead": _result_lead(outcome),
+        "rows": rows,
+        "all_correct": outcome.all_correct,
+        "all_correct_text": MESSAGES["result_all_correct"],
+        "not_graded_note": MESSAGES["result_not_graded_note"],
+        "open_label": MESSAGES["result_open_question"],
+    }
+    numbers = outcome.missed_numbers
+    if numbers:
+        # Each number is escaped by format_html; the separators are literal, so the join is safe.
+        joined = mark_safe(join_with_og([format_html("<b>{}</b>", n) for n in numbers]))
+        why = MESSAGES["retry_band_why_one" if len(numbers) == 1 else "retry_band_why_other"]
+        context["band"] = {
+            "number": len(numbers),
+            "unit": MESSAGES["retry_band_unit"],
+            "heading": MESSAGES["retry_band_heading"],
+            "why": format_html(why, numbers=joined),
+            "minutes": MESSAGES["band_minutes"].format(m=outcome.minutes),
+            "button_label": MESSAGES["retry_band_button"].format(n=len(numbers)),
+            "action_url": resolve_url("quiz:retry", quiz.id),
+        }
+    return context
+
+
+def _result_lead(outcome: services.Result) -> str:
+    """«7 riktige, 2 delvis riktige og 1 feil.»; zero counts are left out."""
+    parts = []
+    for count, code in (
+        (outcome.correct, "result_lead_correct"),
+        (outcome.partial, "result_lead_partial"),
+    ):
+        if count:
+            parts.append(MESSAGES[f"{code}_{'one' if count == 1 else 'other'}"].format(n=count))
+    if outcome.incorrect:
+        parts.append(MESSAGES["result_lead_incorrect"].format(n=outcome.incorrect))
+    return f"{join_with_og(parts)}." if parts else ""
 
 
 def _override_items(shown: str, overridden: bool) -> list[dict]:

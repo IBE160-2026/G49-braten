@@ -6,16 +6,17 @@ Free-text goes through `ai.gateway.grade_free_text`, which never counts toward t
 """
 
 import logging
+import math
 import random
+from dataclasses import dataclass
 
 from django.db import IntegrityError, transaction
-from django.utils.http import urlencode
+from django.db.models import Exists, OuterRef
 
 from ai import gateway
 from ai.errors import AIError
 from ai.schemas import GradeRequest
 from core import time
-from core.messages import MESSAGES
 from courses.models import Status, Topic
 from quiz.models import Answer, Quiz, QuizKind, QuizQuestion
 from quiz.rules import Grade, grade_choice
@@ -23,9 +24,6 @@ from studymat import services as studymat_services
 from studymat.models import Question, QuestionKind
 
 logger = logging.getLogger(__name__)
-
-# The query parameter on `return_url` that names a finished Quiz for the Quiz tab's note.
-FINISHED_PARAM = "quiz"
 
 
 def available_questions(student, topic: Topic):
@@ -207,24 +205,144 @@ def first_unanswered(quiz: Quiz) -> int | None:
     )
 
 
-def finished_url(quiz: Quiz) -> str:
-    """`return_url` naming this Quiz, so the Quiz tab shows its note."""
-    separator = "&" if "?" in quiz.return_url else "?"
-    return f"{quiz.return_url}{separator}{urlencode({FINISHED_PARAM: quiz.pk})}"
+# ---- P07 «Resultat» and «Øv på feilene» (FR-13, AD-9) ------------------------------------
+
+# The effective Grades that put a Question in a Retry round. Not graded, pending and unanswered
+# Questions are left out (FR-12, FR-13).
+MISSED = (Grade.INCORRECT, Grade.PARTIAL)
 
 
-def finish_note(student, quiz_id) -> str:
-    """«Quizen er lagret. k av N riktige.» for the Student's Quiz `quiz_id`; "" for anything else.
+def missed(quiz: Quiz) -> list[int]:
+    """The Question ids whose effective Grade is incorrect or partial, in the Quiz's position order."""
+    misses = Answer.objects.filter(quiz=quiz).with_effective_grade().filter(effective_grade__in=MISSED)
+    return list(
+        QuizQuestion.objects.filter(quiz=quiz, question_id__in=misses.values("question_id"))
+        .order_by("position")
+        .values_list("question_id", flat=True)
+    )
 
-    k counts effective Grades that are `correct`; N counts the Questions still in the Quiz.
+
+def start_retry(student, quiz: Quiz) -> Quiz | None:
+    """«Øv på feilene»: a Retry round of `quiz`'s missed Questions, in its order (no shuffle).
+
+    Reuses the parent's Retry round that has no Answers yet (its Questions brought in line with the
+    current misses, which an override may have changed), else creates one. None when nothing is
+    missed (nothing is created). The round copies `course` and `return_url`.
     """
+    assert quiz.student_id == student.pk, "start_retry: not the Student's Quiz"
+    question_ids = missed(quiz)
+    if not question_ids:
+        return None
+    unanswered = (
+        Quiz.objects.filter(student=student, parent_quiz=quiz, kind=QuizKind.RETRY)
+        .exclude(Exists(Answer.objects.filter(quiz=OuterRef("pk"))))
+        .order_by("-id")
+        .first()
+    )
+    if unanswered is not None:
+        _set_questions(student, unanswered, question_ids)
+        return unanswered
+    # One token per round of this parent, so two concurrent POSTs create one round (the loser of the
+    # unique constraint takes the winner's).
+    rounds = Quiz.objects.filter(student=student, parent_quiz=quiz).count()
+    token = f"retry-{quiz.pk}-{rounds + 1}"
     try:
-        pk = int(quiz_id)
-    except (TypeError, ValueError):
-        return ""
-    quiz = Quiz.objects.for_student(student).filter(pk=pk).first()
-    if quiz is None:
-        return ""
-    total = QuizQuestion.objects.filter(quiz=quiz).count()
-    correct = Answer.objects.filter(quiz=quiz).with_effective_grade().filter(effective_grade=Grade.CORRECT).count()
-    return MESSAGES["quiz_saved"].format(k=correct, n=total)
+        with transaction.atomic():
+            round_ = Quiz.objects.create(
+                student=student,
+                course_id=quiz.course_id,
+                kind=QuizKind.RETRY,
+                parent_quiz=quiz,
+                return_url=quiz.return_url,
+                start_token=token,
+            )
+            _set_questions(student, round_, question_ids)
+    except IntegrityError:
+        twin = Quiz.objects.filter(
+            student=student, start_token=token, kind=QuizKind.RETRY, parent_quiz=quiz
+        ).first()
+        if twin is None:
+            raise
+        return twin
+    logger.info("quiz retry student=%s quiz=%s parent=%s n=%s", student.pk, round_.pk, quiz.pk, len(question_ids))
+    return round_
+
+
+def _set_questions(student, quiz: Quiz, question_ids: list[int]) -> None:
+    """Positions 1..n for `question_ids`, unless the Quiz already has exactly these in this order."""
+    current = list(QuizQuestion.objects.filter(quiz=quiz).order_by("position").values_list("question_id", flat=True))
+    if current == question_ids:
+        return
+    with transaction.atomic():
+        QuizQuestion.objects.filter(quiz=quiz).delete()
+        QuizQuestion.objects.bulk_create(
+            QuizQuestion(student=student, quiz=quiz, question_id=question_id, position=position)
+            for position, question_id in enumerate(question_ids, start=1)
+        )
+
+
+@dataclass
+class ResultRow:
+    """One Question on P07. `number` is its display number (1-based among the remaining Questions)."""
+
+    number: int
+    position: int
+    question: Question
+    answer: Answer | None
+    # The effective Grade (pending reads as not graded); "" when unanswered.
+    grade: str
+    missed: bool
+
+
+@dataclass
+class Result:
+    rows: list[ResultRow]
+    correct: int
+    partial: int
+    incorrect: int
+
+    @property
+    def total(self) -> int:
+        return len(self.rows)
+
+    @property
+    def missed_numbers(self) -> list[int]:
+        return [row.number for row in self.rows if row.missed]
+
+    @property
+    def all_correct(self) -> bool:
+        return bool(self.rows) and self.correct == self.total
+
+    @property
+    def minutes(self) -> int:
+        """«ca. {m} min» for a Retry round of the misses: 0.8 minutes per Question, rounded up."""
+        return math.ceil(0.8 * len(self.missed_numbers))
+
+
+def result(quiz: Quiz) -> Result:
+    """Every Question still in the Quiz with its effective Grade, and the counts for P07."""
+    quiz_questions = list(
+        QuizQuestion.objects.filter(quiz=quiz).select_related("question__source").order_by("position")
+    )
+    answers = {answer.question_id: answer for answer in Answer.objects.filter(quiz=quiz)}
+    misses = set(missed(quiz))
+    rows = []
+    for number, quiz_question in enumerate(quiz_questions, start=1):
+        answer = answers.get(quiz_question.question_id)
+        rows.append(
+            ResultRow(
+                number=number,
+                position=quiz_question.position,
+                question=quiz_question.question,
+                answer=answer,
+                grade=answer.shown_grade if answer is not None else "",
+                missed=quiz_question.question_id in misses,
+            )
+        )
+    grades = [row.grade for row in rows]
+    return Result(
+        rows=rows,
+        correct=grades.count(Grade.CORRECT),
+        partial=grades.count(Grade.PARTIAL),
+        incorrect=grades.count(Grade.INCORRECT),
+    )

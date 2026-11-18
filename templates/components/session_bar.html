@@ -1,13 +1,16 @@
 {% load ui %}{% comment %}
-session-bar (P06): «Avslutt» leaves at once (Answers are already saved), the count over a strip of one
-slot per Question, and the context. `oob` re-renders it out of band after an HTMX answer.
+session-bar (P06, P07): «Avslutt» leaves at once (Answers are already saved), the count over a strip of
+one slot per Question, and the context. A result page passes no `slots`: no progress, only the context.
+`oob` re-renders it out of band after an HTMX answer.
   exit_url, index, total, slots [{answered, current}], context_label
 {% endcomment %}
-<header class="session-bar" id="session-bar"{% if oob %} hx-swap-oob="true"{% endif %}>
+<header class="session-bar{% if not slots %} session-bar--result{% endif %}" id="session-bar"{% if oob %} hx-swap-oob="true"{% endif %}>
   <a class="session-exit" href="{{ exit_url }}">{% icon "x" %}<span>Avslutt</span></a>
   <div class="session-progress">
-    <p class="session-count">{{ index }} av {{ total }}</p>
-    <ol class="session-strip" aria-hidden="true">{% for slot in slots %}<li class="session-slot{% if slot.answered %} session-slot--answered{% endif %}{% if slot.current %} session-slot--current{% endif %}"></li>{% endfor %}</ol>
+    {% if slots %}
+      <p class="session-count">{{ index }} av {{ total }}</p>
+      <ol class="session-strip" aria-hidden="true">{% for slot in slots %}<li class="session-slot{% if slot.answered %} session-slot--answered{% endif %}{% if slot.current %} session-slot--current{% endif %}"></li>{% endfor %}</ol>
+    {% endif %}
   </div>
   <p class="session-context">{{ context_label }}</p>
 </header>

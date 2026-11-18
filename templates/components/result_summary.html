@@ -1,0 +1,14 @@
+{% load ui %}{% comment %}
+result-summary (P07, DESIGN.md): the score with «av N», the lead sentence, and a strip of numbered slots
+tinted by Grade (unanswered dashed, not graded neutral), each linking to its row `#q-{number}`.
+  score_k, score_n, lead, rows [{number, grade, grade_label}]
+{% endcomment %}
+<section class="result-summary" aria-labelledby="result-score">
+  <h2 class="result-score" id="result-score"><span class="result-score-k">{{ score_k }}</span> <span class="result-score-n">av {{ score_n }}</span></h2>
+  {% if lead %}<p class="result-lead">{{ lead }}</p>{% endif %}
+  <ol class="result-strip" aria-label="Spørsmål">
+    {% for row in rows %}
+      <li><a class="result-slot result-slot--{{ row.grade }}" href="#q-{{ row.number }}" aria-label="Spørsmål {{ row.number }}: {{ row.grade_label }}">{{ row.number }}</a></li>
+    {% endfor %}
+  </ol>
+</section>

@@ -1,0 +1,42 @@
+{% extends "layouts/base.html" %}
+{% load ui %}
+{# P07 «Resultat» (FR-13, story 9): the band for «Øv på feilene», the score, and one row per Question. #}
+{% block title %}Resultat – AI Study Buddy{% endblock %}
+{% block body_class %}session-body{% endblock %}
+{% block body %}
+{% include "components/session_bar.html" %}
+{% include "components/mode_banner.html" %}
+<main id="main" class="session-page result-page" tabindex="-1">
+  <div id="page-messages" class="page-messages"></div>
+  <h1 class="page-title">Resultat</h1>
+  {% if band %}
+    {% include "components/next_step_band.html" with band=band %}
+  {% elif all_correct %}
+    <p class="calm-message">{% icon "ok" %}<span>{{ all_correct_text }}</span></p>
+  {% endif %}
+  {% include "components/result_summary.html" %}
+  <ol class="result-rows">
+    {% for row in rows %}
+      <li>
+        <details class="result-row result-row--{{ row.grade }}" id="q-{{ row.number }}">
+          <summary>
+            <span class="result-row-number">{{ row.number }}</span>
+            <span class="result-row-grade">{% if row.grade_icon %}{% icon row.grade_icon %}{% endif %}{{ row.grade_label }}</span>
+            <span class="result-row-prompt"{% if row.lang %} lang="{{ row.lang }}"{% endif %}>{{ row.question.prompt }}</span>
+          </summary>
+          <div class="result-row-body">
+            {% if row.answer %}
+              {% include "components/feedback_panel.html" with readonly=True heading_id=row.heading_id heading_level=3 answer=row.answer question=row.question grade=row.grade grade_label=row.grade_label grade_icon=row.grade_icon failure_message=row.failure_message wrong_choice=row.wrong_choice correct_letter=row.correct_letter is_mc=row.is_mc lang=row.lang overridden=row.overridden ai_grade_label=row.ai_grade_label only %}
+              {% if row.grade == "not_graded" %}<p class="result-row-note">{{ not_graded_note }}</p>{% endif %}
+            {% else %}
+              <p class="result-row-note">{{ row.grade_label }}</p>
+            {% endif %}
+            <a class="result-row-open" href="{{ row.question_url }}">{{ open_label }}{% icon "chev-r" %}</a>
+          </div>
+        </details>
+      </li>
+    {% endfor %}
+  </ol>
+  <p class="result-back"><a class="button-secondary" href="{{ quiz.return_url }}">Tilbake</a></p>
+</main>
+{% endblock %}

@@ -7,14 +7,19 @@ heading after an Answer (app.js, data-focus-on-swap).
   can_override, override_url, override_items: «Endre vurdering» on a graded Free-text Answer (FR-12)
   overridden, ai_grade_label: the «Endret av deg» chip and the «KI-vurdering: …» line
   delete_url: «Slett spørsmålet», D09 in #dialog (FR-24)
+  readonly: P07's rows (story 9): no override menu, retry, delete or next; not live, not focused.
+  heading_id, heading_level: unique per row on P07 (defaults «feedback-heading» and 2)
 {% endcomment %}
-<section class="feedback-panel feedback-panel--{{ grade }}" aria-live="polite" aria-labelledby="feedback-heading">
+{% with heading_id=heading_id|default:"feedback-heading" %}
+<section class="feedback-panel feedback-panel--{{ grade }}"{% if not readonly %} aria-live="polite"{% endif %} aria-labelledby="{{ heading_id }}">
   <div class="feedback-head">
-    <h2 class="feedback-heading" id="feedback-heading" tabindex="-1" data-focus-on-swap>{% icon grade_icon %}<span>{{ grade_label }}</span></h2>
+    <h{{ heading_level|default:"2" }} class="feedback-heading" id="{{ heading_id }}"{% if not readonly %} tabindex="-1" data-focus-on-swap{% endif %}>{% icon grade_icon %}<span>{{ grade_label }}</span></h{{ heading_level|default:"2" }}>
     {% if overridden %}<span class="chip">{% icon "pencil" %}Endret av deg</span>{% endif %}
     {% if answer.is_mock %}<span class="chip">Demo</span>{% endif %}
   </div>
-  {% if grade == "not_graded" %}
+  {% if grade == "not_graded" and readonly %}
+    <p class="feedback-explanation">{{ failure_message }}</p>
+  {% elif grade == "not_graded" %}
     {% include "components/inline_message.html" with text=failure_message id="grading-failed" %}
     <form class="feedback-retry" method="post" action="{{ regrade_url }}" hx-post="{{ regrade_url }}" hx-target="#question-card" hx-swap="innerHTML" hx-disabled-elt="find button[type='submit']" hx-sync="this:drop">
       {% csrf_token %}
@@ -31,6 +36,7 @@ heading after an Answer (app.js, data-focus-on-swap).
       <p{% if lang %} lang="{{ lang }}"{% endif %}>{{ question.model_answer }}</p>
     </details>
   {% endif %}
+  {% if not readonly %}
   <div class="feedback-actions">
     <a class="button-primary" href="{{ next_url }}" data-next>{{ next_label }}{% icon "arrow" %}</a>
     {% if can_override %}
@@ -47,4 +53,6 @@ heading after an Answer (app.js, data-focus-on-swap).
     {% endif %}
     <a class="button-quiet button-quiet--destructive" href="{{ delete_url }}" hx-get="{{ delete_url }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "trash" %}Slett spørsmålet</a>
   </div>
+  {% endif %}
 </section>
+{% endwith %}

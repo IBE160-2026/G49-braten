@@ -260,4 +260,24 @@
     var tab = document.getElementById(id);
     if (tab && tab.getAttribute("role") === "tab" && tab.getAttribute("aria-selected") === "true") tab.focus();
   })();
+
+  // ---- result-summary (P07): a strip slot opens the question row it links to -----------------
+
+  function openRowForHash() {
+    var id = window.location.hash.slice(1);
+    if (!id) return;
+    var row = document.getElementById(id);
+    if (row && row.tagName === "DETAILS" && row.classList.contains("result-row")) {
+      row.open = true;
+      var summary = row.querySelector("summary");
+      if (summary) summary.focus();
+    }
+  }
+  window.addEventListener("hashchange", openRowForHash);
+  // The same slot twice fires no hashchange, so a click opens its row as well.
+  document.addEventListener("click", function (evt) {
+    var slot = evt.target.closest && evt.target.closest("a.result-slot");
+    if (slot && slot.hash === window.location.hash) openRowForHash();
+  });
+  openRowForHash();
 })();

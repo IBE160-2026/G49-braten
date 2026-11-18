@@ -10,7 +10,6 @@ from core.http import render_page, safe_next, vary_on_htmx
 from core.ownership import get_owned_or_404
 from core.messages import MESSAGES
 from courses.models import Course, Source, Status, Topic
-from quiz import services as quiz_services
 from studymat.models import Flashcard, KeyConcept, Question
 from web.context_processors import THEME_COOKIE, THEMES
 
@@ -118,10 +117,7 @@ def topic(request, topic_id):
             {"label": course.name, "url": resolve_url("web:course", course.id)},
         ],
     }
-    if tab == "quiz":
-        # «Quizen er lagret. k av N riktige.» after «Fullfør quiz» (story 8; P07 replaces it in story 9).
-        context["finish_note"] = quiz_services.finish_note(request.user, request.GET.get(quiz_services.FINISHED_PARAM))
-    elif tab == "summary":
+    if tab == "summary":
         listed = sources.select_related("summary").prefetch_related(
             Prefetch("key_concepts", queryset=KeyConcept.objects.for_student(request.user))
         )

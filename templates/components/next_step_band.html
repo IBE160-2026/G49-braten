@@ -1,0 +1,27 @@
+{% load ui %}{% comment %}
+next-step-band (DESIGN.md): exactly one per page, right under the title. The size, the action and why,
+then one copper button with the time under it. The button POSTs to `action_url` when `method` is
+"post" (the default), otherwise it is a link to it. A `section` labeled by its heading.
+  band: {number, unit, heading, why (safe HTML, numbers in <b>), minutes, button_label, action_url, method}
+{% endcomment %}
+<section class="next-step-band" aria-labelledby="next-step-heading">
+  <div class="band-size">
+    <p class="band-number">{{ band.number }}</p>
+    <p class="band-unit">{{ band.unit }}</p>
+  </div>
+  <div class="band-text">
+    <h2 class="band-heading" id="next-step-heading">{{ band.heading }}</h2>
+    <p class="band-why">{{ band.why }}</p>
+  </div>
+  <div class="band-go">
+    {% if band.method == "get" %}
+      <a class="band-button" href="{{ band.action_url }}">{{ band.button_label }}{% icon "arrow" %}</a>
+    {% else %}
+      <form method="post" action="{{ band.action_url }}">
+        {% csrf_token %}
+        <button class="band-button" type="submit">{{ band.button_label }}{% icon "arrow" %}</button>
+      </form>
+    {% endif %}
+    <p class="band-time">{% icon "clock" %}<span>{{ band.minutes }}</span></p>
+  </div>
+</section>
