@@ -120,7 +120,6 @@ Testable consequences per capability: `acceptance-criteria.md`. Priority and bui
 ## Assumptions
 
 - Numeric values marked † in `acceptance-criteria.md` are starting values, tuned by the tests named there; they are not open decisions.
-- `architecture/technology.md` describes a different project (pytagoras-website-v2) and is excluded from this contract.
 - The adopted architecture spine supersedes the PRD addendum's implementation notes where they overlap (spaced repetition: Leitner, AD-11).
 
 ## Open Questions
