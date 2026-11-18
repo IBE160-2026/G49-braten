@@ -297,7 +297,8 @@ def test_fr23_quiz_tab_counts_ready_questions_and_has_an_empty_history(client_id
     assert "Du har ikke tatt en quiz i dette temaet ennå." in panel
     assert "Hva er A?" not in panel and "Hva er B?" not in panel
     # Actions for later stories are left out.
-    for later in ("Velg antall og start", "Repeter dagens kort", "Bla i alle kort", "Sett opp prøveeksamen"):
+    assert "Velg antall og start" in panel
+    for later in ("Repeter dagens kort", "Bla i alle kort", "Sett opp prøveeksamen"):
         assert later not in panel
 
 

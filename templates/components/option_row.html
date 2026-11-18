@@ -1,0 +1,12 @@
+{% load ui %}{% comment %}
+option-row (P06): a native radio with its letter key (keys 1–4 select, app.js). Once answered the
+radios lock and the tags say «Ditt svar» and «Riktig svar» in words, with an icon.
+  option: {index, letter, text, chosen, state, tag, tag_icon, focus}; locked; lang
+  `focus` (after an empty Answer) also takes `autofocus` on a full page (`oob` unset).
+{% endcomment %}
+<label class="option-row{% if option.state %} option-row--{{ option.state }}{% endif %}">
+  <input type="radio" name="choice" value="{{ option.index }}"{% if option.chosen %} checked{% endif %}{% if locked %} disabled{% endif %}{% if option.focus %} data-focus-on-swap{% if not oob %} autofocus{% endif %}{% endif %}>
+  <span class="option-key">{{ option.letter }}</span>
+  <span class="option-text"{% if lang %} lang="{{ lang }}"{% endif %}>{{ option.text }}</span>
+  {% if option.tag %}<span class="option-tag">{% icon option.tag_icon "sm" %}{{ option.tag }}</span>{% endif %}
+</label>

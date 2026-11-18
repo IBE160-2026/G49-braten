@@ -216,8 +216,6 @@ def test_fr21_real_mode_raises_provider_unavailable_and_counts_the_attempt(ida, 
 
 def test_fr21_not_yet_built_operations_raise_not_implemented(ida):
     with pytest.raises(NotImplementedError):
-        gateway.grade_free_text(ida, None)
-    with pytest.raises(NotImplementedError):
         gateway.simpler_explanation(ida, None)
 
 

@@ -1,0 +1,49 @@
+{% extends "layouts/base.html" %}
+{% load ui %}
+{# P06 Quiz in Practice mode (FR-10 to FR-12): one Question per page; the card is swapped after an Answer. #}
+{% block title %}Spørsmål {{ index }} av {{ total }} – {{ topic.name }} – AI Study Buddy{% endblock %}
+{% block body_class %}session-body{% endblock %}
+{% block body %}
+{% include "components/session_bar.html" %}
+{% include "components/mode_banner.html" %}
+<main id="main" class="session-page" tabindex="-1">
+  <div id="page-messages" class="page-messages"></div>
+  <div id="question-card">
+{% partialdef card inline %}
+{% if oob %}{% include "components/session_bar.html" %}{% endif %}
+<article class="question-card" aria-labelledby="question-prompt">
+  <p class="question-meta"><span class="chip">{% if is_mc %}Flervalg{% else %}Fritekst{% endif %}</span><span>Spørsmål {{ index }} av {{ total }}</span></p>
+  <h1 class="question-prompt" id="question-prompt" tabindex="-1"{% if lang %} lang="{{ lang }}"{% endif %}{% if not answer and not error and not oob %} autofocus{% endif %}>{{ question.prompt }}</h1>
+  {% if question.hint %}
+    <details class="question-hint">
+      <summary>{% icon "hint" %}Vis hint</summary>
+      <p{% if lang %} lang="{{ lang }}"{% endif %}>{{ question.hint }}</p>
+    </details>
+  {% endif %}
+  <form class="question-form" method="post" action="{{ answer_url }}" novalidate{% if not answer %} hx-post="{{ answer_url }}" hx-target="#question-card" hx-swap="innerHTML" hx-disabled-elt="find button[type='submit']" hx-sync="this:drop"{% if not is_mc %} hx-indicator="#grading-indicator"{% endif %}{% endif %}>
+    {% csrf_token %}
+    {% if is_mc %}
+      <fieldset class="option-group"{% if error %} aria-describedby="answer-error"{% endif %}>
+        <legend class="visually-hidden">Svaralternativer</legend>
+        {% for option in options %}{% include "components/option_row.html" with option=option locked=answer lang=lang %}{% endfor %}
+      </fieldset>
+    {% else %}
+      <div class="field">
+        <label for="answer-text">Ditt svar</label>
+        <textarea class="text-input text-area" id="answer-text" name="text" rows="5"{% if answer %} readonly{% endif %}{% if error %} aria-invalid="true" aria-describedby="answer-error" data-focus-on-swap{% if not oob %} autofocus{% endif %}{% endif %}>{% if answer %}{{ answer.text }}{% else %}{{ typed }}{% endif %}</textarea>
+      </div>
+    {% endif %}
+    {% if error %}{% include "components/inline_message.html" with text=error id="answer-error" %}{% endif %}
+    {% if not answer %}
+      <div class="question-actions">
+        <button class="button-primary" type="submit">Svar</button>
+        {% if not is_mc %}<p class="grading-indicator htmx-indicator" id="grading-indicator">{% icon "loader" %}Retter svaret …</p>{% endif %}
+      </div>
+    {% endif %}
+  </form>
+  {% if answer %}{% include "components/feedback_panel.html" %}{% endif %}
+</article>
+{% endpartialdef %}
+  </div>
+</main>
+{% endblock %}

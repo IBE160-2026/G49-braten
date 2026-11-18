@@ -21,6 +21,8 @@ def _lower(value):
 # `courses` (AD-1), so the values are repeated here; tests check they match.
 DetailLevel = Annotated[Literal["short", "medium", "detailed"], BeforeValidator(_lower)]
 QuestionKind = Annotated[Literal["multiple_choice", "free_text"], BeforeValidator(_lower)]
+# The graded values of quiz.rules.Grade (`not_graded` is set by the caller on an AIError, never here).
+Grade = Annotated[Literal["correct", "partial", "incorrect"], BeforeValidator(_lower)]
 
 
 # ---- Requests ----------------------------------------------------------------------------
@@ -51,6 +53,16 @@ class SummaryRequest(BaseModel):
     language: str = ""
     detail_level: DetailLevel
     locations: list[Location]
+
+
+class GradeRequest(BaseModel):
+    """`grade_free_text`: one Free-text Answer, with the Source text at the Question's Reference (FR-12)."""
+
+    prompt: str
+    model_answer: str
+    answer: str
+    source_text: str
+    language: str = ""
 
 
 # ---- Responses ---------------------------------------------------------------------------
@@ -108,3 +120,10 @@ class SummaryResponse(BaseModel):
     """What `regenerate_summary` returns."""
 
     summary: str
+
+
+class GradeResponse(BaseModel):
+    """What `grade_free_text` returns: the Grade and why."""
+
+    grade: Grade
+    explanation: str

@@ -1,0 +1,32 @@
+{% load ui %}{% comment %}
+feedback-panel (P06, FR-11, FR-12): the Grade as an icon and a word, then the Explanation, then the
+Reference. «Ikke rettet» shows the failure assertively with «Prøv å rette igjen». Focus moves to the
+heading after an Answer (app.js, data-focus-on-swap).
+  answer, question, grade, grade_label, grade_icon, failure_message, wrong_choice, correct_letter,
+  is_mc, lang, regrade_url, next_url, next_label
+{% endcomment %}
+<section class="feedback-panel feedback-panel--{{ grade }}" aria-live="polite" aria-labelledby="feedback-heading">
+  <div class="feedback-head">
+    <h2 class="feedback-heading" id="feedback-heading" tabindex="-1" data-focus-on-swap>{% icon grade_icon %}<span>{{ grade_label }}</span></h2>
+    {% if answer.is_mock %}<span class="chip">Demo</span>{% endif %}
+  </div>
+  {% if grade == "not_graded" %}
+    {% include "components/inline_message.html" with text=failure_message id="grading-failed" %}
+    <form class="feedback-retry" method="post" action="{{ regrade_url }}" hx-post="{{ regrade_url }}" hx-target="#question-card" hx-swap="innerHTML" hx-disabled-elt="find button[type='submit']" hx-sync="this:drop">
+      {% csrf_token %}
+      <button class="button-secondary" type="submit">{% icon "refresh" %}Prøv å rette igjen</button>
+    </form>
+  {% else %}
+    <p class="feedback-explanation">{% if wrong_choice %}Riktig svar er {{ correct_letter }}. {% endif %}{% if answer.explanation %}<span{% if lang and not answer.is_mock %} lang="{{ lang }}"{% endif %}>{{ answer.explanation }}</span>{% endif %}</p>
+  {% endif %}
+  {% include "components/reference.html" with item=question lang=lang %}
+  {% if not is_mc and grade != "not_graded" and question.model_answer %}
+    <details class="feedback-model">
+      <summary>Vis fasit</summary>
+      <p{% if lang %} lang="{{ lang }}"{% endif %}>{{ question.model_answer }}</p>
+    </details>
+  {% endif %}
+  <div class="feedback-actions">
+    <a class="button-primary" href="{{ next_url }}" data-next>{{ next_label }}{% icon "arrow" %}</a>
+  </div>
+</section>

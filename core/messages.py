@@ -49,6 +49,16 @@ MESSAGES: dict[str, str] = {
     "refused": "Kunne ikke lage studiemateriell fordi KI-tjenesten avviste forespørselen. Prøv igjen.",
     "invalid_format": "Kunne ikke lage studiemateriell fordi svaret fra KI-tjenesten hadde feil format. Prøv igjen.",
     "provider_unavailable": "Kunne ikke lage studiemateriell fordi KI-tjenesten ikke svarte. Prøv igjen.",
+    # FR-21 (EXPERIENCE.md, State Patterns «Key rejected»): on the source-row and in a Quiz.
+    "key_rejected": "KI-tjenesten godtok ikke API-nøkkelen. Sjekk nøkkelen i .env og start appen på nytt.",
+    # P06 Quiz (FR-10 to FR-12, story 8).
+    "answer_choose_first": "Velg et svar først.",
+    "answer_write_first": "Skriv et svar først.",
+    "grading_failed": "Kunne ikke rette svaret fordi KI-tjenesten ikke svarte. Prøv igjen.",
+    "mock_grade_explanation": "Demo-vurdering: {k} av {m} nøkkelord fra fasiten finnes i svaret ditt.",
+    "quiz_count_required": "Velg hvor mange spørsmål du vil ha.",
+    "quiz_available": "{n} spørsmål tilgjengelig. Flervalg og fritekst blandes.",
+    "quiz_saved": "Quizen er lagret. {k} av {n} riktige.",
     # Shown by static/js/app.js when htmx gets no answer or an error status (AD-18).
     "network_error": "Fikk ikke kontakt med appen. Sjekk nettforbindelsen og prøv igjen.",
     "response_error": "Det du ba om, kunne ikke vises. Last inn siden på nytt og prøv igjen.",

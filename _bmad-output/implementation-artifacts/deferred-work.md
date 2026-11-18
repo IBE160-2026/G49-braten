@@ -32,3 +32,12 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/7-topic-page-with-four-tabs-and-item-deletion.md`
   summary: Add a browser/JS test harness so `static/js/app.js` behaviour (P05 tab keys ← → Home End, focus restore after a tab change) is tested, not only checked by hand.
   evidence: The repo has no JS or browser test runner; `tests/test_shell.py` only checks app.js as source text, so a broken key handler passes every test.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/8-practice-mode-quiz-and-grading.md`
+  summary: Story 8b — the Student's Grade override on Free-text Answers («Endre vurdering» → «Riktig»/«Delvis riktig»/«Feil», «Bruk KI-vurderingen», marker «Endret av deg · KI-vurdering: …», tint follows the effective Grade; not on MC or «Ikke rettet») and «Slett spørsmålet» in the P06 feedback panel via the story-7 D09 dialog, the Quiz continuing at the next Question.
+  evidence: Split from story 8 at the Author's choice (2026-11-17) because the full CAP-7 spec was ~3000 tokens; story 8 already stores `override_grade` and `with_effective_grade()`, and 8b must land before story 9 (Retry round uses the effective Grade).
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/8-practice-mode-quiz-and-grading.md`
+  summary: Distinguish an in-flight Free-text grading (`grade=None`) from a failed one on P06, and make `quiz.services.regrade` claim the row atomically, so a concurrent second POST or regrade neither shows a false «Ikke rettet» nor sends a duplicate grading call.
+  evidence: Story 8 renders `grade=None` as `not_graded`/`provider_unavailable` (spec Design Notes) and `regrade` accepts `None`; harmless with Mock's instant grading, but story 10's Real adapter takes up to 15 s, during which a non-HTMX double submit hits this.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/8-practice-mode-quiz-and-grading.md`
+  summary: Cover the P06 keyboard contract in `static/js/app.js` (1–4 selects the option, Enter answers, Enter on the feedback heading moves on, focus to `[data-focus-on-swap]` after an HTMX swap) with a browser/JS test.
+  evidence: No JS or browser test runner exists; tests only check the markup hooks, so breaking the handlers fails nothing.

@@ -23,12 +23,17 @@
     {% endif %}
   {% endif %}
 {% elif tab == "quiz" %}
+  {% if finish_note %}{% include "components/inline_message.html" with variant="info" text=finish_note id="quiz-finish-note" %}{% endif %}
   {% if counts.questions %}
+    {% url 'quiz:start' topic.id as start_quiz_url %}
     <section class="tool-card" aria-labelledby="quiz-card-heading">
       {% icon "hint" %}
       <div class="tool-card-text">
         <h2 class="tool-card-heading" id="quiz-card-heading">Quiz i {{ topic.name }}</h2>
         <p>{{ counts.questions }} spørsmål er klar{{ counts.questions|pluralize:"t,e" }}.</p>
+      </div>
+      <div class="tool-card-actions">
+        <a class="button-secondary" href="{{ start_quiz_url }}" hx-get="{{ start_quiz_url }}" hx-target="#dialog" hx-swap="innerHTML">Velg antall og start</a>
       </div>
     </section>
   {% else %}

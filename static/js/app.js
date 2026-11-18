@@ -167,6 +167,59 @@
     next.focus();
   });
 
+  // ---- P06 Quiz: keys 1–4 pick an option, Enter answers, Enter again moves on ------------
+
+  function isTyping(el) {
+    if (!el || !el.closest) return false;
+    if (el.isContentEditable) return true;
+    var tag = el.tagName;
+    if (tag === "TEXTAREA" || tag === "SELECT") return true;
+    return tag === "INPUT" && el.type !== "radio" && el.type !== "checkbox";
+  }
+
+  document.addEventListener("keydown", function (evt) {
+    if (evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) return;
+    var target = evt.target;
+    // 1–4 select an option of the one open option-group, unless the Student is typing.
+    if (/^[1-4]$/.test(evt.key) && !isTyping(target)) {
+      var group = document.querySelector(".option-group");
+      if (!group) return;
+      var radios = group.querySelectorAll('input[type="radio"]:not(:disabled)');
+      var radio = radios[Number(evt.key) - 1];
+      if (!radio) return;
+      evt.preventDefault();
+      radio.checked = true;
+      radio.focus();
+      return;
+    }
+    if (evt.key !== "Enter") return;
+    // Enter on an option answers.
+    if (target.matches && target.matches('.option-group input[type="radio"]')) {
+      var form = target.form;
+      if (!form) return;
+      evt.preventDefault();
+      if (form.requestSubmit) form.requestSubmit();
+      else form.submit();
+      return;
+    }
+    // Enter on the feedback heading moves on (never by itself: the Student presses it).
+    if (target.matches && target.matches(".feedback-heading")) {
+      var card = target.closest("#question-card");
+      var next = card && card.querySelector("[data-next]");
+      if (!next) return;
+      evt.preventDefault();
+      next.click();
+    }
+  });
+
+  // After a swap into #question-card, focus the feedback heading (or the field to fix).
+  document.addEventListener("htmx:afterSettle", function (evt) {
+    var target = evt.detail && evt.detail.target;
+    if (!target || target.id !== "question-card") return;
+    var focusTarget = target.querySelector("[data-focus-on-swap]");
+    if (focusTarget) focusTarget.focus();
+  });
+
   // ---- tema-tabs (P05): ← → Home End follow the neighbouring tab's link ----------
   // Each tab is a full-page GET link (AD-13), so the keys navigate; the flag below puts focus
   // back on the selected tab of the new page.

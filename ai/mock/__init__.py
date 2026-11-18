@@ -11,10 +11,12 @@ the real Reference check (story 6) removes it (AD-4).
 
 import hashlib
 import json
+import re
 from functools import cache
 from pathlib import Path
 
-from ai.schemas import StudyMaterial, SummaryResponse
+from ai.schemas import GradeRequest, GradeResponse, StudyMaterial, SummaryResponse
+from core.messages import MESSAGES
 
 RECORDINGS_DIR = Path(__file__).resolve().parent
 SAMPLE_PATH = RECORDINGS_DIR.parent.parent / "sample" / "normalisering.pdf"
@@ -52,3 +54,33 @@ def study_material(detail_level: str) -> StudyMaterial:
     material = _study_material().model_copy(deep=True)
     material.summary = summary(detail_level).summary
     return material
+
+
+# The Mock grading rule (AD-4, story 8): the share of the model answer's words found in the Answer.
+MOCK_CORRECT_AT = 0.6
+MOCK_PARTIAL_AT = 0.3
+MOCK_MIN_WORD = 3
+_WORD = re.compile(r"[^\W\d_]+")
+
+
+def keywords(text: str) -> set[str]:
+    """Lower-cased words of at least MOCK_MIN_WORD letters (Æ, Ø and Å count as letters)."""
+    return {word for word in _WORD.findall(text.lower()) if len(word) >= MOCK_MIN_WORD}
+
+
+def grade(request: GradeRequest) -> GradeResponse:
+    """Grade a Free-text Answer by word overlap with the model answer, for any Source.
+
+    overlap = |answer ∩ model| / |model|: at least 0.6 is correct, at least 0.3 partial, else incorrect.
+    """
+    model = keywords(request.model_answer)
+    found = len(keywords(request.answer) & model)
+    overlap = found / len(model) if model else 0.0
+    if overlap >= MOCK_CORRECT_AT:
+        result = "correct"
+    elif overlap >= MOCK_PARTIAL_AT:
+        result = "partial"
+    else:
+        result = "incorrect"
+    explanation = MESSAGES["mock_grade_explanation"].format(k=found, m=len(model))
+    return GradeResponse(grade=result, explanation=explanation)

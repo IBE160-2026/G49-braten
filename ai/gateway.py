@@ -18,7 +18,14 @@ from django.db.models import F
 from ai import mock
 from ai.errors import AIError, DailyLimitReached, NeedsKey, ProviderUnavailable
 from ai.models import GenerationCallCount
-from ai.schemas import GenerateRequest, StudyMaterial, SummaryRequest, SummaryResponse
+from ai.schemas import (
+    GenerateRequest,
+    GradeRequest,
+    GradeResponse,
+    StudyMaterial,
+    SummaryRequest,
+    SummaryResponse,
+)
 from core import time
 
 logger = logging.getLogger(__name__)
@@ -52,9 +59,13 @@ def regenerate_summary(student, request: SummaryRequest) -> SummaryResponse:
     return _counted(student, "regenerate_summary", request.content_sha256, _send_summary, request)
 
 
-def grade_free_text(student, request):
-    """Grade a Free-text Answer (FR-12). Never counted. Story 8."""
-    raise NotImplementedError("grade_free_text arrives in story 8.")
+def grade_free_text(student, request: GradeRequest) -> GradeResponse:
+    """Grade a Free-text Answer (FR-12). Never counted against the daily limit (AD-3).
+
+    Mock mode grades every Source with the word-overlap rule (no `NeedsKey`, so Questions made in
+    Real mode can still be practised); Real mode raises `ProviderUnavailable` until story 10.
+    """
+    return _uncounted(student, "grade_free_text", _send_grade, request)
 
 
 def simpler_explanation(student, request):
@@ -71,6 +82,21 @@ def _counted(student, operation: str, content_sha256: str, send, request):
         if mode() == MOCK and not mock.is_sample(content_sha256):
             raise NeedsKey()
         _count_call(student)
+        result = send(request)
+    except AIError as error:
+        logger.info("ai %s student=%s outcome=%s", operation, student.pk, error.code)
+        raise
+    except Exception:
+        logger.exception("ai %s student=%s outcome=error", operation, student.pk)
+        raise
+    logger.info("ai %s student=%s outcome=ok mode=%s", operation, student.pk, mode())
+    return result
+
+
+def _uncounted(student, operation: str, send, request):
+    """Like `_counted`, without the mode gate and the daily counter."""
+    assert not connection.in_atomic_block, "No gateway call runs inside a transaction (AD-19)."
+    try:
         result = send(request)
     except AIError as error:
         logger.info("ai %s student=%s outcome=%s", operation, student.pk, error.code)
@@ -99,4 +125,10 @@ def _send_generate(request: GenerateRequest) -> StudyMaterial:
 def _send_summary(request: SummaryRequest) -> SummaryResponse:
     if mode() == MOCK:
         return mock.summary(request.detail_level)
+    raise ProviderUnavailable()
+
+
+def _send_grade(request: GradeRequest) -> GradeResponse:
+    if mode() == MOCK:
+        return mock.grade(request)
     raise ProviderUnavailable()

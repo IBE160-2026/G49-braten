@@ -1,0 +1,10 @@
+{% extends "layouts/shell.html" %}
+{# D06 «Start quiz» (FR-10): the number of Questions as presets, capped at what is available. #}
+{% block title %}{{ title }} – AI Study Buddy{% endblock %}
+{% partialdef fields %}
+{% include "components/segmented_control.html" with field=form.count %}
+{{ form.start_token }}
+{% endpartialdef %}
+{% block content %}
+{% with as_page=True %}{% partialdef dialog inline %}{% include "components/dialog.html" with title=title lead=lead body="quiz/start.html#fields" submit_label="Start quiz" action=action %}{% endpartialdef %}{% endwith %}
+{% endblock %}
