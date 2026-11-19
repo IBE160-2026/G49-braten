@@ -10,6 +10,8 @@
   </div>
   {% include "components/menu.html" with menu_id="course-actions" trigger_label="Flere valg for "|add:course.name items="courses/course_menu_items.html" %}
 </div>
+{# The Next step for this fag (FR-28); none without Topics, where the empty-state carries the action. #}
+{% if next_step.is_calm %}<p class="calm-message">{% icon "ok" %}<span>{{ next_step.text }}</span></p>{% elif next_step %}{% include "components/next_step_band.html" with band=next_step %}{% endif %}
 <div class="page-mastery">
   {% include "components/mastery_line.html" with score=mastery.score average=True meter_class="mastery-meter--wide" %}
   <p class="mastery-explain">{% icon "info" %}{% message "mastery_explain_course" %}</p>

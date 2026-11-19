@@ -1188,3 +1188,10 @@ button[disabled][aria-describedby] { cursor: not-allowed; opacity: .55; }
 a.today-chip { color: var(--rail-ink); text-decoration: none; }
 a.today-chip:hover { background: var(--rail-3); }
 .tool-card-note { color: var(--ink-2); font-weight: 600; }
+
+/* The next-step-band or calm-message right after the title on Hjem, P04 and P05 (story 13). */
+.page > .next-step-band + *, .page > .calm-message + * { margin-top: 24px; }
+.course-row-due { font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+@media (min-width: 600px) {
+  .course-row-due { grid-column: 1; }
+}

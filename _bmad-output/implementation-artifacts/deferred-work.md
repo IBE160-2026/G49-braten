@@ -62,3 +62,9 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/12-topic-score-course-score-weak-topics-and-quiz-history.md`
   summary: Cover the D10 topic-picker footer update in `static/js/app.js` (checking a box updates «{t} temaer valgt · {q} spørsmål», singular for one) with a browser/JS test.
   evidence: No JS test runner exists; tests only check the server-rendered footer and the data attributes, so a broken listener fails nothing.
+- source_spec: none
+  summary: Story 13b — the seven-day forecast-chart (real Due dates only, today marked «I dag», counts printed, an ordered list for screen readers) on Hjem («Studievarsel for fagene dine» with fag-forecast-rows and day columns), P04 (mini «Kort i {fag} neste 7 dager»), P05 and in P09 (today as cards left, «Repetert» at the end, the return-forecast preview), absorbing the P09 forecast entry from story 11.
+  evidence: Split from story 13 at the Author's choice (2026-11-19): the Next step (CAP-11, Must) ships first; the forecast is a UX surface that is independently shippable.
+- source_spec: none
+  summary: Story 13c — the trend-label (per tema and per fag), the answer-history «Siste 20 svar» and the tema-forecast-panel «Varsel for temaet» on P05, absorbing the story 12 deferral.
+  evidence: Split from story 13 at the Author's choice (2026-11-19); the trend is a UX assumption not in the PRD, and the panel needs the forecast from 13b.

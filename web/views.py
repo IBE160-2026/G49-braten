@@ -1,7 +1,7 @@
 """Composite pages (AD-1): Hjem P03, Fagoversikt P04, Tema P05, «Fant ikke siden» P12, and the theme."""
 
 from django.conf import settings
-from django.db.models import Count, Prefetch
+from django.db.models import Prefetch
 from django.shortcuts import redirect, render, resolve_url
 from django.utils.http import urlencode
 from django.views.decorators.http import require_http_methods, require_POST, require_safe
@@ -28,7 +28,8 @@ THEME_MAX_AGE = 60 * 60 * 24 * 365
 @vary_on_htmx
 def home(request):
     # The fag list is `shell_courses` from web.context_processors.shell, shared with the rail.
-    return render_page(request, "web/home.html", {"nav_current": "home"}, partials=())
+    context = {"nav_current": "home", "next_step": progress_services.next_step(request.user, Scope.all())}
+    return render_page(request, "web/home.html", context, partials=())
 
 
 @require_safe
@@ -39,12 +40,13 @@ def course(request, course_id):
     course = get_owned_or_404(Course, request.user, pk=course_id)
     mastery = progress_services.course_score(request.user, course.id)
     weak = mastery.weak
-    ready = _ready_question_counts(request.user, course)
+    ready = progress_services.ready_question_counts(request.user, Scope(course_id=course.id))
     return render_page(
         request,
         "web/course.html",
         {
             "course": course,
+            "next_step": progress_services.next_step(request.user, Scope(course_id=course.id)),
             "current_course": course,
             "mastery": mastery,
             "topic_scores": progress_services.weak_first(mastery.topics),
@@ -56,17 +58,6 @@ def course(request, course_id):
     )
 
 
-def _ready_question_counts(student, course) -> dict[int, int]:
-    """{topic id: ready Questions} in the Course (FR-9: Questions count only from ready kilder)."""
-    rows = (
-        Question.objects.filter(student=student, source__topic__course=course, source__status=Status.READY)
-        .order_by()
-        .values("source__topic_id")
-        .annotate(n=Count("id"))
-    )
-    return {row["source__topic_id"]: row["n"] for row in rows}
-
-
 @require_http_methods(["GET", "POST"])
 @vary_on_htmx
 def weak_quiz(request, course_id):
@@ -74,7 +65,7 @@ def weak_quiz(request, course_id):
     starts a Practice-mode Quiz of every ready Question of the chosen Topics (once per start token)."""
     course = get_owned_or_404(Course, request.user, pk=course_id)
     return_url = resolve_url("web:course", course.id)
-    ready = _ready_question_counts(request.user, course)
+    ready = progress_services.ready_question_counts(request.user, Scope(course_id=course.id))
     mastery = progress_services.course_score(request.user, course.id)
     listed = [t for t in progress_services.weak_first(mastery.topics) if ready.get(t.topic.id)]
     if not listed:
@@ -169,7 +160,7 @@ def _summary_blocks(sources) -> list[dict]:
 @require_safe
 @vary_on_htmx
 def topic(request, topic_id):
-    """P05: breadcrumb, title, actions and the four tema-tabs (FR-23). The band comes later.
+    """P05: breadcrumb, title, actions, the quiz band (Next step) and the four tema-tabs (FR-23).
 
     Each tab is a full-page GET link (`?tab=`, AD-13); only the selected tab's panel is rendered.
     """
@@ -204,6 +195,8 @@ def topic(request, topic_id):
             {"label": "Hjem", "url": resolve_url("web:home")},
             {"label": course.name, "url": resolve_url("web:course", course.id)},
         ],
+        # The band above the tabs, whichever tab is open (EXPERIENCE.md, tema-tabs).
+        "next_step": progress_services.next_step(request.user, Scope(topic_id=topic.id)),
         # The Topic score under the title, on every tab (FR-16).
         "mastery": progress_services.topic_scores(request.user, Scope(topic_id=topic.id))[topic.id],
     }

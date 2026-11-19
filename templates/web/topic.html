@@ -14,7 +14,8 @@
   </div>
   {% include "components/menu.html" with menu_id="topic-actions" trigger_label="Flere valg for "|add:topic.name items="courses/topic_menu_items.html" %}
 </div>
-{# The band comes with the Next step (story 13). #}
+{# The quiz band (Next step) when the Topic has ready Questions; above the tabs on every tab. #}
+{% if next_step.is_calm %}<p class="calm-message">{% icon "ok" %}<span>{{ next_step.text }}</span></p>{% elif next_step %}{% include "components/next_step_band.html" with band=next_step %}{% endif %}
 {% url 'web:topic' topic.id as topic_url %}{% url 'studymat:add_source' topic.id as add_source_url %}
 {% include "components/tabs.html" with tabs=tabs tab=tab base_url=topic_url %}
 <section class="tab-panel" role="tabpanel" id="panel-{{ tab }}" aria-labelledby="tab-{{ tab }}" tabindex="0">

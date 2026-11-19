@@ -31,3 +31,15 @@ def short_date(moment: datetime.datetime | datetime.date) -> str:
     if isinstance(moment, datetime.datetime):
         moment = moment.astimezone(OSLO).date()
     return f"{moment.day}. {SHORT_MONTHS[moment.month - 1]}"
+
+
+# Long month names in bokmål, for «19. november» (EXPERIENCE.md, Voice and Tone: in sentences).
+LONG_MONTHS = (
+    "januar", "februar", "mars", "april", "mai", "juni",
+    "juli", "august", "september", "oktober", "november", "desember",
+)  # fmt: skip
+
+
+def long_date(day: datetime.date) -> str:
+    """«19. november»."""
+    return f"{day.day}. {LONG_MONTHS[day.month - 1]}"

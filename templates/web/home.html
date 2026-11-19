@@ -3,6 +3,8 @@
 {% block title %}Hjem – AI Study Buddy{% endblock %}
 {% block content %}
 <h1 class="page-title">Hjem</h1>
+{# The Next step for all fag (FR-28); none without fag, where the empty-state carries the action. #}
+{% if next_step.is_calm %}<p class="calm-message">{% icon "ok" %}<span>{{ next_step.text }}</span></p>{% elif next_step %}{% include "components/next_step_band.html" with band=next_step %}{% endif %}
 {% if shell_courses %}
   <section class="course-list" aria-labelledby="course-list-heading">
     <h2 class="section-heading" id="course-list-heading">Fagene dine</h2>
@@ -21,6 +23,7 @@
               </span>
             {% endif %}
             {% endwith %}
+            <span class="course-row-due">{% if course.due_today %}{% message "course_due_today" n=course.due_today %}{% else %}{% message "course_due_none" %}{% endif %}</span>
           </a>
           {% with course_id=course.id|stringformat:"s" %}
             {% include "components/menu.html" with menu_id="course-menu-"|add:course_id trigger_label="Flere valg for "|add:course.name items="courses/course_menu_items.html" %}
