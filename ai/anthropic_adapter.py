@@ -16,6 +16,8 @@ from `InvalidFormat`. Provider errors become the typed `ai.errors` the callers s
 `FailureReason`.
 """
 
+import logging
+import time
 from functools import cache
 
 import anthropic
@@ -47,10 +49,19 @@ MAX_OUTPUT_TOKENS = 16000
 
 # Grading stays under NFR-3's 15 s: one try, 12 s (AD-2). Generation and Summary get one retry,
 # so a transient 429/5xx does not cost the Student a Generation call on «Prøv igjen».
+# The retry is ours, not the SDK's: the SDK also retries a timeout, and a timed-out request may
+# already have run (and been billed), so a timeout is never retried (Author's decision 2026-11-19).
 GRADE_TIMEOUT = 12.0
 GRADE_RETRIES = 0
 GENERATE_TIMEOUT = 110.0
 GENERATE_RETRIES = 1
+RETRY_DELAY = 2.0
+
+# The SDK and its HTTP client log request details at DEBUG/INFO (with `ANTHROPIC_LOG=debug`, whole
+# request bodies, i.e. Source text). They are held at WARNING whatever the environment says (NFR-4).
+SDK_LOGGERS = ("anthropic", "httpx", "httpx2", "httpcore")
+for _name in SDK_LOGGERS:
+    logging.getLogger(_name).setLevel(logging.WARNING)
 
 EFFORT_GRADE = "low"
 EFFORT_GENERATE = "medium"
@@ -103,21 +114,38 @@ def output_format(model: type[pydantic.BaseModel]) -> dict:
 
 
 def _parse(model, *, system: str, user: str, effort: str, timeout: float, max_retries: int):
-    try:
-        client = _client().with_options(timeout=timeout, max_retries=max_retries)
-        message = client.messages.create(
-            model=MODEL,
-            max_tokens=MAX_OUTPUT_TOKENS,
-            system=system,
-            messages=[{"role": "user", "content": user}],
-            output_config={"format": output_format(model), "effort": effort},
-        )
-    except anthropic.APIError as error:
-        raise _mapped(error) from None
-    except anthropic.AnthropicError as error:
-        # Any other SDK error (client or header setup): the app keeps running.
-        raise ProviderUnavailable(type(error).__name__) from None
-    return _read(message, model)
+    for attempt in range(max_retries + 1):
+        try:
+            client = _client().with_options(timeout=timeout, max_retries=0)
+            message = client.messages.create(
+                model=MODEL,
+                max_tokens=MAX_OUTPUT_TOKENS,
+                system=system,
+                messages=[{"role": "user", "content": user}],
+                output_config={"format": output_format(model), "effort": effort},
+            )
+        except anthropic.APIError as error:
+            if attempt < max_retries and _retryable(error):
+                time.sleep(RETRY_DELAY)
+                continue
+            raise _mapped(error) from None
+        except anthropic.AnthropicError as error:
+            # Any other SDK error (client or header setup): the app keeps running.
+            raise ProviderUnavailable(type(error).__name__) from None
+        return _read(message, model)
+    raise AssertionError("unreachable")  # pragma: no cover
+
+
+def _retryable(error: anthropic.APIError) -> bool:
+    """Errors where nothing ran, so a retry cannot be billed twice: 429, 5xx/529, no connection.
+
+    A timeout is not retried: the request may have run to the end on the provider's side.
+    """
+    if isinstance(error, anthropic.APITimeoutError):
+        return False
+    if isinstance(error, anthropic.APIConnectionError):
+        return True
+    return isinstance(error, (anthropic.RateLimitError, anthropic.InternalServerError))
 
 
 def _mapped(error: anthropic.APIError) -> AIError:

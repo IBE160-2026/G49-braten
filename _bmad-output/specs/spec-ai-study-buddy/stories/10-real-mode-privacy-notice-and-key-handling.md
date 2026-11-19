@@ -91,6 +91,13 @@ context:
 
 ## Spec Change Log
 
+- **2026-11-19, after the Author's walkthrough (risk spots fixed at the Author's request).**
+  - *Retries:* the frozen «generation and Summary `max_retries=1`» is now the adapter's own single retry with the SDK at `max_retries=0`. It retries 429, 5xx/529 and a lost connection, never a timeout (a timed-out request may have run and been billed) or a rejected Key. Worst case drops from about 220 s to about 112 s, and no request is billed twice.
+  - *SDK logging:* the `anthropic`, `httpx`, `httpx2` and `httpcore` loggers are held at WARNING, so `ANTHROPIC_LOG=debug` cannot write Source text to the log (triage row 22, now patched).
+  - *Unexpected errors in generation:* any non-`AIError` from the gateway fails the Source at once as `provider_unavailable` with «Prøv igjen», instead of a 500 and «genererer» until the AD-5 timeout.
+  - *Privacy coverage:* a test lists every public gateway operation that takes a Student and a request and requires each to raise `PrivacyNotAccepted` in Real mode before acceptance; a new operation fails the test until it is added.
+  - *Not fixed here:* the prompts' quality against real replies stays the Author's OQ-2 and NFR-5 content check.
+
 ## Review Triage Log
 
 Pass 1 (iteration 0) — Blind Hunter (BH), Edge Case Hunter (EC), Verification Gap (VG).

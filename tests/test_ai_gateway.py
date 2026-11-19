@@ -253,6 +253,38 @@ def test_fr22_real_mode_without_acceptance_sends_nothing_and_counts_nothing(ida,
     assert "outcome=privacy_not_accepted" in caplog.text
 
 
+# Every gateway operation that sends Source text, with a request for it. A new operation must be
+# added here, so it cannot skip the privacy check (AD-17).
+PRIVATE_OPERATIONS = {
+    "generate_study_material": lambda: generate_request(sha=OTHER_SHA),
+    "regenerate_summary": lambda: summary_request(sha=OTHER_SHA),
+    "grade_free_text": grade_request,
+}
+# Not built yet (story 16). When it is, it must move to PRIVATE_OPERATIONS.
+NOT_BUILT = {"simpler_explanation"}
+
+
+def test_ad17_every_gateway_operation_that_takes_a_student_checks_privacy(ida, real, adapter):
+    import inspect
+
+    operations = {
+        name
+        for name, function in inspect.getmembers(gateway, inspect.isfunction)
+        if function.__module__ == gateway.__name__
+        and not name.startswith("_")
+        and list(inspect.signature(function).parameters)[:2] == ["student", "request"]
+    }
+    assert operations == set(PRIVATE_OPERATIONS) | NOT_BUILT, "add the new operation to PRIVATE_OPERATIONS"
+    for name, request in PRIVATE_OPERATIONS.items():
+        with pytest.raises(errors.PrivacyNotAccepted):
+            getattr(gateway, name)(ida, request())
+    for name in NOT_BUILT:
+        with pytest.raises(NotImplementedError):
+            getattr(gateway, name)(ida, None)
+    assert adapter == []
+    assert used(ida) == 0
+
+
 def test_fr22_privacy_is_checked_before_the_counter(ida, real, adapter):
     use_up(ida)
     with pytest.raises(errors.PrivacyNotAccepted):

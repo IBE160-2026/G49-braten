@@ -13,7 +13,7 @@ from ai import gateway
 from ai.errors import AIError, InvalidFormat
 from ai.schemas import GenerateRequest, Location
 from courses import services as courses_services
-from courses.models import Source, SourceKind
+from courses.models import FailureReason, Source, SourceKind
 from ingestion.models import SourceText
 from studymat import checks
 from studymat.models import Flashcard, KeyConcept, Question, Summary
@@ -63,6 +63,11 @@ def generate(student, source: Source) -> bool:
             raise InvalidFormat("empty summary")
     except AIError as error:
         courses_services.mark_failed(source, token, error.code)
+        return True
+    except Exception:
+        # A bug or an unexpected library error (the gateway has logged it): the Source fails now,
+        # with «Prøv igjen», instead of reading «genererer» until the AD-5 timeout.
+        courses_services.mark_failed(source, token, FailureReason.PROVIDER_UNAVAILABLE)
         return True
 
     checked = checks.check(material, {loc.index: loc.text for loc in locs})

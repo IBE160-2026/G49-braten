@@ -100,6 +100,7 @@ def api(monkeypatch):
     def install(*answers) -> FakeAPI:
         fake = FakeAPI(*answers)
         monkeypatch.setattr(anthropic_adapter, "_client", fake.client)
+        monkeypatch.setattr(anthropic_adapter, "RETRY_DELAY", 0)
         return fake
 
     return install
@@ -214,10 +215,11 @@ def test_nfr3_timeouts_and_retries_per_operation(api, monkeypatch):
     anthropic_adapter.generate(generate_request())
     fake.answers = [reply({"summary": "Kort."})]
     anthropic_adapter.summary(summary_request())
+    # The SDK never retries; the adapter's own single retry for generation is tested below.
     assert seen == [
         {"timeout": 12.0, "max_retries": 0},
-        {"timeout": 110.0, "max_retries": 1},
-        {"timeout": 110.0, "max_retries": 1},
+        {"timeout": 110.0, "max_retries": 0},
+        {"timeout": 110.0, "max_retries": 0},
     ]
 
 
@@ -351,6 +353,28 @@ def test_fr21_generation_gives_up_after_one_retry(api):
     assert len(fake.requests) == 2
 
 
+@pytest.mark.parametrize("call", [anthropic_adapter.generate, anthropic_adapter.summary], ids=["generate", "summary"])
+def test_fr21_a_timeout_is_never_retried_so_it_cannot_be_billed_twice(api, call):
+    fake = api(httpx2.ReadTimeout("slow"), reply(material_payload()))
+    request = generate_request() if call is anthropic_adapter.generate else summary_request()
+    with pytest.raises(errors.ProviderUnavailable):
+        call(request)
+    assert len(fake.requests) == 1
+
+
+def test_fr21_generation_retries_once_after_a_lost_connection(api):
+    fake = api(httpx2.ConnectError("down"), reply(material_payload()))
+    assert isinstance(anthropic_adapter.generate(generate_request()), StudyMaterial)
+    assert len(fake.requests) == 2
+
+
+def test_fr21_a_rejected_key_is_not_retried(api):
+    fake = api(error_response(401, "authentication_error"), reply(material_payload()))
+    with pytest.raises(errors.KeyRejected):
+        anthropic_adapter.generate(generate_request())
+    assert len(fake.requests) == 1
+
+
 # ---- The Key never shows (AD-2, NFR-4) ------------------------------------------------------
 
 
@@ -385,3 +409,20 @@ def test_nfr4_the_key_never_appears_in_logs(api, student, settings, caplog):
     assert "Normalisering fjerner redundans" not in "\n".join(
         r.getMessage() for r in caplog.records if r.name == "ai.gateway"
     )
+
+
+# ---- SDK logging is held at WARNING (NFR-4) --------------------------------------------------
+
+
+@pytest.mark.parametrize("name", anthropic_adapter.SDK_LOGGERS)
+def test_nfr4_sdk_loggers_are_held_at_warning(name):
+    assert logging.getLogger(name).getEffectiveLevel() >= logging.WARNING
+
+
+def test_nfr4_source_text_never_reaches_the_log_even_at_debug(api, caplog):
+    # A retried generation: the SDK and HTTP client would log the request body at DEBUG.
+    api(error_response(529, "overloaded_error"), reply(material_payload()))
+    with caplog.at_level(logging.DEBUG):
+        anthropic_adapter.generate(generate_request())
+    assert "Normalisering fjerner redundans" not in caplog.text
+    assert KEY not in caplog.text

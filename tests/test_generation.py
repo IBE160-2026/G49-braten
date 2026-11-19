@@ -207,6 +207,16 @@ def test_fr9_an_empty_summary_fails_as_invalid_format(ida, sample, monkeypatch):
     assert item_count(sample) == 0
 
 
+def test_fr9_an_unexpected_error_fails_the_source_at_once_instead_of_leaving_it_generating(client_ida, ida, sample, monkeypatch):
+    fail_with(monkeypatch, RuntimeError)
+    response = client_ida.post(generate_url(sample), **HTMX)
+    assert response.status_code == 200
+    sample.refresh_from_db()
+    assert (sample.status, sample.failure_reason) == (Status.FAILED, FailureReason.PROVIDER_UNAVAILABLE)
+    assert item_count(sample) == 0
+    assert "disabled" not in retry_button(response.content.decode())
+
+
 def test_fr9_six_failure_messages_are_in_core_messages():
     assert MESSAGES["timed_out"] == "Genereringen ble ikke ferdig. Prøv igjen."
     for code in ("truncated", "rate_limited", "refused", "invalid_format", "provider_unavailable"):
