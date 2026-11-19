@@ -1,6 +1,30 @@
-# NFR-2: fresh-clone run (implementer's machine)
+# NFR-2: fresh-clone runs (implementer's machine)
 
-Status: **passed locally with the deviations below; the README's clone URL and a cold install are untested.** The run on another machine is still the Author's (NFR-2, SETUP-GUIDE Part A).
+Status: **passed from the GitHub URL with a cold uv cache and a freshly downloaded Python (run 2, below).** Run 1's deviations 1–3 are closed by run 2, except that both runs used the implementer's machine with uv already installed. The run on another machine is still the Author's (NFR-2, SETUP-GUIDE Part A).
+
+## Run 2: from GitHub, cold cache (2026-11-19)
+
+| Item | Value |
+| --- | --- |
+| Source | `git clone https://github.com/IBE160-2026/G49-braten.git` at `fa16e0f` (pushed the same day), into an empty temp dir |
+| Isolation | empty `UV_CACHE_DIR`, empty `UV_PYTHON_INSTALL_DIR` with `UV_PYTHON_PREFERENCE=only-managed` (uv downloaded Python itself), `ANTHROPIC_API_KEY` and `AI_PROVIDER` unset |
+| uv | 0.12.13 (already installed; not part of the run) |
+| Python (downloaded by `uv sync`) | 3.13.15 |
+
+| Step | Result | Wall-clock |
+| --- | --- | --- |
+| `git clone …` | OK | 1 s |
+| `cp .env.example .env` | OK | – |
+| `uv sync` | OK, downloaded Python 3.13.15 and the packages (68 MB cache) | 2 s on a fast network |
+| `uv run manage.py migrate` | OK | 3 s |
+| `uv run manage.py runserver 127.0.0.1:8765` | OK | ~1 s |
+| `GET /` | 302 to `/accounts/sign-in/?next=/`; the page shows «Demomodus:» and «Opprett konto» | – |
+| `GET /accounts/sign-up/` | 200 | – |
+| `uv run pytest` | **886 passed**, sockets disabled, no Key | 101 s |
+
+No deviation from the README; nothing to fix.
+
+## Run 1: local clone (2026-11-19)
 
 ## Setup
 
@@ -41,4 +65,4 @@ Found and fixed:
 
 ## Still open
 
-- The NFR-2 run on another machine, from the GitHub URL, with a cold uv install: the Author's.
+- The NFR-2 run on another machine (ideally Windows, or without uv installed), following the README from the first line: the Author's.
