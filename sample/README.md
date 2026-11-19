@@ -9,6 +9,8 @@ written for AI Study Buddy.
 | `source.md` | The slide text. `# Title` starts a slide; `- ` lines become bullets. |
 | `build_sample.py` | Renders `source.md` to `normalisering.pdf` (Helvetica, WinAnsi, so æøå survive). |
 | `normalisering.pdf` | The committed Sample document. |
+| `build_too_many_pages.py` | Writes `for_mange_sider.pdf`. |
+| `for_mange_sider.pdf` | 51 pages, one line each: the README's upload over FR-3's 50-page limit (SM-2 check 4). |
 
 Rebuild after editing the text:
 
