@@ -23,6 +23,16 @@ Uten API-nøkkel kjører appen i **demomodus** (Mock mode) med innspilte svar fo
 
 Du trenger ikke Python fra før, og heller ikke Node, Docker, en databaseserver, en betalt konto eller en API-nøkkel.
 
+## API-nøkler
+
+Appen bruker **én** API-nøkkel, og den er valgfri:
+
+| Nøkkel | Fra | Trengs til | Uten den |
+| --- | --- | --- | --- |
+| `ANTHROPIC_API_KEY` | Anthropic Console (<https://console.anthropic.com>) | Å lage studiemateriell fra dine egne filer (ekte modus) | Appen kjører i demomodus. Alt kan prøves med eksempeldokumentet, og testene trenger aldri nøkkel. |
+
+Ingen andre nøkler eller kontoer trengs. Nøkkelen legges bare i `.env`, som git ignorerer. Se [Ekte modus](#ekte-modus-med-api-nøkkel) for hvordan du lager den og setter en utgiftsgrense.
+
 ## Start appen
 
 ```bash
