@@ -1,0 +1,33 @@
+{% extends "layouts/base.html" %}
+{% load ui %}
+{% comment %}
+P08 «Bla i kort» (FR-14, story 11b): one Flashcard per page in generation order. GET only; it never
+writes (AD-11). The card is P09's markup (`components/flashcard_card.html`); `?vis=svar` is the flip
+without JavaScript. «Forrige»/«Neste» are links, absent at the ends; app.js follows them on ← and →.
+{% endcomment %}
+{% block title %}Kort {{ index }} av {{ total }} – Bla i kort – {{ topic_name }} – AI Study Buddy{% endblock %}
+{% block body_class %}session-body{% endblock %}
+{% block body %}
+{% include "components/session_bar.html" %}
+{% include "components/mode_banner.html" %}
+<main id="main" class="session-page" tabindex="-1">
+  <div id="page-messages" class="page-messages"></div>
+  <p class="next-step-row">{{ row }}</p>
+  <div id="review-card">
+    {% include "components/flashcard_card.html" %}
+  </div>
+  <div class="browse-foot">
+    <p class="browse-next-review">{% icon "calendar" %}<span>{{ next_review }}</span></p>
+    {% with card_id=card.id|stringformat:"s" %}
+    {% include "components/menu.html" with menu_id="card-menu-"|add:card_id trigger_label="Flere valg for kortet "|add:card.front|truncatechars:60 items="studymat/item_menu_items.html" item_kind="card" item_id=card.id delete_label="Slett kortet" item_next=here_url item_dialog=False %}
+    {% endwith %}
+  </div>
+  {% if prev_url or next_url %}
+  <nav class="browse-nav" aria-label="Bla mellom kortene">
+    {% if prev_url %}<a class="button-secondary browse-prev" href="{{ prev_url }}" rel="prev" data-browse-prev>{% icon "chev-l" %}Forrige</a>{% endif %}
+    {% if next_url %}<a class="button-secondary browse-next" href="{{ next_url }}" rel="next" data-browse-next>Neste{% icon "chev-r" %}</a>{% endif %}
+  </nav>
+  <p class="review-keys" aria-hidden="true"><kbd>←</kbd> <kbd>→</kbd> blar</p>
+  {% endif %}
+</main>
+{% endblock %}

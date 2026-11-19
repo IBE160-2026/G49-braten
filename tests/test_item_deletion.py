@@ -55,11 +55,16 @@ def source(normalisering):
 # ---- Matrix: Delete card ------------------------------------------------------------------
 
 
-def test_fr24_delete_card_from_test_deg_selv_lands_back_with_one_card_fewer(client_ida, normalisering, source):
+def test_fr24_delete_card_from_bla_i_kort_lands_back_with_one_card_fewer(client_ida, normalisering, source):
+    """Story 11b: cards are deleted from P08 «Bla i kort»; D09's `next` is that position."""
     card = Flashcard.objects.get(front="Kort A")
     page = client_ida.get(topic_url(normalisering, "selftest")).content.decode()
     assert text_of(tab_of(main_of(page), "selftest")).endswith("Test deg selv · 3 kort")
-    next_url = topic_url(normalisering, "selftest")
+    next_url = reverse("review:browse", args=[normalisering.id, 1])
+    p08 = client_ida.get(next_url).content.decode()
+    # D09 opens as a full page from the session layout (a normal POST/redirect, no HX-Location).
+    assert f'href="{delete_url("card", card.id)}?next={next_url}">' in p08
+    assert "hx-get" not in p08.split('class="menu-item menu-item--destructive"', 1)[1].split("</a>", 1)[0]
     dialog = client_ida.get(f"{delete_url('card', card.id)}?next={next_url}", **HTMX_DIALOG).content.decode()
     assert dialog.lstrip().startswith('<dialog class="dialog" role="alertdialog"')
     assert "Slette kortet?" in dialog and MESSAGES["delete_cannot_undo"] in dialog
@@ -69,9 +74,10 @@ def test_fr24_delete_card_from_test_deg_selv_lands_back_with_one_card_fewer(clie
     response = client_ida.post(delete_url("card", card.id), {"next": next_url}, follow=True)
     assert response.redirect_chain[-1][0] == next_url
     main = main_of(response.content.decode())
-    assert text_of(tab_of(main, "selftest")).endswith("Test deg selv · 2 kort")
-    assert "Kort A" not in main and "Kort B" in main and "Kort C" in main
+    assert "Kort A" not in main and "Kort B" in main
     assert not Flashcard.objects.filter(pk=card.pk).exists()
+    page = client_ida.get(topic_url(normalisering, "selftest")).content.decode()
+    assert text_of(tab_of(main_of(page), "selftest")).endswith("Test deg selv · 2 kort")
     # The rest of that Source is untouched.
     assert KeyConcept.objects.filter(source=source).count() == 2
     assert Question.objects.filter(source=source).count() == 2

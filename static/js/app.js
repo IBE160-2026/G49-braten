@@ -276,6 +276,22 @@
     if (focusTarget) focusTarget.focus();
   });
 
+  // ---- P08 Bla i kort: ← and → follow «Forrige» and «Neste» ----------------------------------
+  // The links are absent at the ends, so there is nothing to follow there. Space/Enter flip the
+  // card through the P09 handler above (the card markup is shared). Not while typing or in a menu.
+
+  document.addEventListener("keydown", function (evt) {
+    if (evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) return;
+    if (evt.key !== "ArrowLeft" && evt.key !== "ArrowRight") return;
+    var target = evt.target;
+    if (isTyping(target)) return;
+    if (target.closest && target.closest('[popover], [role="menu"], [role="tablist"], dialog')) return;
+    var link = document.querySelector(evt.key === "ArrowLeft" ? "[data-browse-prev]" : "[data-browse-next]");
+    if (!link) return;
+    evt.preventDefault();
+    window.location.href = link.href;
+  });
+
   // ---- tema-tabs (P05): ← → Home End follow the neighbouring tab's link ----------
   // Each tab is a full-page GET link (AD-13), so the keys navigate; the flag below puts focus
   // back on the selected tab of the new page.

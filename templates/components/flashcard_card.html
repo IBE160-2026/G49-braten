@@ -1,0 +1,22 @@
+{% load ui %}{% comment %}
+flashcard (P08, P09): the front first; «Vis svaret» (a link to `flip_url`, flipped in place by
+app.js, Space/Enter) shows the back and the Reference. The meta line names «{fag} › {tema}» and
+«Forside»/«Bakside». app.js finds it by [data-review-card] inside #review-card.
+  card (its `source` loaded), lang, course_name, topic_name, flipped, flip_url
+{% endcomment %}
+<article class="review-card{% if flipped %} is-flipped{% endif %}" data-review-card aria-labelledby="review-front">
+  <p class="review-card-meta">
+    <span class="review-card-path">{{ course_name }} › {{ topic_name }}</span>
+    <span class="review-card-side" data-face="front"{% if flipped %} hidden{% endif %}>Forside</span>
+    <span class="review-card-side" data-face="back"{% if not flipped %} hidden{% endif %}>Bakside</span>
+  </p>
+  <h1 class="review-card-front" id="review-front" tabindex="-1"{% if lang %} lang="{{ lang }}"{% endif %}{% if not flipped %} autofocus{% endif %}>{{ card.front }}</h1>
+  <div class="review-card-back" data-face="back"{% if not flipped %} hidden{% endif %}>
+    <p class="review-card-answer" id="review-back" tabindex="-1"{% if lang %} lang="{{ lang }}"{% endif %}{% if flipped %} autofocus{% endif %}>{{ card.back }}</p>
+    {% include "components/reference.html" with item=card lang=lang %}
+  </div>
+  <div class="review-card-flip" data-face="front"{% if flipped %} hidden{% endif %}>
+    <a class="button-primary" href="{{ flip_url }}" data-flip>{% icon "flip" %}Vis svaret</a>
+    <p class="review-keys" aria-hidden="true"><kbd>Mellomrom</kbd> snur kortet</p>
+  </div>
+</article>

@@ -89,6 +89,12 @@ MESSAGES: dict[str, str] = {
     "return_months": "om {n} mnd.",
     "review_context_all": "I dag · repetisjon",
     "review_context_scoped": "{name} · repetisjon",
+    # P08 Bla i kort (FR-14, story 11b).
+    "browse_context": "{name} · bla i kort",
+    "browse_row": "Kort {n} av {m} · {left} kort igjen i temaet · → neste kort",
+    "browse_row_last": "Kort {n} av {m} · Siste kort i temaet",
+    "browse_next_review": "Neste repetisjon: {date}",
+    "browse_not_reviewed": "Ikke repetert ennå",
     # Mastery (FR-16, FR-17, story 12): progress figures on the shell, Hjem, P04, P05 and D10.
     "mastery_none": "Ikke nok data ennå",
     "mastery_explain_course": "Mestring for et fag er snittet av temaene som har nok svar.",

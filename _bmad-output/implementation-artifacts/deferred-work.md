@@ -68,3 +68,9 @@
 - source_spec: none
   summary: Story 13c — the trend-label (per tema and per fag), the answer-history «Siste 20 svar» and the tema-forecast-panel «Varsel for temaet» on P05, absorbing the story 12 deferral.
   evidence: Split from story 13 at the Author's choice (2026-11-19); the trend is a UX assumption not in the PRD, and the panel needs the forecast from 13b.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/11b-flashcard-browsing.md`
+  summary: Cover P08's ←/→ navigation (and its guards for fields, menus and dialogs) and the shared Space/Enter flip on P08 and P09 with a browser/JS test.
+  evidence: No JS test runner exists; the only test greps `app.js` for selector strings, so swapped or guarded-out handlers fail nothing.
+- source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/11b-flashcard-browsing.md`
+  summary: Make a click or tap on the card itself flip it on P08 and P09 (EXPERIENCE.md, flashcard component), not only «Vis svaret» and Space/Enter.
+  evidence: The shared card (`components/flashcard_card.html`, from story 11) flips only through the `[data-flip]` link and the keyboard.

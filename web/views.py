@@ -213,12 +213,7 @@ def topic(request, topic_id):
         context["due_today"] = review_services.due_cards(request.user, Scope(topic_id=topic.id)).count()
         back_here = f"{resolve_url('web:topic', topic.id)}?tab=selftest"
         context["review_start_url"] = f"{resolve_url('review:start')}?{urlencode({'topic': topic.id, 'next': back_here})}"
-        # Newest kilde first (Source ordering), then each kilde's cards in the order they were made.
-        context["flashcards"] = (
-            Flashcard.objects.filter(**ready_items)
-            .select_related("source")
-            .order_by("-source__created_at", "-source__id", "id")
-        )
+        # The cards themselves are read and deleted in P08 «Bla i kort» (story 11b).
     elif tab == "sources":
         context["sources"] = sources
         # NFR-7: a failed source-row's «Prøv igjen» is inactive at the daily limit.

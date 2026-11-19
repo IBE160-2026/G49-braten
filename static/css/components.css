@@ -764,19 +764,16 @@ button[disabled][aria-describedby] { cursor: not-allowed; opacity: .55; }
 }
 .key-concepts-heading { font-size: 16px; font-weight: 700; line-height: 1.35; margin-top: 4px; }
 
-/* key-concept-item and the «Test deg selv» card list share the row frame */
-.key-concepts, .flashcard-items {
+/* key-concept-item row frame */
+.key-concepts {
   list-style: none; margin: 0; padding: 0;
   border: 1px solid var(--line); border-radius: var(--rounded-lg); background: var(--ground);
 }
-.key-concept-item, .flashcard-item { display: flex; align-items: flex-start; gap: 4px; padding: 6px 6px 6px 0; min-width: 0; }
-.key-concept-item + .key-concept-item, .flashcard-item + .flashcard-item { border-top: 1px solid var(--line); }
-.key-concept-body, .flashcard-item-body { flex: 1; min-width: 0; display: grid; gap: 6px; padding: 8px 0 8px 16px; }
+.key-concept-item { display: flex; align-items: flex-start; gap: 4px; padding: 6px 6px 6px 0; min-width: 0; }
+.key-concept-item + .key-concept-item { border-top: 1px solid var(--line); }
+.key-concept-body { flex: 1; min-width: 0; display: grid; gap: 6px; padding: 8px 0 8px 16px; }
 .key-concept-term { font-size: 16px; font-weight: 700; line-height: 1.35; }
-.key-concept-definition, .flashcard-item-front, .flashcard-item-back { max-width: 68ch; line-height: 1.62; }
-.flashcard-item-side { font-size: 13px; font-weight: 650; color: var(--ink-3); }
-.flashcard-item-front { font-weight: 650; }
-.flashcard-item-side + .flashcard-item-front, .flashcard-item-side + .flashcard-item-back { margin-top: -4px; }
+.key-concept-definition { max-width: 68ch; line-height: 1.62; }
 @container (min-width: 640px) {
   .key-concept-body { grid-template-columns: 200px minmax(0, 1fr); column-gap: 20px; }
   .key-concept-body > :not(.key-concept-term) { grid-column: 2; }
@@ -1195,3 +1192,22 @@ a.today-chip:hover { background: var(--rail-3); }
 @media (min-width: 600px) {
   .course-row-due { grid-column: 1; }
 }
+
+/* ======================================================================
+   P08 Bla i kort: next-step-row, the line under the card, «Forrige»/«Neste» (story 11b)
+   ====================================================================== */
+.next-step-row {
+  margin-bottom: 16px; font-size: 14px; font-weight: 600; color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.browse-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
+.browse-next-review { display: inline-flex; align-items: center; gap: 6px; min-width: 0; font-size: 14.5px; color: var(--ink-2); }
+.browse-next-review .icon { width: 16px; height: 16px; color: var(--ink-3); }
+.browse-nav { display: flex; gap: 10px; margin-top: 16px; }
+.browse-nav .button-secondary { flex: 1; justify-content: center; }
+.browse-nav .browse-next { margin-left: auto; }
+.browse-nav .icon { width: 18px; height: 18px; }
+@media (min-width: 600px) {
+  .browse-nav .button-secondary { flex: 0 1 auto; }
+}
+.browse-nav + .review-keys { margin-top: 12px; }

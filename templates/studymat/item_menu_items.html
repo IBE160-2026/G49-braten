@@ -1,4 +1,4 @@
 {% load ui %}
-{# D07 for a Key concept or Flashcard: «Slett» opens D09 (FR-24). next brings the delete back to this page and tab. #}
-{% url 'studymat:delete_item' item_kind item_id as delete_url %}
-<a class="menu-item menu-item--destructive" href="{{ delete_url }}?next={{ request.get_full_path|urlencode }}" hx-get="{{ delete_url }}?next={{ request.get_full_path|urlencode }}" hx-target="#dialog" hx-swap="innerHTML">{% icon "trash" %}{{ delete_label }}</a>
+{# D07 for a Key concept or Flashcard: «Slett» opens D09 (FR-24). next brings the delete back to this page and tab, or to `item_next` when given (P08: its position, front showing). `item_dialog=False` opens D09 as a full page (P08: the session layout has no dialog swap target that survives an HX-Location). #}
+{% url 'studymat:delete_item' item_kind item_id as delete_url %}{% with next_url=item_next|default:request.get_full_path %}
+<a class="menu-item menu-item--destructive" href="{{ delete_url }}?next={{ next_url|urlencode }}"{% if item_dialog is not False %} hx-get="{{ delete_url }}?next={{ next_url|urlencode }}" hx-target="#dialog" hx-swap="innerHTML"{% endif %}>{% icon "trash" %}{{ delete_label }}</a>{% endwith %}

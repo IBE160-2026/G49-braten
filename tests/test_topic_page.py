@@ -1,4 +1,4 @@
-"""FR-23 / CAP-6 (story 7): P05 with four tema-tabs, the Sammendrag tab and the card list."""
+"""FR-23 / CAP-6 (story 7): P05 with four tema-tabs and the Sammendrag tab (the card list moved to P08, story 11b)."""
 
 import datetime
 import re
@@ -312,26 +312,16 @@ def test_fr23_quiz_tab_without_questions_shows_an_empty_state(client_ida, normal
 # ---- Test deg selv ------------------------------------------------------------------------
 
 
-def test_fr23_selftest_lists_cards_newest_source_first_with_front_back_reference_and_menu(
-    client_ida, normalisering, freeze_now
-):
-    freeze_now(datetime.datetime(2026, 11, 16, 9, tzinfo=datetime.UTC))
-    ready_source(normalisering, "eldst.pdf", cards=(("Gammel forside", "Gammel bakside"),))
-    freeze_now(datetime.datetime(2026, 11, 16, 10, tzinfo=datetime.UTC))
-    new = ready_source(normalisering, "nyest.pdf", cards=(("Ny forside 1", "Ny bakside 1"), ("Ny forside 2", "b")))
-    main = main_of(client_ida.get(topic_url(normalisering, "selftest")).content.decode())
-    panel = panel_of(main)
-    assert panel.count('class="flashcard-item"') == 3
-    assert panel.index("Ny forside 1") < panel.index("Ny forside 2") < panel.index("Gammel forside")
-    assert "Ny bakside 1" in panel and "Side 1 · nyest.pdf" in panel and "«sitat Ny forside 1»" in panel
-    card = Flashcard.objects.get(source=new, front="Ny forside 1")
-    delete_url = reverse("studymat:delete_item", args=["card", card.id])
-    next_param = f"{topic_url(normalisering)}%3Ftab%3Dselftest"
-    assert f'hx-get="{delete_url}?next={next_param}" hx-target="#dialog"' in panel
-    assert "Slett kortet</a>" in panel
-    # «Repeter dagens kort» came with story 11 (tests/test_review.py); P08 and the exam come later.
-    for later in ("Bla i alle kort", "Sett opp prøveeksamen"):
-        assert later not in panel
+def test_fr23_selftest_shows_only_its_tool_cards_and_no_card_list(client_ida, normalisering):
+    """Story 11b: the card list moved to P08 «Bla i kort»; the tab shows only its tool-cards."""
+    ready_source(normalisering, cards=(("Forside 1", "Bakside 1"), ("Forside 2", "Bakside 2")))
+    panel = panel_of(main_of(client_ida.get(topic_url(normalisering, "selftest")).content.decode()))
+    assert "2 kort i temaet." in text_of(panel)
+    assert "Forside 1" not in panel and "Bakside 1" not in panel and "Kort i temaet" not in panel
+    assert "flashcard-item" not in panel and "/items/card/" not in panel
+    browse = reverse("review:browse", args=[normalisering.id, 1])
+    assert f'<a class="button-quiet" href="{browse}">Bla i alle kort</a>' in panel
+    assert "Sett opp prøveeksamen" not in panel
 
 
 @pytest.mark.parametrize("status", [Status.FAILED, Status.GENERATING])
@@ -339,8 +329,7 @@ def test_fr23_selftest_hides_cards_of_a_source_that_is_not_ready(client_ida, nor
     ready_source(normalisering, "ikke-klar.pdf", cards=(("Skjult forside", "Skjult bakside"),))
     Source.objects.filter(topic=normalisering).update(status=status)
     panel = panel_of(main_of(client_ida.get(topic_url(normalisering, "selftest")).content.decode()))
-    assert "Skjult forside" not in panel and "Skjult bakside" not in panel
-    assert 'class="flashcard-item"' not in panel
+    assert "Skjult forside" not in panel and "Bla i alle kort" not in panel
     assert "Ingen kort ennå" in panel
 
 

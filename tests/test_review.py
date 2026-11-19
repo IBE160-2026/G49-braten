@@ -532,8 +532,8 @@ def test_fr15_selftest_tab_counts_due_and_starts_a_topic_review(now, client_ida,
     assert "3 kort i temaet. 3 forfaller i dag." in text_of(main)
     expected = f"/reviews/start/?topic={normalisering.id}&amp;next=%2Ftopics%2F{normalisering.id}%2F%3Ftab%3Dselftest"
     assert f'<a class="button-secondary" href="{expected}">Repeter dagens kort (3)</a>' in main
-    # The existing card list stays.
-    assert main.count('class="flashcard-item"') == 3
+    # «Bla i alle kort» sits beside it (story 11b).
+    assert "Bla i alle kort" in main
 
     review = start_review(client_ida, topic=normalisering.id, next=f"/topics/{normalisering.id}/?tab=selftest")
     before = dict(ReviewState.objects.values_list("flashcard_id", "due_date"))

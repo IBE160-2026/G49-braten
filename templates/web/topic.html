@@ -73,7 +73,8 @@
     {% endif %}
   </section>
 {% elif tab == "selftest" %}
-  {% if flashcards %}
+  {% if counts.cards %}
+    {% url 'review:browse' topic.id 1 as browse_url %}
     <section class="tool-card" aria-labelledby="cards-card-heading">
       {% icon "cards" %}
       <div class="tool-card-text">
@@ -86,14 +87,9 @@
         {% else %}
           <p class="tool-card-note">Ingen kort i dag</p>
         {% endif %}
+        <a class="button-quiet" href="{{ browse_url }}">Bla i alle kort</a>
       </div>
     </section>
-    <div class="section-head">
-      <h2 class="section-heading" id="cards-heading">Kort i temaet</h2>
-    </div>
-    <ul class="flashcard-items" role="list" aria-labelledby="cards-heading">
-      {% for card in flashcards %}{% include "components/flashcard_item.html" with card=card %}{% endfor %}
-    </ul>
   {% else %}
     {% include "components/empty_state.html" with heading="Ingen kort ennå" text="Kort lages fra kildene dine når studiemateriellet er klart." %}
   {% endif %}
