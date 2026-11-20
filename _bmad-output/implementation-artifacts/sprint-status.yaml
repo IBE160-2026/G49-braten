@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 11-18-2026 08:29
-last_updated: 11-20-2026 10:30
+last_updated: 11-20-2026 10:34
 project: Prosjekt A
 project_key: NOKEY
 tracking_system: file-system
@@ -51,7 +51,7 @@ development_status:
   epic-1-retrospective: optional
 
   epic-2: in-progress
-  2-11-flashcard-browsing-and-leitner-review: review
+  2-11-flashcard-browsing-and-leitner-review: done
   2-11b-flashcard-browsing: review
   2-12-topic-score-course-score-weak-topics-and-quiz-history: review
   2-13-next-step-on-home-and-the-course-overview: done
