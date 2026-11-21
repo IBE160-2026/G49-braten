@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 11-18-2026 08:29
-last_updated: 11-20-2026 10:55
+last_updated: 11-21-2026 08:52
 project: Prosjekt A
 project_key: NOKEY
 tracking_system: file-system
@@ -100,7 +100,7 @@ action_items:
     action: "Add stories 9b, 13b and 13c to sprint-status as backlog so the splits
       are tracked"
     owner: "Mathias, with Claude"
-    status: open
+    status: done
     ref: "_bmad-output/implementation-artifacts/epic-2-retro-2026-11-20.md"
   - id: "epic-2-retro-item-6-add-a-read-only-report-for-sm-1-quizzes"
     epic: 2
