@@ -19,6 +19,7 @@ Mathias spurte hvordan prosjektet ligger an, og ba deretter om at utdaterte punk
   - Kuttlinja 20.11: ikke brukt, trinn 1 ble ferdig 18.11.
   - Kuttlinja 30.11: FR-14–17 er levert i story 11, 11b og 12.
   - Neste steg bmad-spec: spec og stories finnes.
+- Mathias ba om push: issues-ryddingen og denne loggen ble pushet til origin/main (379afd7).
 - Sjekket at disse fortsatt er åpne: PRODUCT.md sier fortsatt «Stack: Undecided». Unntaket i AD-13 dekker bare en Grade-celle som venter, ikke en kilderad som venter. BMad-konfigen har fortsatt communication_language: English.
 
 ### Åpne punkter
