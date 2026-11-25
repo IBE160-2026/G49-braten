@@ -17,7 +17,7 @@ from ingestion import extract
 from ingestion.errors import MEGABYTE, IngestError, megabytes, thousands
 from ingestion.models import LocationKind, SourceText
 from ingestion.services import ingest
-from tests.pdfs import IMAGE_ONLY, LECTURE_TEXT, make_pdf
+from tests.pdfs import IMAGE_ONLY, LECTURE_TEXT, make_pdf, make_unmapped_font_pdf
 
 pytestmark = pytest.mark.django_db
 
@@ -200,6 +200,37 @@ def test_fr3_min_text_chars_boundary_199_refused_200_accepted(topic):
     assert rejected(topic, upload=upload("tynn.pdf", make_pdf([chars_page(199)]))).code == "scanned_pdf"
     source = ingest(topic, upload=upload("akkurat.pdf", make_pdf([chars_page(200)])), detail_level="medium")
     assert source.texts.get().text.replace("\n", "") == "x" * 200
+
+
+UNMAPPED = "ABCDEF " * 10
+
+
+def test_oq1_unmapped_font_pdf_passes_min_text_chars_but_is_refused(topic):
+    texts = extract.pdf_pages(make_unmapped_font_pdf(UNMAPPED))
+    assert texts[0].startswith("/BW/CT/D2/CZ/D9/D1")
+    assert extract.non_whitespace_count(texts) >= extract.MIN_TEXT_CHARS
+    error = rejected(topic, upload=upload("fordelinger.pdf", make_unmapped_font_pdf(UNMAPPED)))
+    assert error.code == "unmapped_font_pdf"
+    assert error.message == (
+        "PDF-en bruker en skrifttype som ikke kan leses som tekst. Lagre den på nytt som PDF, eller lim inn teksten."
+    )
+
+
+def test_oq1_glyph_name_share_boundary_half_accepted_more_refused():
+    assert extract.GLYPH_NAME_SHARE_MAX == 0.5
+    assert extract.glyph_name_share([]) == 0.0
+    assert extract.glyph_name_share(["   "]) == 0.0
+    assert extract.glyph_name_share(["/BW/CT abcdef"]) == 0.5
+    assert extract.glyph_name_share(["/BW/CT abcde"]) > 0.5
+    assert extract.glyph_name_share(["/BW abcd"]) == 0.0  # a lone name is not a run
+
+
+def test_oq1_ordinary_slashes_do_not_trip_the_glyph_name_check(topic):
+    text = LECTURE_TEXT + "\nSe https://www.uit.no/studier og/eller km/t i notatene."
+    assert extract.glyph_name_share(extract.pdf_pages(make_pdf([text] * 2))) == 0.0
+    path = LECTURE_TEXT + "\nSe uit.no/studier/bachelor/emner for timeplanen."
+    assert 0 < extract.glyph_name_share(extract.pdf_pages(make_pdf([path] * 2))) < 0.2
+    assert ingest(topic, upload=upload("lenker.pdf", make_pdf([path] * 2)), detail_level="medium")
 
 
 def test_fr3_pdf_within_page_limit_but_over_150000_characters_is_refused(topic):

@@ -1,7 +1,7 @@
 """Text extraction as pure functions (FR-3, FR-4, AD-6). No database, no Django request objects.
 
 The limits are the PRD §10 numbers (FR-3); MIN_TEXT_CHARS and the plain extraction mode are
-the provisional OQ-1 decision (docs/quality/oq1-pdf-extraction.md).
+the confirmed OQ-1 decision (docs/quality/oq1-pdf-extraction.md).
 """
 
 import codecs
@@ -21,8 +21,12 @@ logger = logging.getLogger(__name__)
 MAX_FILE_BYTES = 10 * MEGABYTE
 MAX_PAGES = 50
 MAX_CHARS = 150_000  # extracted characters, every kind
-# OQ-1 (provisional): fewer non-whitespace characters than this in a whole PDF means scanned.
+# OQ-1 (confirmed 2026-11-25): fewer non-whitespace characters than this in a whole PDF means scanned.
 MIN_TEXT_CHARS = 200
+# OQ-1 (measured 2026-11-23): a font with no Unicode map (LaTeX Type 3 / bitmap fonts) makes pypdf
+# print glyph names such as «/BW/CT/D2» instead of letters. Such a deck passes MIN_TEXT_CHARS but is
+# unreadable. Measured: 89 % glyph names on such a deck, at most 0.9 % on seven ordinary ones.
+GLYPH_NAME_SHARE_MAX = 0.5
 
 PDF_EXTENSION = ".pdf"
 TEXT_EXTENSION = ".txt"
@@ -32,6 +36,9 @@ BOM = "\ufeff"
 
 _BLANK_LINE = re.compile(r"\n[^\S\n]*\n\s*")
 _WHITESPACE = re.compile(r"\s+")
+# Two or more glyph names back to back, so a lone «/studier» or «og/eller» does not count. No «.» in a
+# name, so «/www.uit.no/studier» is not a run; a longer URL path can still count, but stays a tiny share.
+_GLYPH_NAME = re.compile(r"(?:/[A-Za-z][A-Za-z0-9_]*){2,}")
 
 
 def extension(file_name: str) -> str:
@@ -116,6 +123,14 @@ def valid_utf8(text: str) -> str:
 
 def non_whitespace_count(texts: list[str]) -> int:
     return sum(len(_WHITESPACE.sub("", text)) for text in texts)
+
+
+def glyph_name_share(texts: list[str]) -> float:
+    """The share of non-whitespace characters in runs of pypdf glyph names (`/BW/CT`), 0.0 for no text."""
+    total = non_whitespace_count(texts)
+    if not total:
+        return 0.0
+    return sum(len(name) for text in texts for name in _GLYPH_NAME.findall(text)) / total
 
 
 def check_char_limit(texts: list[str]) -> None:

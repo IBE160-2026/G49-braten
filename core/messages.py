@@ -29,6 +29,7 @@ MESSAGES: dict[str, str] = {
     "file_too_large": "Filen er {size} MB. Grensen er {limit} MB.",
     "too_many_chars": "Teksten har {chars} tegn. Grensen er {limit} tegn.",
     "scanned_pdf": "Fant ingen tekst i PDF-en. Skannede dokumenter støttes ikke.",
+    "unmapped_font_pdf": "PDF-en bruker en skrifttype som ikke kan leses som tekst. Lagre den på nytt som PDF, eller lim inn teksten.",
     "unsupported_type": "Bare PDF og tekstfiler (.txt) støttes.",
     "unreadable_pdf": "Kunne ikke lese PDF-en. Den kan være skadet eller passordbeskyttet.",
     "empty_file": "Fant ingen tekst i filen.",

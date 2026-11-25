@@ -1,8 +1,8 @@
-# OQ-1: PDF extraction (provisional)
+# OQ-1: PDF extraction
 
-Status: **provisional** — decided 2026-11-15 without the planned test.
+Status: **confirmed** 2026-11-25 by the Author, after the test on three of the Author's slide decks (2026-11-23, «Measurements» below). It was provisional from 2026-11-15 to 2026-11-23.
 
-The architecture (OQ-1) asked for an extraction test on three of the Author's own slide decks: pypdf 7.0.1 in plain and layout mode against pdfplumber. No slide decks were available when story 4 started, and the Author chose to continue without the test.
+The architecture (OQ-1) asked for an extraction test on three of the Author's own slide decks: pypdf 7.0.1 in plain and layout mode against pdfplumber. No slide decks were available when story 4 started, so the values below were provisional until the test was run on 2026-11-23.
 
 ## Decision
 
@@ -11,12 +11,13 @@ The architecture (OQ-1) asked for an extraction test on three of the Author's ow
 | Library | pypdf 7.0.1 (already in the Stack) | Pure Python, no system dependencies, one row per page as AD-6 needs |
 | Mode | plain (`extract_text()`) | Layout mode pads with spaces for column alignment, which bloats prompts and breaks quote matching |
 | `MIN_TEXT_CHARS` | 200 (total, after stripping whitespace) | A scanned deck gives near zero; a text deck of a few slides gives well over 200 |
+| `GLYPH_NAME_SHARE_MAX` | 0.5 (added 2026-11-23) | More than half the non-whitespace text in runs of glyph names (`/BW/CT/D2`) means a font with no Unicode map. The upload is refused with `unmapped_font_pdf`. Measured: 89 % on 05-Fordelinger_post.pdf, at most 0.9 % on seven ordinary PDFs |
 
-All three are constants in `ingestion`, so changing them later needs no architecture change (spine: "Tuning the starting values").
+All four are constants in `ingestion`, so changing them later needs no architecture change (spine: "Tuning the starting values").
 
 ## Still open
 
-Run the comparison on three real decks (Æ/Ø/Å, bullet lists, a table or two-column slide) and confirm or change the values above. Tracked in `_bmad-output/implementation-artifacts/deferred-work.md`.
+Nothing. The test confirmed pypdf plain mode and `MIN_TEXT_CHARS` = 200 and added `GLYPH_NAME_SHARE_MAX` for decks whose fonts have no Unicode map. Closes retro action epic-1 item 2.
 
 ## Measurements
 

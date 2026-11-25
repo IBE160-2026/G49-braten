@@ -45,6 +45,8 @@ def _from_upload(upload) -> Extracted:
         texts = extract.pdf_pages(data)
         if extract.non_whitespace_count(texts) < extract.MIN_TEXT_CHARS:
             raise IngestError("scanned_pdf")
+        if extract.glyph_name_share(texts) > extract.GLYPH_NAME_SHARE_MAX:
+            raise IngestError("unmapped_font_pdf")
         kind, location_kind = SourceKind.PDF, LocationKind.PAGE
     else:
         texts = extract.paragraphs(extract.decode_text(data))

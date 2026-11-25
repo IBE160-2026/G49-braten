@@ -12,7 +12,7 @@ from courses import services
 from courses.models import Source, SourceKind, Status
 from ingestion.errors import MEGABYTE
 from ingestion.models import SourceText
-from tests.pdfs import IMAGE_ONLY, LECTURE_TEXT, make_pdf
+from tests.pdfs import IMAGE_ONLY, LECTURE_TEXT, make_pdf, make_unmapped_font_pdf
 
 pytestmark = pytest.mark.django_db
 
@@ -174,6 +174,10 @@ def test_fr3_p05_with_sources_offers_legg_til_kilde_above_the_list(client_ida, n
             {"file": lambda: pdf_file("skannet.pdf", [IMAGE_ONLY, IMAGE_ONLY])},
             "Fant ingen tekst i PDF-en. Skannede dokumenter støttes ikke.",
         ),
+        (
+            {"file": lambda: SimpleUploadedFile("fordelinger.pdf", make_unmapped_font_pdf("ABCDEF " * 10))},
+            "PDF-en bruker en skrifttype som ikke kan leses som tekst. Lagre den på nytt som PDF, eller lim inn teksten.",
+        ),
         ({"file": lambda: SimpleUploadedFile("oppgave.docx", b"PK\x03\x04")}, "Bare PDF og tekstfiler (.txt) støttes."),
         ({"file": lambda: SimpleUploadedFile("falsk.pdf", b"not a pdf")}, "Bare PDF og tekstfiler (.txt) støttes."),
         (
@@ -185,7 +189,7 @@ def test_fr3_p05_with_sources_offers_legg_til_kilde_above_the_list(client_ida, n
             "Kunne ikke lese PDF-en. Den kan være skadet eller passordbeskyttet.",
         ),
     ],
-    ids=["pages", "size", "chars", "scanned", "docx", "fake-pdf", "truncated", "encrypted"],
+    ids=["pages", "size", "chars", "scanned", "unmapped-font", "docx", "fake-pdf", "truncated", "encrypted"],
 )
 @pytest.mark.parametrize("headers", [{}, HTMX_DIALOG], ids=["page", "htmx"])
 def test_fr3_rejection_shows_reason_with_velg_en_annen_fil_and_saves_nothing(

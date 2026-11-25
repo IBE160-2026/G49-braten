@@ -3,7 +3,7 @@
 import io
 
 from pypdf import PdfWriter
-from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject, NumberObject
+from pypdf.generic import ArrayObject, DecodedStreamObject, DictionaryObject, NameObject, NumberObject
 
 IMAGE_ONLY = None  # a page entry that draws one image and no text
 
@@ -55,6 +55,42 @@ def make_pdf(pages, *, password: str | None = None, owner_password: str | None =
         page[NameObject("/Contents")] = writer._add_object(contents)
     if password is not None or owner_password is not None:
         writer.encrypt(user_password=password or "", owner_password=owner_password)
+    buffer = io.BytesIO()
+    writer.write(buffer)
+    return buffer.getvalue()
+
+
+def make_unmapped_font_pdf(line: str, pages: int = 2) -> bytes:
+    """Pages whose font maps A–F to glyph names pypdf has no Unicode for, as a LaTeX Type 3 deck does.
+
+    pypdf then extracts «/BW/CT/D2…» instead of letters (OQ-1, 05-Fordelinger_post.pdf).
+    """
+    writer = PdfWriter()
+    encoding = DictionaryObject(
+        {
+            NameObject("/Type"): NameObject("/Encoding"),
+            NameObject("/Differences"): ArrayObject(
+                [NumberObject(65)] + [NameObject("/" + name) for name in ("BW", "CT", "D2", "CZ", "D9", "D1")]
+            ),
+        }
+    )
+    font = DictionaryObject(
+        {
+            NameObject("/Type"): NameObject("/Font"),
+            NameObject("/Subtype"): NameObject("/Type1"),
+            NameObject("/BaseFont"): NameObject("/Helvetica"),
+            NameObject("/Encoding"): encoding,
+        }
+    )
+    font_ref = writer._add_object(font)
+    for _ in range(pages):
+        page = writer.add_blank_page(612, 792)
+        page[NameObject("/Resources")] = DictionaryObject(
+            {NameObject("/Font"): DictionaryObject({NameObject("/F1"): font_ref})}
+        )
+        contents = DecodedStreamObject()
+        contents.set_data(b"BT /F1 11 Tf 40 760 Td (" + _escape(line) + b") Tj ET\n")
+        page[NameObject("/Contents")] = writer._add_object(contents)
     buffer = io.BytesIO()
     writer.write(buffer)
     return buffer.getvalue()
