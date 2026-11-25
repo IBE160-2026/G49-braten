@@ -42,6 +42,7 @@ Gjøre ferdig gjennomgangen (bmad-build steg 4–5) av nettlesertestene for app.
 - Ingenting er utsatt til deferred-work.
 - Verifisering: `uv run pytest -m browser` ga 20 bestått. `uv run pytest` ga 902 bestått og 20 valgt bort. En blandet kjøring (`-m ""`, nettlesertester først) ga 52 bestått.
 - Commit `1388911`. Spec-en har status `done`, og retrotiltak E1-1 er `done` i sprint-status.yaml.
+- Pushet til origin/main (`be6ba49..0dc5932`), inkludert OQ-1-loggcommiten `d495d7a`.
 
 ### Åpne punkter
 Ingen.
