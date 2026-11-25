@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 11-18-2026 08:29
-last_updated: 11-21-2026 08:52
+last_updated: 11-25-2026 09:34
 project: Prosjekt A
 project_key: NOKEY
 tracking_system: file-system
@@ -80,7 +80,7 @@ action_items:
     action: "Run scripts/compare_extraction.py on three of the Author's slide decks
       with --report and confirm or change pypdf plain mode and MIN_TEXT_CHARS (OQ-1)"
     owner: "Mathias (files), Claude (run)"
-    status: open
+    status: done
     ref: "_bmad-output/implementation-artifacts/epic-1-retro-2026-11-20.md"
   - id: "epic-1-retro-item-3-run-the-real-mode-measurements-in-docs-q"
     epic: 1

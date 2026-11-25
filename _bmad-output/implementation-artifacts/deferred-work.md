@@ -17,6 +17,7 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/4-upload-and-text-extraction-with-location.md`
   summary: Run the OQ-1 extraction test on three real slide decks (pypdf 7.0.1 plain and layout mode vs pdfplumber; Æ/Ø/Å, bullet lists, a table or two-column slide) and confirm or change the plain mode and `MIN_TEXT_CHARS` = 200 in `ingestion/extract.py` and `docs/quality/oq1-pdf-extraction.md`.
   evidence: Story 4 started without slide decks, so the Author chose provisional values (docs/quality/oq1-pdf-extraction.md, 2026-11-15); the tests only use Helvetica PDFs built with pypdf's writer.
+  resolved: 2026-11-25. Test run on 2026-11-23, and the Author confirmed plain mode and `MIN_TEXT_CHARS` = 200. Added `GLYPH_NAME_SHARE_MAX` (`unmapped_font_pdf`) for LaTeX/Type 3 decks; see docs/quality/oq1-pdf-extraction.md.
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/4-upload-and-text-extraction-with-location.md`
   summary: Cap the request body size before Django reads a whole upload (the 10 MB check runs after it is received).
   evidence: `_from_upload` checks `upload.size` only after the body is spooled to disk; set a server/proxy limit or `DATA_UPLOAD_MAX_MEMORY_SIZE`-style guard with the Hosted setup (OQ-3).

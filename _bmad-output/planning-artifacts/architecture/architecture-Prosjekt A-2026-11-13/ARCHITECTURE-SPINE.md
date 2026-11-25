@@ -306,7 +306,7 @@ stateDiagram-v2
 | anthropic (Python SDK) | 2.8.0 |
 | pydantic (direct dependency) | 2.14.3 |
 | Claude model | Claude Haiku 5.5, `claude-haiku-5-5` |
-| pypdf | 7.0.1 `[PROVISIONAL]`: locked only after OQ-1 |
+| pypdf | 7.0.1, plain mode: locked by OQ-1 on 2026-11-25 (docs/quality/oq1-pdf-extraction.md) |
 | python-dotenv | 1.2.4 |
 | pytest-django | 4.14.0 (lists Django 6.0; 6.1 support is merged for 4.15) |
 | pytest-socket | 0.8.1 |
