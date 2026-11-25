@@ -9,6 +9,7 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/3-shell-courses-and-a-basic-home.md`
   summary: Add a browser test harness (e.g. Playwright, run Key-free) covering app.js — dialog opens on swap into #dialog, Esc/Avbryt empties the slot and returns focus, failure messages show.
   evidence: The only check of app.js is a source-text regex; deleting `showModal()` would leave every dialog invisible with JS on and no test would fail.
+  resolved: 2026-11-25. Retro action E1-1: Playwright browser tests in `tests/browser/` (opt-in, `uv run pytest -m browser`); see spec-retro-e1-1-browser-test-harness.md.
 
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/3b-topics-and-sources.md`
   summary: Story 4 must fit upload file names into `Source.name` (≤ 80 chars) — shorten keeping the extension, or reject with a named message.
@@ -33,6 +34,7 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/7-topic-page-with-four-tabs-and-item-deletion.md`
   summary: Add a browser/JS test harness so `static/js/app.js` behaviour (P05 tab keys ← → Home End, focus restore after a tab change) is tested, not only checked by hand.
   evidence: The repo has no JS or browser test runner; `tests/test_shell.py` only checks app.js as source text, so a broken key handler passes every test.
+  resolved: 2026-11-25. Retro action E1-1: Playwright browser tests in `tests/browser/` (opt-in, `uv run pytest -m browser`); see spec-retro-e1-1-browser-test-harness.md.
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/8-practice-mode-quiz-and-grading.md`
   summary: Story 8b — the Student's Grade override on Free-text Answers («Endre vurdering» → «Riktig»/«Delvis riktig»/«Feil», «Bruk KI-vurderingen», marker «Endret av deg · KI-vurdering: …», tint follows the effective Grade; not on MC or «Ikke rettet») and «Slett spørsmålet» in the P06 feedback panel via the story-7 D09 dialog, the Quiz continuing at the next Question.
   evidence: Split from story 8 at the Author's choice (2026-11-17) because the full CAP-7 spec was ~3000 tokens; story 8 already stores `override_grade` and `with_effective_grade()`, and 8b must land before story 9 (Retry round uses the effective Grade).
@@ -42,12 +44,14 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/8-practice-mode-quiz-and-grading.md`
   summary: Cover the P06 keyboard contract in `static/js/app.js` (1–4 selects the option, Enter answers, Enter on the feedback heading moves on, focus to `[data-focus-on-swap]` after an HTMX swap) with a browser/JS test.
   evidence: No JS or browser test runner exists; tests only check the markup hooks, so breaking the handlers fails nothing.
+  resolved: 2026-11-25. Retro action E1-1: Playwright browser tests in `tests/browser/` (opt-in, `uv run pytest -m browser`); see spec-retro-e1-1-browser-test-harness.md.
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/9-quiz-result-and-retry-round.md`
   summary: Story 9b — act on P07 rows in place: «Endre vurdering», «Prøv å rette igjen» and «Slett spørsmålet» inside an expanded result row, re-rendering the band, score, strip and rows under HTMX with the row kept open and focus on its feedback heading (no-JS: redirect to P07 `#q-{position}`).
   evidence: Split from story 9 at the Author's choice (2026-11-18) because the full spec was ~1900 tokens; story 9 shows P07 rows read-only with a link to the P06 position, where these actions already exist (stories 8, 8b).
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/9-quiz-result-and-retry-round.md`
   summary: Cover the P07 strip behaviour in `static/js/app.js` (a slot click or `#q-N` hash opens and focuses its result row) with a browser/JS test.
   evidence: No JS or browser test runner exists; tests only check the `href="#q-N"`/`id="q-N"` markup, so a broken selector fails nothing.
+  resolved: 2026-11-25. Retro action E1-1: Playwright browser tests in `tests/browser/` (opt-in, `uv run pytest -m browser`); see spec-retro-e1-1-browser-test-harness.md.
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/10-real-mode-privacy-notice-and-key-handling.md`
   summary: `manage.py record_mock`, which re-records the Mock responses from Real mode, strips headers and Keys, and re-plants the wrong-page item (AD-4).
   evidence: It needs real paid calls and a stable prompt, so it waits until the Author has tuned the prompt against real output (OQ-2). The `ai/mock/__init__.py` docstring still says story 10.
@@ -63,6 +67,7 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/12-topic-score-course-score-weak-topics-and-quiz-history.md`
   summary: Cover the D10 topic-picker footer update in `static/js/app.js` (checking a box updates «{t} temaer valgt · {q} spørsmål», singular for one) with a browser/JS test.
   evidence: No JS test runner exists; tests only check the server-rendered footer and the data attributes, so a broken listener fails nothing.
+  resolved: 2026-11-25. Retro action E1-1: Playwright browser tests in `tests/browser/` (opt-in, `uv run pytest -m browser`); see spec-retro-e1-1-browser-test-harness.md.
 - source_spec: none
   summary: Story 13b — the seven-day forecast-chart (real Due dates only, today marked «I dag», counts printed, an ordered list for screen readers) on Hjem («Studievarsel for fagene dine» with fag-forecast-rows and day columns), P04 (mini «Kort i {fag} neste 7 dager»), P05 and in P09 (today as cards left, «Repetert» at the end, the return-forecast preview), absorbing the P09 forecast entry from story 11.
   evidence: Split from story 13 at the Author's choice (2026-11-19): the Next step (CAP-11, Must) ships first; the forecast is a UX surface that is independently shippable.
@@ -72,6 +77,7 @@
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/11b-flashcard-browsing.md`
   summary: Cover P08's ←/→ navigation (and its guards for fields, menus and dialogs) and the shared Space/Enter flip on P08 and P09 with a browser/JS test.
   evidence: No JS test runner exists; the only test greps `app.js` for selector strings, so swapped or guarded-out handlers fail nothing.
+  resolved: 2026-11-25. Retro action E1-1: Playwright browser tests in `tests/browser/` (opt-in, `uv run pytest -m browser`); see spec-retro-e1-1-browser-test-harness.md.
 - source_spec: `_bmad-output/specs/spec-ai-study-buddy/stories/11b-flashcard-browsing.md`
   summary: Make a click or tap on the card itself flip it on P08 and P09 (EXPERIENCE.md, flashcard component), not only «Vis svaret» and Space/Enter.
   evidence: The shared card (`components/flashcard_card.html`, from story 11) flips only through the `[data-flip]` link and the keyboard.

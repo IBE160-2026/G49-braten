@@ -73,7 +73,7 @@ action_items:
     action: "Add a Key-free browser test harness (Playwright) covering app.js: dialogs,
       P05 tab keys, P06 keyboard contract, P07 strip, D10 footer, P08 arrows"
     owner: "Claude (on the Author's go)"
-    status: open
+    status: done
     ref: "_bmad-output/implementation-artifacts/epic-1-retro-2026-11-20.md"
   - id: "epic-1-retro-item-2-run-scripts-compare_extraction-py-on-thr"
     epic: 1

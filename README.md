@@ -84,6 +84,19 @@ Testene dekker blant annet (NFR-5):
 | Daglig grense for genereringer (NFR-7) | `tests/test_ai_gateway.py`, `tests/test_generation.py` |
 | Hele sensorstien over, ende til ende | `tests/test_examiner_path.py` |
 
+### Nettlesertester
+
+`static/js/app.js` (dialoger, tastene i fanene, quizen og kortene, resultatstripen og temavelgeren) testes i en ekte nettleser med Playwright og Chromium, uten nøkkel og i demomodus. Testene ligger i `tests/browser/` og er valgfrie: `uv run pytest` hopper over dem. Første gang laster du ned Chromium (rundt 100 MB):
+
+```bash
+uv run playwright install chromium   # én gang
+uv run pytest -m browser             # kjører bare nettlesertestene
+```
+
+Også når du peker på en enkelt fil eller test i `tests/browser/`, trengs `-m browser`. Uten det blir alt valgt bort i stillhet. `-m ""` kjører alle testene. Kjør `uv run pytest -m browser` før du committer en endring i `static/js/app.js`, siden den vanlige kjøringen ikke dekker den.
+
+Nettleseren snakker bare med en testserver på 127.0.0.1. En forespørsel til en annen adresse blir stoppet og får testen til å feile.
+
 ## Akseptansesjekkliste (SM-2)
 
 Hver sjekk består enten ved å følge denne README-en (R) eller ved en automatisk test (T). `tests/test_sm2_checklist.py` feiler hvis en test som er nevnt her, får nytt navn eller forsvinner.

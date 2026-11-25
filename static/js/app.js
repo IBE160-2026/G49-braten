@@ -346,10 +346,14 @@
     }
   }
   window.addEventListener("hashchange", openRowForHash);
-  // The same slot twice fires no hashchange, so a click opens its row as well.
+  // The same slot twice fires no hashchange, so a click opens its row as well. The link's own
+  // jump to the (unfocusable) row would then move focus to <body>, so it is cancelled; focusing
+  // the summary scrolls it into view.
   document.addEventListener("click", function (evt) {
     var slot = evt.target.closest && evt.target.closest("a.result-slot");
-    if (slot && slot.hash === window.location.hash) openRowForHash();
+    if (!slot || slot.hash !== window.location.hash) return;
+    evt.preventDefault();
+    openRowForHash();
   });
   openRowForHash();
 
