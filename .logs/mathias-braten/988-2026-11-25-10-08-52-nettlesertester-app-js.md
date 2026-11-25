@@ -20,3 +20,28 @@ Gjennomfør retrotiltak E1-1 etter spec-en `_bmad-output/implementation-artifact
 
 ### Åpne punkter
 - Gjennomgang (review) av endringene gjenstår. Spec-en står fortsatt som `in-progress`.
+
+## 2026-11-25 kl. 10:22 — Mathias Bråten
+
+### Oppgave
+Gjøre ferdig gjennomgangen (bmad-build steg 4–5) av nettlesertestene for app.js, og committe.
+
+### Plan
+- Tre uavhengige reviewere: Blind Hunter, Edge Case Hunter og Verification Gap. Hvert funn ble sjekket mot koden, og vurderingene står i spec-ens Review Triage Log (13 rader).
+- Rett de små funnene, kjør verifiseringen og sett spec-en til `done`.
+
+### Resultat
+- Rettet etter gjennomgangen:
+  - `DJANGO_ALLOW_ASYNC_UNSAFE` settes tilbake etter hver nettlesertest.
+  - Ny test for at Enter snur kortet i P08.
+  - README sier at `-m browser` trengs også når en enkelt fil fra nettleserdelen navngis, og at testene bør kjøres før endringer i app.js.
+- Avvist:
+  - Ctrl/Cmd-klikk på den aktive ruta i P07-stripa åpner ikke ny fane. Det er sjeldent, og en sperre ville gjort koden mer innviklet.
+  - Overstyringen av `live_server`, felles fixtures og WebSocket-vern. Appen bruker ikke WebSocket.
+  - Utdaterte linjenumre i spec-en.
+- Ingenting er utsatt til deferred-work.
+- Verifisering: `uv run pytest -m browser` ga 20 bestått. `uv run pytest` ga 902 bestått og 20 valgt bort. En blandet kjøring (`-m ""`, nettlesertester først) ga 52 bestått.
+- Commit `1388911`. Spec-en har status `done`, og retrotiltak E1-1 er `done` i sprint-status.yaml.
+
+### Åpne punkter
+Ingen.

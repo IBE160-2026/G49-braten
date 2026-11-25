@@ -43,4 +43,4 @@
 - [ ] 2026-11-16 [story-6-generering-og-referansesjekk](991-2026-11-16-18-10-57-story-6-generering-og-referansesjekk.md) — story 17: studymat.services.locations() bruker bare index som nøkkel; avklar dette når Word-kilder kan ha både overskrifter og avsnitt
 - [x] 2026-11-23 [oq1-pdf-uttrekk](989-2026-11-23-15-34-38-oq1-pdf-uttrekk.md) — bestem om OQ-1 settes til «confirmed» (pypdf vanlig modus, MIN_TEXT_CHARS 200) og lukk retrotiltak 2 (løst 2026-11-25: bekreftet, 6c3ab94)
 - [x] 2026-11-23 [oq1-pdf-uttrekk](989-2026-11-23-15-34-38-oq1-pdf-uttrekk.md) — LaTeX/Type 3-PDF-er gir glyfnavn som passerer MIN_TEXT_CHARS: legg til en sjekk i ingestion, eller noter det som kjent begrensning (løst 2026-11-23: sjekken `unmapped_font_pdf` er lagt inn)
-- [ ] 2026-11-25 [nettlesertester-app-js](988-2026-11-25-10-08-52-nettlesertester-app-js.md) — gjennomgå nettlesertestene og P07-fiksen i app.js (spec-retro-e1-1 står som in-progress)
+- [x] 2026-11-25 [nettlesertester-app-js](988-2026-11-25-10-08-52-nettlesertester-app-js.md) — gjennomgå nettlesertestene og P07-fiksen i app.js (spec-retro-e1-1 står som in-progress) (løst 2026-11-25: gjennomgått og committet, 1388911)
